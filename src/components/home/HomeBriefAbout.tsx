@@ -252,7 +252,7 @@ export default function HomeBriefAbout() {
               <span className="block overflow-hidden mt-0.5">
                 <span className="about-read-text-wrap inline-block overflow-hidden">
                   <span className="about-read-text-block inline-block text-[12px] max-[1028px]:text-[10px] max-[767px]:text-[10px] tracking-[0.02em] leading-[1.04]">
-                    ABOUT
+
                   </span>
                 </span>
               </span>

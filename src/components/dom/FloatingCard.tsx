@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useRef, useEffect, useCallback } from "react";
-import Link from "next/link";
 import gsap from "gsap";
 import { mouseCoordinator } from "@/lib/mouseCoordinator";
+import { useUIStore } from "@/store/useUIStore";
 
 /**
  * FloatingCard — Pink card with 3D mouse-tilt effect.
@@ -105,6 +105,15 @@ export default function FloatingCard({ className = "", style }: FloatingCardProp
     };
   }, [handleMouseMove]);
 
+  const startTransition = useUIStore((state) => state.startTransition);
+  const isTransitioning = useUIStore((state) => state.isTransitioning);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isTransitioning) return;
+    startTransition("/about");
+  };
+
   return (
     <div
       ref={cardRef}
@@ -118,7 +127,18 @@ export default function FloatingCard({ className = "", style }: FloatingCardProp
         ...style,
       }}
     >
-      <Link href="/about" className="block w-full h-full cursor-pointer" aria-label="Learn more about Vishwas K">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            handleClick(e as unknown as React.MouseEvent);
+          }
+        }}
+        className="block w-full h-full cursor-pointer focus:outline-none"
+        aria-label="Learn more about Vishwas K"
+      >
         <div
           ref={innerRef}
           className="w-full h-full rounded-[14px] p-[18px_14px] sm:p-[20px_16px] md:p-[24px_18px] relative overflow-hidden bg-[#ffabb7] text-[#302c1a] will-change-transform shadow-[0_20px_50px_rgba(48,44,26,0.18)]"
@@ -167,7 +187,7 @@ export default function FloatingCard({ className = "", style }: FloatingCardProp
             </span>
           </div>
         </div>
-      </Link>
+      </div>
     </div>
   );
 }

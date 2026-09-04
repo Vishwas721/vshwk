@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React from "react";
 import Link from "next/link";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 import HeaderLogo from "@/components/dom/HeaderLogo";
 import BounceLine from "@/components/dom/BounceLine";
 
@@ -11,10 +9,6 @@ import BounceLine from "@/components/dom/BounceLine";
  * AboutPage — 1:1 Architectural Replica of Hisami Kurita's /about Route
  *
  * Includes:
- * - GSAP 0-100 Full-Screen Preloader:
- *   - Counter animates from 00 to 100 over ~1.8s
- *   - Binds to massive Six Caps typography in the screen center
- *   - On 100%, preloader slides up (yPercent: -100) to reveal the mapped About content
  * - Replicated 2D Kurita Structural Layout:
  *   - AboutMainVisualSection: HELLO, WORLD / VISHWAS K / IS FULL-STACK / AI ENGINEER AT REVA UNIVERSITY
  *   - Floating Profile Card with institution details
@@ -24,115 +18,13 @@ import BounceLine from "@/components/dom/BounceLine";
  *   - Technical Stack badges & Navigation controls
  */
 export default function AboutPage() {
-  const preloaderRef = useRef<HTMLDivElement>(null);
-  const counterTextRef = useRef<HTMLSpanElement>(null);
-  const progressBarRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // ─── GSAP 0-100 Preloader Timeline ───
-  useGSAP(() => {
-    const counterObj = { value: 0 };
-    const preloader = preloaderRef.current;
-    const content = contentRef.current;
-    if (!preloader) return;
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setIsLoaded(true);
-      },
-    });
-
-    // Animate counter from 0 to 100 over ~1.8s
-    tl.to(counterObj, {
-      value: 100,
-      duration: 1.8,
-      ease: "power2.inOut",
-      onUpdate: () => {
-        const val = Math.round(counterObj.value);
-        if (counterTextRef.current) {
-          counterTextRef.current.textContent = val < 10 ? `0${val}` : `${val}`;
-        }
-        if (progressBarRef.current) {
-          progressBarRef.current.style.width = `${val}%`;
-        }
-      },
-    });
-
-    // Slide preloader overlay up out of view
-    tl.to(preloader, {
-      duration: 0.9,
-      yPercent: -100,
-      ease: "power3.inOut",
-    });
-
-    // Reveal page content underneath
-    if (content) {
-      tl.from(
-        content,
-        {
-          y: 50,
-          opacity: 0,
-          duration: 1.0,
-          ease: "power3.out",
-        },
-        "-=0.4"
-      );
-    }
-  }, []);
-
   return (
     <main className="relative min-h-screen w-full bg-[#f0efeb] text-[#302c1a] overflow-x-hidden">
-      {/* ─── Full-Screen GSAP 0-100 Preloader Overlay ─── */}
-      <div
-        ref={preloaderRef}
-        className="fixed inset-0 z-[100] bg-[#302c1a] text-[#f0efeb] flex flex-col justify-between p-6 sm:p-12 will-change-transform select-none"
-      >
-        {/* Top bar of preloader */}
-        <div className="flex justify-between items-center text-[11px] md:text-[13px] font-mono tracking-[0.15em] opacity-60">
-          <span>VISHWAS K ・ PORTFOLIO</span>
-          <span>INITIALIZING ABOUT / 2026</span>
-        </div>
-
-        {/* Center: Massive Six Caps 0-100 typography */}
-        <div className="flex flex-col items-center justify-center my-auto">
-          <div className="flex items-baseline leading-none">
-            <span
-              ref={counterTextRef}
-              className="text-[clamp(6rem,24vw,18rem)] font-normal leading-none tracking-tight select-none"
-              style={{ fontFamily: "var(--font-six-caps)" }}
-            >
-              00
-            </span>
-            <span
-              className="text-[clamp(2.5rem,8vw,6rem)] font-normal opacity-60 ml-2"
-              style={{ fontFamily: "var(--font-six-caps)" }}
-            >
-              %
-            </span>
-          </div>
-
-          {/* Minimalist progress track */}
-          <div className="w-48 md:w-64 h-[2px] bg-white/15 mt-4 rounded-full overflow-hidden">
-            <div
-              ref={progressBarRef}
-              className="h-full bg-[#55b1ff] w-0 rounded-full transition-all"
-            />
-          </div>
-        </div>
-
-        {/* Bottom bar of preloader */}
-        <div className="flex justify-between items-center text-[10px] md:text-[12px] font-mono tracking-[0.2em] opacity-40">
-          <span>LOADING PROFILE</span>
-          <span>STANDBY</span>
-        </div>
-      </div>
-
       {/* ─── Navigation Elements ─── */}
       <HeaderLogo />
 
-      {/* ─── Page Content (Revealed after Preloader) ─── */}
-      <div ref={contentRef} className="relative z-10 w-full">
+      {/* ─── Page Content ─── */}
+      <div className="relative z-10 w-full">
         {/* ─── Hero Section (AboutMainVisualSection) ─── */}
         <section className="relative w-full min-h-screen px-6 sm:px-10 pt-[92px] pb-[92px] overflow-hidden">
           {/* Top Back Link */}

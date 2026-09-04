@@ -6,6 +6,7 @@ import SmoothScrollProvider from "@/components/dom/SmoothScrollProvider";
 import Sidebar from "@/components/layout/Sidebar";
 import SidebarNavigation from "@/components/dom/SidebarNavigation";
 import PagePushWrapper from "@/components/layout/PagePushWrapper";
+import Loader from "@/components/layout/Loader";
 
 const sidebarTitle = localFont({
   src: "../../public/fonts/SixCaps-Regular.woff2",
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="w-full overflow-x-hidden bg-[#f0efeb] text-white antialiased">
+        <Loader />
         <SmoothScrollProvider>
           <PagePushWrapper>
             {children}

@@ -457,7 +457,7 @@ export default function Sidebar() {
                 onClick={closeSidebar}
                 className="block w-full break-words hover:opacity-75 transition-opacity"
               >
-                HISAMIKURITA
+                VISHWAS
               </Link>
             </div>
             <div className="sidebar-title-item block translate-y-10 opacity-0 mt-2 w-full break-words">

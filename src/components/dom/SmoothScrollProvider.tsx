@@ -1,10 +1,29 @@
 "use client";
 
-import { ReactLenis } from "lenis/react";
-import type { ReactNode } from "react";
+import { ReactLenis, useLenis } from "lenis/react";
+import { useEffect, type ReactNode } from "react";
+import { useUIStore } from "@/store/useUIStore";
 
 interface SmoothScrollProviderProps {
   children: ReactNode;
+}
+
+function LenisScrollController() {
+  const isAppLoaded = useUIStore((state) => state.isAppLoaded);
+  const isTransitioning = useUIStore((state) => state.isTransitioning);
+  const lenis = useLenis();
+
+  useEffect(() => {
+    if (!lenis) return;
+
+    if (!isAppLoaded || isTransitioning) {
+      lenis.stop();
+    } else {
+      lenis.start();
+    }
+  }, [lenis, isAppLoaded, isTransitioning]);
+
+  return null;
 }
 
 export default function SmoothScrollProvider({
@@ -19,6 +38,7 @@ export default function SmoothScrollProvider({
         syncTouch: true,
       }}
     >
+      <LenisScrollController />
       {children}
     </ReactLenis>
   );
