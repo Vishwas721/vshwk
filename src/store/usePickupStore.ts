@@ -50,6 +50,7 @@ export interface PickupState {
   globalBgColor: string;
   projects: ProjectData[];
   enter: () => void;
+  enterFromBottom: () => void;
   leave: () => void;
   setScene: (sceneName: string) => void;
   setCurrentNumber: (num: number, direction?: "next" | "prev" | "init") => void;
@@ -79,6 +80,17 @@ export const usePickupStore = create<PickupState>((set, get) => ({
       currentNumber: 1,
       scene: "next01",
       globalBgColor: "#F9F6F0",
+    }),
+
+  enterFromBottom: () =>
+    set({
+      isAnimationActive: true,
+      isCurrent: true,
+      isRewinding: false,
+      direction: "prev",
+      currentNumber: 3,
+      scene: "next03",
+      globalBgColor: "#D8F3DC",
     }),
 
   leave: () =>

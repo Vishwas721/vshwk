@@ -70,6 +70,16 @@ export default function ProjectsPickupSection() {
     const viewportHypot = Math.hypot(window.innerWidth, window.innerHeight);
     const blastTargetScale = (viewportHypot * 2.6) / 64;
 
+    // Ensure circle is primed at max scale and base is blue
+    if (baseBgEl) baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
+    if (circleEl) {
+      gsap.set(circleEl, {
+        scale: blastTargetScale,
+        opacity: 1,
+        backgroundColor: "#F9F6F0",
+      });
+    }
+
     const rewindTl = gsap.timeline({
       onComplete: () => {
         // Reset state after circle has shrunken to 0
@@ -77,9 +87,11 @@ export default function ProjectsPickupSection() {
         prevNumberRef.current = 1;
         setBaseBgColor(ABOUT_BG_COLOR);
         if (baseBgEl) baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
-        if (circleEl) gsap.set(circleEl, { scale: 0, opacity: 1 });
+        if (circleEl) gsap.set(circleEl, { scale: 0, opacity: 0 });
 
-        // Complete release to About section and restart Lenis
+        // ONLY inside onComplete:
+        // a) Call lenis.start()
+        // b) Call leave() on Zustand store
         completeRelease();
       },
     });
@@ -90,32 +102,20 @@ export default function ProjectsPickupSection() {
       {
         y: 40,
         opacity: 0,
-        duration: 0.32,
+        duration: 0.25,
         ease: "power2.in",
       }
     );
 
-    // 2. Prepare circle at full scale over the blue background
-    rewindTl.set(circleEl, {
-      scale: blastTargetScale,
-      opacity: 1,
-      backgroundColor: "#F9F6F0",
-    });
-
-    // Ensure underlying plane is the blue About color so shrinking reveals blue
-    if (baseBgEl) {
-      baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
-    }
-
-    // 3. Shrink the Cream bubble from massive scale back down to 0
+    // 2. Shrink the Cream bubble from its max size back down to 0
     rewindTl.to(
       circleEl,
       {
         scale: 0,
         duration: 0.85,
-        ease: "power3.inOut",
+        ease: "power3.out",
       },
-      "-=0.1"
+      "-=0.15"
     );
 
     rewindTimelineRef.current = rewindTl;
@@ -126,9 +126,14 @@ export default function ProjectsPickupSection() {
     onRewindToAbout: handleRewindToAbout,
   });
 
-  // ─── Initial Entrance Blast Animation ───
+  // ─── Initial Entrance Blast / Footer Re-entry Animation ───
   useEffect(() => {
-    // Exact moment store triggers enter() into Project 1 for the first time
+    if (!isCurrent) {
+      hasInitializedRef.current = false;
+      return;
+    }
+
+    // Exact moment store triggers enter() or enterFromBottom() for the first time
     if (!hasInitializedRef.current && isCurrent) {
       hasInitializedRef.current = true;
 
@@ -137,7 +142,28 @@ export default function ProjectsPickupSection() {
       if (!circleEl || !baseBgEl) return;
 
       if (entryTimelineRef.current) entryTimelineRef.current.kill();
+      if (collisionTimelineRef.current) collisionTimelineRef.current.kill();
+      if (rewindTimelineRef.current) rewindTimelineRef.current.kill();
 
+      // Case 1: Re-entering from Footer (scrolling UP into Project 3)
+      if (currentNumber === 3) {
+        prevNumberRef.current = 3;
+        const mintColor = projects[2].color; // "#D8F3DC"
+        setBaseBgColor(mintColor);
+        baseBgEl.style.backgroundColor = mintColor;
+        setGlobalBgColor(mintColor);
+        setDisplayedProject(projects[2]);
+        gsap.set(circleEl, { scale: 0, opacity: 0 });
+
+        // Render Project 3 text immediately without entry blast
+        gsap.set(
+          [titleRef.current, categoryRef.current, descRef.current, numberBadgeRef.current],
+          { y: 0, opacity: 1 }
+        );
+        return;
+      }
+
+      // Case 2: Entering from About (scrolling DOWN into Project 1)
       const viewportHypot = Math.hypot(window.innerWidth, window.innerHeight);
       const blastTargetScale = (viewportHypot * 2.6) / 64;
 
@@ -153,10 +179,15 @@ export default function ProjectsPickupSection() {
       const entryTl = gsap.timeline({
         onComplete: () => {
           setBaseBgColor(activeProject.color);
-          baseBgEl.style.backgroundColor = activeProject.color;
           setGlobalBgColor(activeProject.color);
           setDisplayedProject(activeProject);
-          gsap.set(circleEl, { scale: 0, opacity: 0 });
+          // Keep circle at max scale over blue base so rewind is instantly primed
+          baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
+          gsap.set(circleEl, {
+            scale: blastTargetScale,
+            opacity: 1,
+            backgroundColor: "#F9F6F0",
+          });
         },
       });
 
@@ -208,12 +239,14 @@ export default function ProjectsPickupSection() {
       const hostEl = hostBubbleRef.current;
       const invaderEl = invaderBubbleRef.current;
       const baseBgEl = baseBgRef.current;
+      const circleEl = entryCircleRef.current;
       if (!hostEl || !invaderEl || !baseBgEl) return;
 
       if (collisionTimelineRef.current) collisionTimelineRef.current.kill();
 
       const viewportHypot = Math.hypot(window.innerWidth, window.innerHeight);
       const blastTargetScale = (viewportHypot * 1.45) / 130;
+      const fullBlastScale = (viewportHypot * 2.6) / 64;
 
       hostEl.style.backgroundColor = prevProject.color;
       invaderEl.style.backgroundColor = activeProject.color;
@@ -243,6 +276,20 @@ export default function ProjectsPickupSection() {
             x: 0,
             y: 0,
           });
+
+          // If stepping back into Project 1, prime the cream entry bubble over blue
+          if (currentNumber === 1) {
+            baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
+            if (circleEl) {
+              gsap.set(circleEl, {
+                scale: fullBlastScale,
+                opacity: 1,
+                backgroundColor: "#F9F6F0",
+              });
+            }
+          } else if (circleEl) {
+            gsap.set(circleEl, { scale: 0, opacity: 0 });
+          }
 
           // Animate in new project text
           if (titleRef.current) {

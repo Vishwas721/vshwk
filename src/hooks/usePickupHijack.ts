@@ -21,12 +21,16 @@ interface UsePickupHijackOptions {
  * 3. Scrolling down past Project 3 (SummAID):
  *    - Keeps globalBgColor Mint (#D8F3DC) to eliminate blue bleed.
  *    - Smoothly glides to footer and calls lenis.start().
- * 4. Scrolling up steps Project 3 -> 2 -> 1.
- * 5. Scrolling up from Project 1:
- *    - Does NOT immediately call lenis.start().
+ * 4. Scrolling up from Footer:
+ *    - Detects upward entry into ProjectsPickupSection from the bottom.
+ *    - Smoothly locks viewport at section offsetTop.
+ *    - Initializes at Project 3 (SummAID) with Mint (#D8F3DC) background without entry blast animation.
+ * 5. Scrolling up inside section steps Project 3 -> 2 -> 1.
+ * 6. Scrolling up from Project 1:
+ *    - Does NOT immediately call lenis.start() or leave().
  *    - Triggers onRewindToAbout to shrink the cream circle and reveal the blue About section.
- *    - Calls lenis.start() and releases to About only AFTER the animation completes.
- * 6. Enforces a 1200ms cooldown lockout between interactions to prevent state thrashing.
+ *    - Calls lenis.start() and releases to About only AFTER the shrinking animation completes.
+ * 7. Enforces a 1200ms cooldown lockout between interactions to prevent state thrashing.
  */
 export function usePickupHijack(
   sectionRef: React.RefObject<HTMLElement | null>,
@@ -41,37 +45,45 @@ export function usePickupHijack(
 
   const lenis = useLenis();
   const enter = usePickupStore((s) => s.enter);
+  const enterFromBottom = usePickupStore((s) => s.enterFromBottom);
   const leave = usePickupStore((s) => s.leave);
   const next = usePickupStore((s) => s.next);
   const prev = usePickupStore((s) => s.prev);
-  const setCurrentNumber = usePickupStore((s) => s.setCurrentNumber);
   const setGlobalBgColor = usePickupStore((s) => s.setGlobalBgColor);
+  const isCurrent = usePickupStore((s) => s.isCurrent);
 
   const isLockedRef = useRef(false);
   const isCoolingDownRef = useRef(false);
+  const accumulatedDeltaRef = useRef(0);
   const touchStartYRef = useRef(0);
   const scrollTweenRef = useRef<gsap.core.Tween | null>(null);
+  const lastScrollYRef = useRef(0);
+
+  // Sync ref with store state
+  useEffect(() => {
+    isLockedRef.current = isCurrent;
+  }, [isCurrent]);
 
   // Lock and snap to the Pickup section
   const lockAtSection = useCallback(
-    (startProjectNumber: number = 1, direction: "next" | "prev" | "init" = "init") => {
+    (startProjectNumber: 1 | 3 = 1, direction: "init" | "prev" = "init") => {
       if (isLockedRef.current || !sectionRef.current) return;
 
       const section = sectionRef.current;
       isLockedRef.current = true;
       isCoolingDownRef.current = true;
+      accumulatedDeltaRef.current = 0;
 
       // 1. Halt Lenis smooth scroll immediately
       if (lenis) {
         lenis.stop();
       }
 
-      // 2. Set active project
-      if (startProjectNumber === 1) {
-        enter();
+      // 2. Set active project in Zustand store
+      if (startProjectNumber === 3) {
+        enterFromBottom();
       } else {
-        setCurrentNumber(startProjectNumber, direction);
-        usePickupStore.setState({ isCurrent: true, isAnimationActive: true });
+        enter();
       }
 
       // 3. Smoothly tween viewport to exact section offsetTop
@@ -84,7 +96,7 @@ export function usePickupHijack(
 
       scrollTweenRef.current = gsap.to(scrollObj, {
         y: targetY,
-        duration: 0.8,
+        duration: 0.75,
         ease: "power2.out",
         onUpdate: () => {
           window.scrollTo(0, scrollObj.y);
@@ -97,14 +109,14 @@ export function usePickupHijack(
           if (lenis) {
             lenis.scrollTo(targetY, { immediate: true });
           }
-          // Enforce cooldown after snapping
+          // Enforce cooldown after snapping to prevent immediate re-trigger
           setTimeout(() => {
             isCoolingDownRef.current = false;
           }, cooldownMs);
         },
       });
     },
-    [cooldownMs, enter, lenis, sectionRef, setCurrentNumber]
+    [cooldownMs, enter, enterFromBottom, lenis, sectionRef]
   );
 
   // Release lock downward towards footer
@@ -128,7 +140,7 @@ export function usePickupHijack(
 
     scrollTweenRef.current = gsap.to(scrollObj, {
       y: exitTarget,
-      duration: 0.9,
+      duration: 0.85,
       ease: "power2.inOut",
       onUpdate: () => {
         window.scrollTo(0, scrollObj.y);
@@ -140,7 +152,6 @@ export function usePickupHijack(
         window.scrollTo(0, exitTarget);
         if (lenis) {
           lenis.scrollTo(exitTarget, { immediate: true });
-          // EXPLICITLY re-enable Lenis smooth scroll
           lenis.start();
         }
         setTimeout(() => {
@@ -151,44 +162,31 @@ export function usePickupHijack(
   }, [leave, lenis, sectionRef, setGlobalBgColor]);
 
   // Release lock upward towards About section
+  // Called ONLY after GSAP bubble shrinking timeline completes!
   const releaseUpward = useCallback(() => {
     if (!sectionRef.current) return;
     const section = sectionRef.current;
 
-    isCoolingDownRef.current = true;
     isLockedRef.current = false;
     leave();
     setGlobalBgColor("transparent");
 
     const exitTopTarget = Math.max(0, section.offsetTop - window.innerHeight * 0.45);
-    const scrollObj = { y: window.scrollY };
 
-    if (scrollTweenRef.current) {
-      scrollTweenRef.current.kill();
-    }
-
-    scrollTweenRef.current = gsap.to(scrollObj, {
-      y: exitTopTarget,
-      duration: 0.85,
-      ease: "power2.inOut",
-      onUpdate: () => {
-        window.scrollTo(0, scrollObj.y);
-        if (lenis) {
-          lenis.scrollTo(scrollObj.y, { immediate: true });
-        }
-      },
-      onComplete: () => {
-        window.scrollTo(0, exitTopTarget);
-        if (lenis) {
-          lenis.scrollTo(exitTopTarget, { immediate: true });
-          // EXPLICITLY re-enable Lenis smooth scroll
-          lenis.start();
-        }
-        setTimeout(() => {
+    if (lenis) {
+      lenis.start();
+      lenis.scrollTo(exitTopTarget, {
+        duration: 0.85,
+        onComplete: () => {
           isCoolingDownRef.current = false;
-        }, 400);
-      },
-    });
+        },
+      });
+    } else {
+      window.scrollTo(0, exitTopTarget);
+      setTimeout(() => {
+        isCoolingDownRef.current = false;
+      }, 400);
+    }
   }, [leave, lenis, sectionRef, setGlobalBgColor]);
 
   // Handle downward user gesture
@@ -223,12 +221,13 @@ export function usePickupHijack(
       }, cooldownMs);
     } else {
       // At Project 1 (Privex) and scrolling UP:
-      // Do NOT immediately call lenis.start()!
+      // Do NOT immediately call lenis.start() or leave()!
       // Trigger the Upward Rewind timeline first
       isCoolingDownRef.current = true;
 
       if (onRewindToAbout) {
         onRewindToAbout(() => {
+          // ONLY called when bubble scale has reached 0:
           releaseUpward();
         });
       } else {
@@ -238,22 +237,51 @@ export function usePickupHijack(
   }, [cooldownMs, onRewindToAbout, prev, releaseUpward]);
 
   // Monitor viewport scroll to catch entry from above or below
-  useLenis(() => {
-    if (isLockedRef.current || isCoolingDownRef.current || !sectionRef.current) return;
-
-    const rect = sectionRef.current.getBoundingClientRect();
-
-    // Entering from above (scrolling down into Pickup)
-    if (rect.top <= 15 && rect.top >= -80 && rect.bottom > window.innerHeight * 0.5) {
-      lockAtSection(1, "init");
+  useLenis((lenisInstance) => {
+    if (isLockedRef.current || isCoolingDownRef.current || !sectionRef.current) {
+      lastScrollYRef.current = window.scrollY;
+      return;
     }
-    // Entering from below (scrolling up into Pickup)
-    else if (rect.bottom >= window.innerHeight - 15 && rect.bottom <= window.innerHeight + 80 && rect.top < 0) {
+
+    const section = sectionRef.current;
+    const rect = section.getBoundingClientRect();
+    const currentScrollY = window.scrollY;
+    const isScrollingUp = currentScrollY < lastScrollYRef.current || (lenisInstance && lenisInstance.direction === -1);
+    const isScrollingDown = currentScrollY > lastScrollYRef.current || (lenisInstance && lenisInstance.direction === 1);
+    lastScrollYRef.current = currentScrollY;
+
+    const sectionTop = section.offsetTop;
+    const sectionHeight = section.offsetHeight;
+
+    // Case 1: Scrolling DOWN from About into ProjectsPickupSection
+    if (
+      isScrollingDown &&
+      rect.top <= 25 &&
+      rect.top >= -120 &&
+      currentScrollY < sectionTop + sectionHeight * 0.4
+    ) {
+      lockAtSection(1, "init");
+      return;
+    }
+
+    // Case 2: Scrolling UP from Footer into ProjectsPickupSection
+    if (
+      isScrollingUp &&
+      currentScrollY <= sectionTop + sectionHeight + 100 &&
+      currentScrollY >= sectionTop + sectionHeight * 0.2
+    ) {
       lockAtSection(3, "prev");
+      return;
     }
   });
 
-  // Attach gesture listeners
+  // Keep references to latest handlers for event listeners without triggering effect rebuilds
+  const handlersRef = useRef({ handleScrollDown, handleScrollUp });
+  useEffect(() => {
+    handlersRef.current = { handleScrollDown, handleScrollUp };
+  });
+
+  // Attach gesture listeners (stable: doesn't re-run or unlock Lenis prematurely)
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (!isLockedRef.current) return;
@@ -263,10 +291,14 @@ export function usePickupHijack(
 
       if (isCoolingDownRef.current) return;
 
-      if (e.deltaY > wheelThreshold) {
-        handleScrollDown();
-      } else if (e.deltaY < -wheelThreshold) {
-        handleScrollUp();
+      accumulatedDeltaRef.current += e.deltaY;
+
+      if (accumulatedDeltaRef.current > wheelThreshold) {
+        accumulatedDeltaRef.current = 0;
+        handlersRef.current.handleScrollDown();
+      } else if (accumulatedDeltaRef.current < -wheelThreshold) {
+        accumulatedDeltaRef.current = 0;
+        handlersRef.current.handleScrollUp();
       }
     };
 
@@ -289,9 +321,9 @@ export function usePickupHijack(
       const deltaY = touchStartYRef.current - currentY; // Upward swipe = scroll down
 
       if (deltaY > touchThreshold) {
-        handleScrollDown();
+        handlersRef.current.handleScrollDown();
       } else if (deltaY < -touchThreshold) {
-        handleScrollUp();
+        handlersRef.current.handleScrollUp();
       }
     };
 
@@ -300,10 +332,10 @@ export function usePickupHijack(
 
       if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
         e.preventDefault();
-        handleScrollDown();
+        handlersRef.current.handleScrollDown();
       } else if (e.key === "ArrowUp" || e.key === "PageUp") {
         e.preventDefault();
-        handleScrollUp();
+        handlersRef.current.handleScrollUp();
       }
     };
 
@@ -321,18 +353,8 @@ export function usePickupHijack(
       if (scrollTweenRef.current) {
         scrollTweenRef.current.kill();
       }
-
-      if (isLockedRef.current && lenis) {
-        lenis.start();
-      }
     };
-  }, [
-    handleScrollDown,
-    handleScrollUp,
-    lenis,
-    touchThreshold,
-    wheelThreshold,
-  ]);
+  }, [touchThreshold, wheelThreshold]);
 
   return {
     isLocked: isLockedRef.current,
