@@ -13,38 +13,65 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * Works & Archive Datas matching legacy BaseHambergerMenu.vue
- * Including M-TRUST, KTKM, YAKUDOH, and ARCHIVE
+ * Real Project Roster for Interactive Sidebar
  */
-const WORKS_DATA = [
+export interface ProjectRosterItem {
+  id: string;
+  title: string;
+  desc: string;
+  tech: string;
+  image: string;
+  link: string;
+}
+
+export const WORKS_DATA: ProjectRosterItem[] = [
   {
     id: "01",
-    title: "M-TRUST",
-    desc: "DIGITAL PRODUCTION SPECIALIZING IN BRANDING & WEBGL EXPERIENCES.",
+    title: "Privex",
+    desc: "Privacy-focused local visual firewall and memory agent.",
+    tech: "YOLOv8, LangGraph, FastAPI, pgvector, Neo4j",
     image: "/images/poster-mtrust.webp",
-    link: "/#works",
+    link: "#privex",
   },
   {
     id: "02",
-    title: "KTKM",
-    desc: "OFFICIAL PORTAL WITH PLAYFUL INTERACTIONS AND SOUND DESIGN.",
+    title: "NagarikOne",
+    desc: "Civic issue reporting platform with 50m geospatial duplicate detection.",
+    tech: "PERN Stack, React Native, PostGIS, Gemini API",
     image: "/images/poster-ketakuma.webp",
-    link: "/#works",
+    link: "#nagarikone",
   },
   {
     id: "03",
-    title: "YAKUDOH",
-    desc: "THE DIGITAL EXPERIENCE FOR CONTEMPORARY ARTS & THREE.JS SHADERS.",
+    title: "SummAID",
+    desc: "AI-powered clinical intelligence platform for medical reports.",
+    tech: "FastAPI, pgvector, local LLMs, React",
     image: "/images/poster-yakudoh.webp",
-    link: "/#works",
+    link: "#summaid",
   },
   {
-    id: "archive",
-    title: "ARCHIVE",
-    desc: "I'M PUTTING TOGETHER A DYNAMIC ARCHIVE PAGE OF THE WORK I'M SUBMITTING TO CODEPEN.",
-    image: "/images/hambergermenu-archive.webp",
-    link: "/archive",
-    isArchive: true,
+    id: "04",
+    title: "Prism",
+    desc: "AI prior authorization review platform.",
+    tech: "Azure AI Document Intelligence, Azure OpenAI, FastAPI, React",
+    image: "/images/poster-frontier.webp",
+    link: "#prism",
+  },
+  {
+    id: "05",
+    title: "Gesto",
+    desc: "Real-time sign language to code converter.",
+    tech: "Python, MediaPipe, OpenCV",
+    image: "/images/poster-basta.webp",
+    link: "#gesto",
+  },
+  {
+    id: "06",
+    title: "RegeneX",
+    desc: "Drug repurposing platform for rare diseases.",
+    tech: "PyTorch Geometric, Neo4j",
+    image: "/images/poster-redandgreen.webp",
+    link: "#regenex",
   },
 ];
 
@@ -504,12 +531,17 @@ export default function Sidebar() {
 
                     {/* Metadata: dynamic break-words without rigid fixed widths or overflow */}
                     <span className="flex-1 min-w-0 w-full flex flex-col items-center break-words">
-                      <span className="block w-full break-words text-[#302c1a] text-[56px] max-[767px]:text-[12.8vw] font-[family-name:var(--font-sidebar-title)] text-center leading-none mt-[-12px] mb-[20px] max-[767px]:mb-[12px] group-hover:opacity-70 transition-opacity">
+                      <span className="block w-full break-words text-[#302c1a] text-[56px] max-[767px]:text-[12.8vw] font-[family-name:var(--font-sidebar-title)] text-center leading-none mt-[-12px] mb-[16px] max-[767px]:mb-[10px] group-hover:opacity-70 transition-opacity uppercase">
                         {item.title}
                       </span>
-                      <span className="block w-full break-words text-[#302c1a] text-[10px] leading-[1.3] tracking-[0.02em] text-center font-[family-name:var(--font-sidebar-body)]">
+                      <span className="block w-full break-words text-[#302c1a] text-[10px] leading-[1.35] tracking-[0.02em] text-center font-[family-name:var(--font-sidebar-body)] uppercase">
                         {item.desc}
                       </span>
+                      {item.tech && (
+                        <span className="block w-full break-words text-[#302c1a]/70 text-[9px] font-mono leading-[1.3] tracking-[0.02em] text-center mt-[8px] max-[767px]:mt-[5px] uppercase">
+                          {item.tech}
+                        </span>
+                      )}
                     </span>
                   </Link>
                 </div>
