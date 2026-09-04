@@ -237,7 +237,7 @@ export default function HomeBriefAbout() {
           >
             {/* ─── Top-Left Indicator ("・ ABOUT") ─── */}
             <div
-              className="absolute top-[-4px] left-[42px] max-[1028px]:left-[3.594vw] max-[767px]:left-[9px] z-20 pointer-events-none text-white font-[helvetica,Arial,sans-serif]"
+              className="absolute top-[-20px] md:top-[-24px] max-[767px]:top-[-14px] -translate-y-1.5 left-[42px] max-[1028px]:left-[3.594vw] max-[767px]:left-[9px] z-20 pointer-events-none text-white font-[helvetica,Arial,sans-serif]"
               aria-hidden="true"
             >
               {/* Dot '・' */}
@@ -263,9 +263,8 @@ export default function HomeBriefAbout() {
               {DESKTOP_TITLE_LINES.map((line, idx) => (
                 <div
                   key={idx}
-                  className={`block w-full ${line.isRightAlign ? "text-right" : "text-left"} ${
-                    line.hasPaddingRight ? "pr-[11.719vw]" : ""
-                  }`}
+                  className={`block w-full ${line.isRightAlign ? "text-right" : "text-left"} ${line.hasPaddingRight ? "pr-[11.719vw]" : ""
+                    }`}
                 >
                   <span className="app-text-animation block pointer-events-none select-none">
                     <span

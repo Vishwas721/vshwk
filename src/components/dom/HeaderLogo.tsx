@@ -62,7 +62,7 @@ export default function HeaderLogo({
   return (
     <div
       ref={containerRef}
-      className="fixed top-[20px] left-[20px] md:left-[40px] z-50 select-none overflow-hidden"
+      className="header-logo-container fixed top-[20px] left-[20px] md:left-[40px] z-50 select-none overflow-hidden will-change-transform"
     >
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

@@ -8,12 +8,41 @@
   font-display: swap;
 }
 
+@theme {
+  --font-sidebar-title: var(--font-sidebar-title), 'Six Caps', sans-serif;
+  --font-sidebar-body: var(--font-sidebar-body), helvetica, "Helvetica Neue", Arial, sans-serif;
+}
+
 :root {
   --font-six-caps: 'Six Caps', sans-serif;
+  --font-sidebar-title: 'Six Caps', sans-serif;
+  --font-sidebar-body: helvetica, "Helvetica Neue", Arial, sans-serif;
 }
 
 html, body {
-  background-color: #f0efeb !important;
-  color: #302c1a;
+  width: 100%;
   overflow-x: hidden;
+  background-color: #f0efeb;
+  color: #302c1a;
+  margin: 0;
+  padding: 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  -webkit-appearance: none;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  -webkit-appearance: none;
+}
+

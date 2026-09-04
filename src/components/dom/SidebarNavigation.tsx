@@ -1,63 +1,70 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { useLenis } from "lenis/react";
+import { useUIStore } from "@/store/useUIStore";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 /**
  * SidebarNavigation — Fixed right-edge vertical capsule & scroll slider replicating BaseHambergerMenu.vue
  *
- * Adapted for Kurita's signature soft off-white/cream #f0efeb theme:
- * - Crisp white (#ffffff) capsule with subtle warm border and shadow
- * - Signature 2-bar hamburger menu in #302c1a
- * - Dynamic scroll slider track and gliding handle in #302c1a
- * - Hover micro-squeeze animation matching legacy behavior
+ * Core Features:
+ * - Global fixed positioning: fixed top-0 right-0 h-[100dvh] z-[50]
+ * - Dual-layer global scroll tracker: useLenis + GSAP ScrollTrigger (tracking entire document.body 0 to 1)
+ * - Dynamic black slider thumb mapped to 0-1 progress from absolute top (/) to footer
+ * - Signature 2-bar hamburger menu trigger wired to useUIStore
  */
 export default function SidebarNavigation() {
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const hoverAreaRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hoverAreaRef = useRef<HTMLButtonElement>(null);
   const sliderHandleRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const { toggleSidebar } = useUIStore();
 
-  useEffect(() => {
-    const sidebar = sidebarRef.current;
-    if (!sidebar) return;
+  // Range of motion for the slider handle indicator on the 173px track
+  const maxTravel = 140;
 
-    // Initial entrance from offscreen right (+130px)
-    gsap.fromTo(
-      sidebar,
-      { x: 130, opacity: 0 },
-      {
-        duration: 1.2,
-        delay: 0.4,
-        x: 0,
-        opacity: 1,
-        ease: "power3.out",
-      }
-    );
+  // ─── 1. Lenis Real-time Smooth Scroll Tracker ───
+  useLenis(({ progress }) => {
+    setScrollProgress(progress);
+    if (sliderHandleRef.current) {
+      gsap.to(sliderHandleRef.current, {
+        y: progress * maxTravel,
+        duration: 0.1,
+        ease: "none",
+        overwrite: "auto",
+      });
+    }
+  });
 
-    // Track scroll position for slider handle
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? Math.min(1, Math.max(0, scrollY / maxScroll)) : 0;
-      setScrollProgress(progress);
+  // ─── 2. GSAP ScrollTrigger tracking entire document.body (0 to 1) ───
+  useGSAP(() => {
+    if (typeof document === "undefined") return;
 
-      if (sliderHandleRef.current) {
-        gsap.to(sliderHandleRef.current, {
-          y: progress * 140, // Range of motion for the slider handle indicator
-          duration: 0.2,
-          ease: "power1.out",
-          overwrite: "auto",
-        });
-      }
-    };
+    const trigger = ScrollTrigger.create({
+      trigger: document.body,
+      start: "top top",
+      end: "bottom bottom",
+      onUpdate: (self) => {
+        setScrollProgress(self.progress);
+        if (sliderHandleRef.current) {
+          gsap.to(sliderHandleRef.current, {
+            y: self.progress * maxTravel,
+            duration: 0.1,
+            ease: "none",
+            overwrite: "auto",
+          });
+        }
+      },
+    });
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => trigger.kill();
   }, []);
 
   const handleMouseEnter = () => {
@@ -84,19 +91,19 @@ export default function SidebarNavigation() {
 
   return (
     <aside
-      ref={sidebarRef}
-      className="fixed z-50 select-none transition-all duration-300
-        /* Mobile: top-right 60x60 square button */
-        top-[10px] right-[20px] w-[60px] h-[60px]
-        /* Desktop: tall vertical dock capsule */
-        md:top-[10px] md:bottom-[10px] md:right-[10px] md:w-[110px] md:h-[calc(100vh-20px)]"
+      ref={containerRef}
+      aria-label="Navigation and scroll progress"
+      className="fixed top-0 right-0 h-[100dvh] z-[50] pointer-events-none select-none flex flex-col justify-center items-end pr-[10px] max-[767px]:pr-[20px] max-[767px]:top-[10px] max-[767px]:bottom-auto max-[767px]:h-auto"
       style={{ willChange: "transform, opacity" }}
     >
-      <div
+      <button
         ref={hoverAreaRef}
+        type="button"
+        aria-label="Open navigation menu"
+        onClick={toggleSidebar}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="relative w-full h-full bg-[#ffffff] border border-[rgba(48,44,26,0.08)] rounded-[10px] shadow-[0_8px_30px_rgba(48,44,26,0.08)] cursor-pointer overflow-hidden flex flex-col justify-between items-center py-8"
+        className="pointer-events-auto relative w-[110px] h-[calc(100dvh-20px)] bg-[#ffffff] border border-[rgba(48,44,26,0.08)] rounded-[10px] shadow-[0_8px_30px_rgba(48,44,26,0.08)] cursor-pointer overflow-hidden flex flex-col justify-between items-center py-8 outline-none focus:outline-none transition-opacity duration-300 max-[767px]:w-[60px] max-[767px]:h-[60px] max-[767px]:p-0 max-[767px]:justify-center"
       >
         {/* Top subtle branding/indicator on desktop */}
         <div className="hidden md:flex flex-col items-center gap-1.5 opacity-50">
@@ -109,11 +116,11 @@ export default function SidebarNavigation() {
         {/* Center: Signature Kurita Hamburger Trigger & Scroll Track */}
         <div className="relative flex flex-col items-center justify-center my-auto">
           {/* Slider track line */}
-          <div className="hidden md:block absolute -top-20 bottom-[-80px] w-[2px] bg-[#e6e4dc] rounded-full">
-            {/* Dynamic Slider Handle Indicator */}
+          <div className="hidden md:block absolute -top-20 bottom-[-80px] w-[2px] bg-[#e6e4dc] rounded-full pointer-events-none">
+            {/* Dynamic Black Slider Handle Indicator */}
             <div
               ref={sliderHandleRef}
-              className="w-2.5 h-6 -ml-[4px] bg-[#302c1a] rounded-full shadow-sm"
+              className="w-2.5 h-6 -ml-[4px] bg-[#302c1a] rounded-full shadow-sm will-change-transform"
               title="Scroll indicator"
             />
           </div>
@@ -129,7 +136,7 @@ export default function SidebarNavigation() {
         <div className="hidden md:flex flex-col items-center gap-1 opacity-60 text-[11px] font-mono text-[#302c1a]">
           <span>{Math.round(scrollProgress * 100)}%</span>
         </div>
-      </div>
+      </button>
     </aside>
   );
 }
