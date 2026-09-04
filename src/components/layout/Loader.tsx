@@ -143,7 +143,7 @@ export default function Loader() {
         className="absolute top-8 left-8 sm:top-10 sm:left-12 flex items-center space-x-2 text-white/70 text-[11px] md:text-[13px] tracking-[0.2em] uppercase font-[helvetica,Arial,sans-serif]"
       >
         <span className="inline-block text-[22px] leading-none text-white">・</span>
-        <span>HISAMI KURITA / PORTFOLIO</span>
+        <span>VISHWAS / PORTFOLIO</span>
       </div>
 
       {/* Center Massive Typographic Percentage */}
