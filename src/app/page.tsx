@@ -250,8 +250,8 @@ export default function Home() {
             </div>
           </h1>
 
-          {/* ─── 3. Pink Floating 3D Tilt Card (Shifted right to completely clear 'ENGINEER') ─── */}
-          <FloatingCard className="translate-x-24 md:translate-x-36 lg:translate-x-44" />
+          {/* ─── 3. Pink Floating 3D Tilt Card (Shifted right to completely clear 'AI & FULL-STACK' and 'ENGINEER') ─── */}
+          <FloatingCard className="translate-x-[20vw] md:translate-x-[24vw] lg:translate-x-[28vw]" />
         </div>
       </section>
 

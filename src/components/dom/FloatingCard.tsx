@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useCallback } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { mouseCoordinator } from "@/lib/mouseCoordinator";
 
@@ -118,15 +119,16 @@ export default function FloatingCard({ className = "" }: FloatingCardProps) {
         perspective: "1000px",
       }}
     >
-      <div
-        ref={innerRef}
-        className="w-full h-full rounded-[14px] p-[26px_18px] relative overflow-hidden bg-[#ffabb7] text-[#302c1a] will-change-transform shadow-[0_20px_50px_rgba(48,44,26,0.18)]"
-        style={{
-          transformStyle: "preserve-3d",
-          transform: "rotate(8deg)",
-          backfaceVisibility: "hidden",
-        }}
-      >
+      <Link href="/about" className="block w-full h-full cursor-pointer" aria-label="Learn more about Vishwas K">
+        <div
+          ref={innerRef}
+          className="w-full h-full rounded-[14px] p-[26px_18px] relative overflow-hidden bg-[#ffabb7] text-[#302c1a] will-change-transform shadow-[0_20px_50px_rgba(48,44,26,0.18)]"
+          style={{
+            transformStyle: "preserve-3d",
+            transform: "rotate(8deg)",
+            backfaceVisibility: "hidden",
+          }}
+        >
         {/* Layer 1: Foreground Readable Content (z-10) */}
         <div className="relative z-10 h-full flex flex-col justify-between">
           {/* Top: Name section peeking near the date line */}
@@ -166,6 +168,7 @@ export default function FloatingCard({ className = "" }: FloatingCardProps) {
           </span>
         </div>
       </div>
-    </div>
-  );
+    </Link>
+  </div>
+);
 }
