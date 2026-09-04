@@ -11,6 +11,7 @@
 @theme {
   --font-sidebar-title: var(--font-sidebar-title), 'Six Caps', sans-serif;
   --font-sidebar-body: var(--font-sidebar-body), helvetica, "Helvetica Neue", Arial, sans-serif;
+  --shadow-sidebar-depth: -20px 0px 50px rgba(0, 0, 0, 0.15);
 }
 
 :root {

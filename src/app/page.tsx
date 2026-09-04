@@ -49,6 +49,18 @@ export default function Home() {
       const hero = heroRef.current;
       if (!yellowCircle || !blueCircle || !hero) return;
 
+      // Explicit Initial State: ensure starting scales/positions are explicitly set
+      gsap.set(yellowCircle, {
+        scale: 1,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+      gsap.set(blueCircle, {
+        scale: 1,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+
       // Initial Entrance Reveal from 0 to baseline 1
       gsap.from(yellowCircle, {
         scale: 0,
@@ -88,6 +100,19 @@ export default function Home() {
           immediateRender: false,
         }
       );
+
+      // Force layout calculation on mount to fix the invisible canvas/shapes bug
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
+
+      const refreshTimer = setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 100);
+
+      return () => {
+        clearTimeout(refreshTimer);
+      };
     },
     { scope: heroRef }
   );

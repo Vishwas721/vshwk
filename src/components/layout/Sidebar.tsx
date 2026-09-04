@@ -75,8 +75,6 @@ export default function Sidebar() {
   const { isSidebarOpen, toggleSidebar, closeSidebar } = useUIStore();
 
   const rootRef = useRef<HTMLDivElement>(null);
-  const overlay01Ref = useRef<HTMLDivElement>(null);
-  const overlay02Ref = useRef<HTMLDivElement>(null);
   const contentsRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
   const btnHoverRef = useRef<HTMLSpanElement>(null);
@@ -99,73 +97,62 @@ export default function Sidebar() {
       if (isSidebarOpen) {
         if (!isMobile) {
           // ─── Desktop Open Animation ───
+          // Root panel slides in with the website push
+          if (rootRef.current) {
+            rootRef.current.style.pointerEvents = "auto";
+            gsap.to(rootRef.current, {
+              x: "0%",
+              duration: 0.3,
+              delay: 0.16,
+              ease: kuritaEase,
+            });
+          }
+
           if (contentsRef.current) {
             gsap.set(contentsRef.current, { autoAlpha: 1 });
             contentsRef.current.style.pointerEvents = "auto";
           }
 
-          // Button translates to intersect the left edge of the 510px drawer (-520px from right)
-          if (btnRef.current) btnRef.current.style.pointerEvents = "auto";
-          gsap.to(btnRef.current, {
-            delay: 0.2,
-            duration: 0.2,
-            ease: kuritaEase,
-            x: -520,
-            autoAlpha: 1,
-          });
-          // Button morphs into a perfect circle (86px x 86px, rounded-full aspect-square)
-          gsap.to(btnRef.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            width: 86,
-            height: 86,
-            borderRadius: 100,
-            scale: 0.9,
-          });
-          gsap.to(btnHoverRef.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            borderRadius: 100,
-            boxShadow: "0px 10px 20px 5px rgba(193, 193, 192, 0.15)",
-          });
+          // Button morphs into perfect circle on the seam (-left-[43px])
+          if (btnRef.current) {
+            btnRef.current.style.pointerEvents = "auto";
+            gsap.to(btnRef.current, {
+              delay: 0.16,
+              duration: 0.25,
+              ease: kuritaEase,
+              autoAlpha: 1,
+              scale: 1,
+            });
+            gsap.to(btnHoverRef.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              borderRadius: 100,
+              boxShadow: "0px 10px 20px 5px rgba(193, 193, 192, 0.15)",
+            });
 
-          // Morph 2 horizontal lines into a 45° close 'X'
-          gsap.to(line01Ref.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            top: 3,
-            height: 9,
-            borderRadius: 4,
-            rotate: 45,
-          });
-          gsap.to(line02Ref.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            bottom: 2,
-            height: 9,
-            borderRadius: 4,
-            rotate: -45,
-          });
-          gsap.to(openareaRef.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            scale: 0.6,
-          });
-
-          // Overlay 01 and 02 expand in lockstep from right (510px wide with curved left edge)
-          gsap.to(overlay01Ref.current, {
-            delay: 0.16,
-            duration: 0.3,
-            ease: kuritaEase,
-            scaleX: 1.0,
-            scaleY: 1.0,
-          });
-          gsap.to(overlay02Ref.current, {
-            delay: 0.16,
-            duration: 0.3,
-            ease: kuritaEase,
-            scaleX: 1.0,
-          });
+            // Morph 2 horizontal lines into a 45° close 'X'
+            gsap.to(line01Ref.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              top: 3,
+              height: 9,
+              borderRadius: 4,
+              rotate: 45,
+            });
+            gsap.to(line02Ref.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              bottom: 2,
+              height: 9,
+              borderRadius: 4,
+              rotate: -45,
+            });
+            gsap.to(openareaRef.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              scale: 0.6,
+            });
+          }
 
           // Staggered reveal of titles and works cards
           gsap.to(".sidebar-title-item", {
@@ -185,53 +172,50 @@ export default function Sidebar() {
           });
         } else {
           // ─── Mobile Open Animation ───
+          if (rootRef.current) {
+            rootRef.current.style.pointerEvents = "auto";
+            gsap.to(rootRef.current, {
+              x: "0%",
+              duration: 0.3,
+              delay: 0.16,
+              ease: kuritaEase,
+            });
+          }
+
           if (contentsRef.current) {
             gsap.set(contentsRef.current, { autoAlpha: 1 });
             contentsRef.current.style.pointerEvents = "auto";
           }
 
-          // Mobile button shifts left
-          if (btnRef.current) btnRef.current.style.pointerEvents = "auto";
-          gsap.to(btnRef.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            x: -window.innerWidth / 2 + 50,
-            autoAlpha: 1,
-            borderRadius: 100,
-          });
-          gsap.to(btnHoverRef.current, {
-            duration: 0.2,
-            borderRadius: 100,
-            boxShadow: "none",
-          });
+          // Mobile button reveals on seam
+          if (btnRef.current) {
+            btnRef.current.style.pointerEvents = "auto";
+            gsap.to(btnRef.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              autoAlpha: 1,
+              scale: 1,
+            });
+            gsap.to(btnHoverRef.current, {
+              duration: 0.2,
+              borderRadius: 100,
+              boxShadow: "none",
+            });
 
-          // Lines morph
-          gsap.to(line01Ref.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            top: 5,
-            rotate: 45,
-          });
-          gsap.to(line02Ref.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            bottom: 4,
-            rotate: -45,
-          });
-
-          // Overlays drop down vertically
-          gsap.to(overlay01Ref.current, {
-            delay: 0.2,
-            duration: 0.2,
-            ease: kuritaEase,
-            scaleY: 1,
-          });
-          gsap.to(overlay02Ref.current, {
-            delay: 0.2,
-            duration: 0.2,
-            ease: kuritaEase,
-            scaleY: 1,
-          });
+            // Lines morph
+            gsap.to(line01Ref.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              top: 5,
+              rotate: 45,
+            });
+            gsap.to(line02Ref.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              bottom: 4,
+              rotate: -45,
+            });
+          }
 
           // Text reveals
           gsap.to(".sidebar-title-item", {
@@ -254,138 +238,130 @@ export default function Sidebar() {
         // ─── Closed State Animation ───
         if (!isMobile) {
           // Desktop Close
-          gsap.to(btnRef.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            x: 0,
-            autoAlpha: 0,
-            onComplete: () => {
-              if (btnRef.current) btnRef.current.style.pointerEvents = "none";
-            },
-          });
-          gsap.to(btnRef.current, {
-            delay: 0.2,
-            duration: 0.2,
-            ease: kuritaEase,
-            width: 110,
-            height: "calc(100dvh - 20px)",
-            borderRadius: 10,
-            scale: 1.0,
-          });
-          gsap.to(btnHoverRef.current, {
-            duration: 0.2,
-            borderRadius: 10,
-            boxShadow: "none",
-          });
+          if (rootRef.current) {
+            gsap.to(rootRef.current, {
+              x: "100%",
+              duration: 0.3,
+              delay: 0,
+              ease: kuritaEase,
+              onComplete: () => {
+                if (rootRef.current) rootRef.current.style.pointerEvents = "none";
+              },
+            });
+          }
 
-          gsap.to(openareaRef.current, {
-            delay: 0.2,
-            duration: 0.2,
-            ease: kuritaEase,
-            scale: 1,
-          });
-          gsap.to(line01Ref.current, {
-            delay: 0.2,
-            duration: 0.2,
-            ease: kuritaEase,
-            top: 0,
-            height: 4,
-            borderRadius: 2,
-            rotate: 0,
-          });
-          gsap.to(line02Ref.current, {
-            delay: 0.2,
-            duration: 0.2,
-            ease: kuritaEase,
-            bottom: 0,
-            height: 4,
-            borderRadius: 2,
-            rotate: 0,
-          });
+          if (btnRef.current) {
+            gsap.to(btnRef.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              autoAlpha: 0,
+              scale: 0.8,
+              onComplete: () => {
+                if (btnRef.current) btnRef.current.style.pointerEvents = "none";
+              },
+            });
+            gsap.to(btnHoverRef.current, {
+              duration: 0.2,
+              borderRadius: 100,
+              boxShadow: "none",
+            });
+            gsap.to(openareaRef.current, {
+              delay: 0.2,
+              duration: 0.2,
+              ease: kuritaEase,
+              scale: 1,
+            });
+            gsap.to(line01Ref.current, {
+              delay: 0.2,
+              duration: 0.2,
+              ease: kuritaEase,
+              top: 0,
+              height: 4,
+              borderRadius: 2,
+              rotate: 0,
+            });
+            gsap.to(line02Ref.current, {
+              delay: 0.2,
+              duration: 0.2,
+              ease: kuritaEase,
+              bottom: 0,
+              height: 4,
+              borderRadius: 2,
+              rotate: 0,
+            });
+          }
 
-          gsap.to(overlay02Ref.current, {
-            delay: 0,
-            duration: 0.3,
-            ease: kuritaEase,
-            scaleX: 0,
-          });
-          gsap.to(overlay01Ref.current, {
-            delay: 0,
-            duration: 0.3,
-            ease: kuritaEase,
-            scaleX: 0,
-          });
-
-          gsap.to(contentsRef.current, {
-            duration: 0.2,
-            autoAlpha: 0,
-            onComplete: () => {
-              if (contentsRef.current) {
-                contentsRef.current.scrollTo(0, 0);
-                contentsRef.current.style.pointerEvents = "none";
-              }
-              gsap.set(".sidebar-item-wrapper", { y: 180 });
-              gsap.set(".sidebar-title-item", { y: 40, opacity: 0 });
-            },
-          });
+          if (contentsRef.current) {
+            gsap.to(contentsRef.current, {
+              duration: 0.2,
+              autoAlpha: 0,
+              onComplete: () => {
+                if (contentsRef.current) {
+                  contentsRef.current.scrollTo(0, 0);
+                  contentsRef.current.style.pointerEvents = "none";
+                }
+                gsap.set(".sidebar-item-wrapper", { y: 180 });
+                gsap.set(".sidebar-title-item", { y: 40, opacity: 0 });
+              },
+            });
+          }
         } else {
           // Mobile Close
-          gsap.to(btnRef.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            x: 0,
-            autoAlpha: 0,
-            width: 60,
-            height: 60,
-            borderRadius: 10,
-            onComplete: () => {
-              if (btnRef.current) btnRef.current.style.pointerEvents = "none";
-            },
-          });
-          gsap.to(btnHoverRef.current, {
-            duration: 0.2,
-            borderRadius: 10,
-            boxShadow: "none",
-          });
+          if (rootRef.current) {
+            gsap.to(rootRef.current, {
+              x: "100%",
+              duration: 0.3,
+              delay: 0,
+              ease: kuritaEase,
+              onComplete: () => {
+                if (rootRef.current) rootRef.current.style.pointerEvents = "none";
+              },
+            });
+          }
 
-          gsap.to(line01Ref.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            top: 0,
-            rotate: 0,
-          });
-          gsap.to(line02Ref.current, {
-            duration: 0.2,
-            ease: kuritaEase,
-            bottom: 0,
-            rotate: 0,
-          });
+          if (btnRef.current) {
+            gsap.to(btnRef.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              autoAlpha: 0,
+              scale: 0.8,
+              onComplete: () => {
+                if (btnRef.current) btnRef.current.style.pointerEvents = "none";
+              },
+            });
+            gsap.to(btnHoverRef.current, {
+              duration: 0.2,
+              borderRadius: 10,
+              boxShadow: "none",
+            });
+            gsap.to(line01Ref.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              top: 0,
+              rotate: 0,
+            });
+            gsap.to(line02Ref.current, {
+              duration: 0.2,
+              ease: kuritaEase,
+              bottom: 0,
+              rotate: 0,
+            });
+          }
 
-          gsap.to(overlay01Ref.current, {
-            delay: 0.2,
-            duration: 0.2,
-            ease: kuritaEase,
-            scaleY: 0,
-          });
-          gsap.to(overlay02Ref.current, {
-            delay: 0.2,
-            duration: 0.2,
-            ease: kuritaEase,
-            scaleY: 0,
-          });
-
-          gsap.to(contentsRef.current, {
-            duration: 0.2,
-            autoAlpha: 0,
-            onComplete: () => {
-              if (contentsRef.current) {
-                contentsRef.current.scrollTo(0, 0);
-                contentsRef.current.style.pointerEvents = "none";
-              }
-              gsap.set(".sidebar-item-wrapper", { y: 180 });
-              gsap.set(".sidebar-title-item", { y: 40, opacity: 0 });
-            },
-          });
+          if (contentsRef.current) {
+            gsap.to(contentsRef.current, {
+              duration: 0.2,
+              autoAlpha: 0,
+              onComplete: () => {
+                if (contentsRef.current) {
+                  contentsRef.current.scrollTo(0, 0);
+                  contentsRef.current.style.pointerEvents = "none";
+                }
+                gsap.set(".sidebar-item-wrapper", { y: 180 });
+                gsap.set(".sidebar-title-item", { y: 40, opacity: 0 });
+              },
+            });
+          }
         }
       }
     },
@@ -394,7 +370,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* ─── Backdrop: Click-outside to close; 100% transparent so NO grey tint/void appears ─── */}
+      {/* ─── Backdrop: Click-outside to close; 100% transparent ─── */}
       <div
         aria-hidden="true"
         onClick={closeSidebar}
@@ -405,58 +381,73 @@ export default function Sidebar() {
         }`}
       />
 
-      {/* ─── Global Fixed Navigation Root (.hambergerMenu) ─── */}
+      {/* 
+        ─── The Outer Wrapper (The Frame) ───
+        - Fixed right-0 h-[100dvh], 560px wide (matching -560px website push)
+        - Base flat legacy grey/beige background (#dfded9)
+        - NO rounded corners (flat rectangular outer frame)
+        - Left padding of 50px (pl-[50px]) creating the signature gap
+        - Holds the close button positioned absolutely relative to this outer wrapper
+      */}
       <aside
         ref={rootRef}
         data-lenis-prevent="true"
         data-lenis-prevent-wheel="true"
         aria-label="Site navigation menu"
-        className="fixed top-0 right-0 h-[100dvh] z-[999] pointer-events-none overscroll-contain"
+        className="fixed top-0 right-0 h-[100dvh] w-[560px] max-[767px]:w-full z-[999] pl-[50px] max-[767px]:pl-0 overscroll-contain bg-[#dfded9] pointer-events-none will-change-transform"
+        style={{ transform: isSidebarOpen ? "translateX(0%)" : "translateX(100%)" }}
       >
         {/* 
-          Overlay 01 (.hambergerMenu-overlay-01)
-          Background under-layer strictly bounded to 510px with curved left edge (rounded-l-[2rem])
+          ─── The Close Button ("X") ───
+          Positioned absolutely relative to the Outer Wrapper.
+          Sits at -left-[43px] (centered on the seam at 0px),
+          floating completely clear of the inner rounded box (which begins at +50px).
         */}
-        <div
-          ref={overlay01Ref}
-          className="absolute top-0 right-0 w-[510px] h-full bg-[#dfded9] rounded-l-[2rem] pointer-events-none origin-right scale-x-0 overflow-hidden
-            max-[767px]:top-[42px] max-[767px]:right-0 max-[767px]:w-full max-[767px]:h-[calc(100vh-72px)] max-[767px]:scale-y-0 max-[767px]:origin-top max-[767px]:rounded-l-[1rem]"
+        <button
+          ref={btnRef}
+          type="button"
+          aria-label={isSidebarOpen ? "Close navigation menu" : "Open navigation menu"}
+          onClick={toggleSidebar}
+          className="absolute top-0 bottom-0 my-auto -left-[43px] w-[86px] h-[86px] rounded-full cursor-pointer z-20 opacity-0 pointer-events-none border-none outline-none focus:outline-none max-[767px]:-left-[30px] max-[767px]:top-[20px] max-[767px]:bottom-auto max-[767px]:w-[60px] max-[767px]:h-[60px]"
         >
-          <div
-            className={`absolute inset-0 rounded-inherit pointer-events-none shadow-[inset_2px_35px_16px_5px_rgba(24,23,13,0.20)] transition-opacity duration-300 ${
-              isSidebarOpen ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        </div>
+          <span
+            ref={btnHoverRef}
+            className="flex justify-center items-center absolute inset-0 w-full h-full bg-white rounded-full transition-transform duration-250 hover:scale-[0.95] shadow-[0px_10px_20px_5px_rgba(193,193,192,0.15)]"
+          >
+            <span
+              ref={openareaRef}
+              className="relative w-[37px] h-[13px] max-[767px]:w-[26px] max-[767px]:h-[13px]"
+            >
+              <span
+                ref={line01Ref}
+                className="absolute top-0 left-0 w-full h-[4px] bg-[#302c1a] rounded-[2px]"
+              />
+              <span
+                ref={line02Ref}
+                className="absolute bottom-0 left-0 w-full h-[4px] bg-[#302c1a] rounded-[2px]"
+              />
+            </span>
+          </span>
+        </button>
 
         {/* 
-          Overlay 02 (.hambergerMenu-overlay-02)
-          Main drawer surface (510px width) with elegant curved left edge: rounded-l-[2rem]
-        */}
-        <div
-          ref={overlay02Ref}
-          className="absolute top-0 right-0 w-[510px] h-full bg-[#bcbbb4] rounded-l-[2rem] pointer-events-none origin-right scale-x-0 overflow-hidden
-            max-[767px]:top-[42px] max-[767px]:right-0 max-[767px]:w-full max-[767px]:h-[calc(100vh-72px)] max-[767px]:scale-y-0 max-[767px]:origin-top max-[767px]:rounded-l-[1rem]"
-        >
-          <div className="absolute inset-0 rounded-inherit pointer-events-none shadow-[inset_35px_60px_50px_20px_rgba(24,23,13,0.50)]" />
-        </div>
-
-        {/* 
-          Contents (.hambergerMenu-contents)
-          510px drawer panel with curved left edge (rounded-l-[2rem])
-          Lenis isolated: data-lenis-prevent="true" data-lenis-prevent-wheel="true" overscroll-contain
-          Horizontal overflow blocked: overflow-x-hidden
-          Vertical scroll enabled with hidden scrollbar UX: overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
+          ─── The Inner Wrapper (The Content Box) ───
+          - Takes up w-full h-full inside the pl-[50px] frame (yielding 510px width)
+          - Styled with legacy darker beige-grey base color (#bcbbb4)
+          - Rounded left corners: rounded-l-[2rem] max-[767px]:rounded-l-[1rem]
+          - Dark moody gradient/inset shadow: shadow-[inset_35px_60px_50px_20px_rgba(24,23,13,0.50)]
+          - Holds all the text and project cards with isolated scrolling
         */}
         <div
           ref={contentsRef}
           data-lenis-prevent="true"
           data-lenis-prevent-wheel="true"
           onWheel={(e) => e.stopPropagation()}
-          className="absolute top-0 right-0 w-[510px] h-full pt-[50px] pb-[50px] pr-[26px] pl-[24px]
-            rounded-l-[2rem] overflow-y-auto overflow-x-hidden overscroll-contain
+          className="relative z-10 w-full h-full bg-[#bcbbb4] rounded-l-[2rem] max-[767px]:rounded-l-[1rem] shadow-[-20px_0px_50px_rgba(0,0,0,0.15)] inset-shadow-[35px_60px_50px_20px_rgba(24,23,13,0.50)]
+            pt-[50px] pb-[50px] pr-[26px] pl-[24px] max-[767px]:px-[12px] max-[767px]:py-[38px]
+            overflow-y-auto overflow-x-hidden overscroll-contain
             [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
-            opacity-0 pointer-events-none max-[767px]:right-0 max-[767px]:w-full max-[767px]:px-[12px] max-[767px]:py-[38px] max-[767px]:rounded-l-[1rem]"
+            opacity-0 pointer-events-none"
         >
           {/* Main Top Navigation Headings (Exact legacy typography math: Six Caps 120px / SP: 28.8vw, leading-[0.88]) */}
           <div className="relative mb-[36px] max-[767px]:mb-[46px] text-[#302c1a] text-[120px] max-[767px]:text-[28.8vw] leading-[0.88] tracking-[-0.002em] font-[family-name:var(--font-sidebar-title)] z-[2] w-full break-words">
@@ -526,39 +517,6 @@ export default function Sidebar() {
             ))}
           </ul>
         </div>
-
-        {/* 
-          Hamburger / Close Button (.hambergerMenu-btn)
-          - Closed: fills right 110px capsule with parallel horizontal lines
-          - Open: transforms into a perfect circle (w-[86px] h-[86px] rounded-full aspect-square)
-            centered on the left edge of the sidebar panel with a 45° close 'X'
-        */}
-        <button
-          ref={btnRef}
-          type="button"
-          aria-label={isSidebarOpen ? "Close navigation menu" : "Open navigation menu"}
-          onClick={toggleSidebar}
-          className="absolute top-0 right-[10px] bottom-0 my-auto w-[110px] h-[calc(100dvh-20px)] rounded-[10px] cursor-pointer z-10 opacity-0 pointer-events-none border-none outline-none focus:outline-none max-[767px]:top-[10px] max-[767px]:right-[20px] max-[767px]:bottom-auto max-[767px]:w-[60px] max-[767px]:h-[60px]"
-        >
-          <span
-            ref={btnHoverRef}
-            className="flex justify-center items-center absolute inset-0 w-full h-full bg-white rounded-inherit transition-transform duration-250 hover:scale-[0.9,0.98]"
-          >
-            <span
-              ref={openareaRef}
-              className="relative w-[37px] h-[13px] max-[767px]:w-[26px] max-[767px]:h-[13px]"
-            >
-              <span
-                ref={line01Ref}
-                className="absolute top-0 left-0 w-full h-[4px] bg-[#302c1a] rounded-[2px]"
-              />
-              <span
-                ref={line02Ref}
-                className="absolute bottom-0 left-0 w-full h-[4px] bg-[#302c1a] rounded-[2px]"
-              />
-            </span>
-          </span>
-        </button>
       </aside>
     </>
   );

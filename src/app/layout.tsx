@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SidebarNavigation />
         <Sidebar />
         {/* The persistent soft off-white/cream canvas */}
-        <Canvas className="!fixed !inset-0 !z-[-1] !bg-[#f0efeb] !pointer-events-none" />
+        <Canvas frameloop="always" className="!fixed !inset-0 !z-[-1] !bg-[#f0efeb] !pointer-events-none" />
       </body>
     </html>
   );
