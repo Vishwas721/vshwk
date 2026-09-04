@@ -98,6 +98,8 @@ export const usePickupStore = create<PickupState>((set, get) => ({
       isAnimationActive: false,
       isCurrent: false,
       isRewinding: false,
+      currentNumber: 1,
+      direction: "init",
       scene: "",
       // Note: globalBgColor is preserved on leave so downward exits remain Mint
     }),

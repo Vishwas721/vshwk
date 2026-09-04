@@ -156,7 +156,7 @@ export function usePickupHijack(
         }
         setTimeout(() => {
           isCoolingDownRef.current = false;
-        }, 400);
+        }, 450);
       },
     });
   }, [leave, lenis, sectionRef, setGlobalBgColor]);
@@ -176,17 +176,16 @@ export function usePickupHijack(
     if (lenis) {
       lenis.start();
       lenis.scrollTo(exitTopTarget, {
-        duration: 0.85,
-        onComplete: () => {
-          isCoolingDownRef.current = false;
-        },
+        duration: 0.75,
       });
     } else {
       window.scrollTo(0, exitTopTarget);
-      setTimeout(() => {
-        isCoolingDownRef.current = false;
-      }, 400);
     }
+
+    // Explicitly reset cooldown via setTimeout so that fast user scroll does not cancel unlock
+    setTimeout(() => {
+      isCoolingDownRef.current = false;
+    }, 450);
   }, [leave, lenis, sectionRef, setGlobalBgColor]);
 
   // Handle downward user gesture
@@ -256,9 +255,9 @@ export function usePickupHijack(
     // Case 1: Scrolling DOWN from About into ProjectsPickupSection
     if (
       isScrollingDown &&
-      rect.top <= 25 &&
-      rect.top >= -120 &&
-      currentScrollY < sectionTop + sectionHeight * 0.4
+      rect.top <= 80 &&
+      rect.bottom > window.innerHeight * 0.3 &&
+      currentScrollY < sectionTop + sectionHeight * 0.7
     ) {
       lockAtSection(1, "init");
       return;
@@ -267,7 +266,7 @@ export function usePickupHijack(
     // Case 2: Scrolling UP from Footer into ProjectsPickupSection
     if (
       isScrollingUp &&
-      currentScrollY <= sectionTop + sectionHeight + 100 &&
+      currentScrollY <= sectionTop + sectionHeight + 120 &&
       currentScrollY >= sectionTop + sectionHeight * 0.2
     ) {
       lockAtSection(3, "prev");

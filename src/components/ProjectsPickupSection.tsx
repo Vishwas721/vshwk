@@ -87,7 +87,20 @@ export default function ProjectsPickupSection() {
         prevNumberRef.current = 1;
         setBaseBgColor(ABOUT_BG_COLOR);
         if (baseBgEl) baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
-        if (circleEl) gsap.set(circleEl, { scale: 0, opacity: 0 });
+
+        // Step 3: ClearProps on Exit
+        // Strip leftover inline styles off text and circle, returning them to clean default CSS states
+        const textElements = [
+          titleRef.current,
+          categoryRef.current,
+          descRef.current,
+          numberBadgeRef.current,
+        ];
+        gsap.set(textElements, { clearProps: "all" });
+        if (circleEl) {
+          gsap.set(circleEl, { clearProps: "all" });
+          gsap.set(circleEl, { scale: 0, opacity: 0 });
+        }
 
         // ONLY inside onComplete:
         // a) Call lenis.start()
@@ -139,6 +152,12 @@ export default function ProjectsPickupSection() {
 
       const circleEl = entryCircleRef.current;
       const baseBgEl = baseBgRef.current;
+      const textElements = [
+        titleRef.current,
+        categoryRef.current,
+        descRef.current,
+        numberBadgeRef.current,
+      ];
       if (!circleEl || !baseBgEl) return;
 
       if (entryTimelineRef.current) entryTimelineRef.current.kill();
@@ -153,13 +172,12 @@ export default function ProjectsPickupSection() {
         baseBgEl.style.backgroundColor = mintColor;
         setGlobalBgColor(mintColor);
         setDisplayedProject(projects[2]);
+
+        gsap.set(circleEl, { clearProps: "all" });
         gsap.set(circleEl, { scale: 0, opacity: 0 });
 
-        // Render Project 3 text immediately without entry blast
-        gsap.set(
-          [titleRef.current, categoryRef.current, descRef.current, numberBadgeRef.current],
-          { y: 0, opacity: 1 }
-        );
+        gsap.set(textElements, { clearProps: "all" });
+        gsap.set(textElements, { y: 0, opacity: 1 });
         return;
       }
 
@@ -167,14 +185,24 @@ export default function ProjectsPickupSection() {
       const viewportHypot = Math.hypot(window.innerWidth, window.innerHeight);
       const blastTargetScale = (viewportHypot * 2.6) / 64;
 
+      // STEP 1: Force GSAP Initialization on Re-Entry
+      // Explicitly reset all animatable elements BEFORE the timeline starts
+      gsap.set(circleEl, { clearProps: "all" });
+      gsap.set(circleEl, {
+        scale: 0,
+        opacity: 1,
+        backgroundColor: activeProject.color,
+        transformOrigin: "center center",
+      });
+
+      gsap.set(textElements, { clearProps: "all" });
+      gsap.set(textElements, {
+        y: 50,
+        opacity: 0,
+      });
+
       // Base background stays strictly #55b1ff while circle violently expands
       baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
-      circleEl.style.backgroundColor = activeProject.color;
-
-      gsap.set(
-        [titleRef.current, categoryRef.current, descRef.current, numberBadgeRef.current],
-        { y: 50, opacity: 0 }
-      );
 
       const entryTl = gsap.timeline({
         onComplete: () => {
@@ -391,6 +419,8 @@ export default function ProjectsPickupSection() {
       className="relative w-full min-h-screen h-screen overflow-hidden select-none z-10"
       style={{
         backgroundColor: baseBgColor,
+        minHeight: "100vh",
+        height: "100vh",
       }}
     >
       {/* ─── Inline SVG Gooey Filter ─── */}
