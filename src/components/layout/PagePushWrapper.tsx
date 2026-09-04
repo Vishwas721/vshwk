@@ -49,6 +49,11 @@ export default function PagePushWrapper({ children }: PagePushWrapperProps) {
         duration: 0.3,
         delay,
         ease: kuritaEase,
+        onComplete: () => {
+          if (!isSidebarOpen && containerRef.current) {
+            gsap.set(containerRef.current, { clearProps: "transform" });
+          }
+        },
       });
 
       // Also animate any fixed header logo elements in sync (legacy BaseHeader.vue behavior)
@@ -59,6 +64,11 @@ export default function PagePushWrapper({ children }: PagePushWrapperProps) {
           duration: 0.3,
           delay,
           ease: kuritaEase,
+          onComplete: () => {
+            if (!isSidebarOpen && headerLogo) {
+              gsap.set(headerLogo, { clearProps: "transform" });
+            }
+          },
         });
       }
     },
@@ -68,7 +78,7 @@ export default function PagePushWrapper({ children }: PagePushWrapperProps) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full min-h-screen overflow-x-hidden will-change-transform bg-[#f0efeb]"
+      className="relative w-full min-h-screen bg-[#f0efeb]"
     >
       {children}
     </div>

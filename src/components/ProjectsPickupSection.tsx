@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef } from "react";
 import gsap from "gsap";
-import { CustomEase } from "gsap/CustomEase";
-import { usePickupStore, type ProjectData } from "@/store/usePickupStore";
-import { usePickupHijack } from "@/hooks/usePickupHijack";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { usePickupStore, PICKUP_PROJECTS } from "@/store/usePickupStore";
 
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(CustomEase);
+  gsap.registerPlugin(ScrollTrigger);
 }
 
 // Outgoing background color of the preceding Short About section
@@ -16,553 +16,505 @@ const ABOUT_BG_COLOR = "#55b1ff";
 /**
  * ProjectsPickupSection
  *
- * Implements:
- * 1. Initial "Entry Blast" wipe from Short About (#55b1ff) into Selected Project 01 (Privex: #F9F6F0).
- * 2. Upward "Rewind" animation when scrolling UP from Project 1:
- *    - Fades out Privex text.
- *    - Scales Cream circle back down from full viewport to 0, seamlessly revealing blue About underneath.
- *    - Releases Lenis and smoothly glides to About.
- * 3. Liquid Gooey Bubble Collision for project-to-project steps (Privex <-> NagarikOne <-> SummAID).
- * 4. Dynamic background sync to prevent any blue bleed below the section.
+ * Implements a continuous, scroll-linked "scrubbing" architecture using GSAP ScrollTrigger.
+ *
+ * Fixed Layout Architecture:
+ * - Outer Wrapper (Trigger): <div ref={triggerRef} className="relative w-full">
+ * - Inner Wrapper (Pinned Canvas): <div ref={pinnedRef} className="h-screen w-full relative overflow-hidden bg-transparent z-10">
+ * - pinSpacing: true guarantees GSAP creates the exact 4000px track without collapsing the layout or blanking.
  */
 export default function ProjectsPickupSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const baseBgRef = useRef<HTMLDivElement>(null);
-  const entryCircleRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const pinnedRef = useRef<HTMLDivElement>(null);
 
-  const gooeyContainerRef = useRef<HTMLDivElement>(null);
-  const hostBubbleRef = useRef<HTMLDivElement>(null);
-  const invaderBubbleRef = useRef<HTMLDivElement>(null);
+  // Bubble layer refs
+  const creamMainRef = useRef<HTMLDivElement>(null);
+  const creamSub1Ref = useRef<HTMLDivElement>(null);
+  const creamSub2Ref = useRef<HTMLDivElement>(null);
 
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const categoryRef = useRef<HTMLSpanElement>(null);
-  const descRef = useRef<HTMLParagraphElement>(null);
-  const numberBadgeRef = useRef<HTMLDivElement>(null);
+  const orangeMainRef = useRef<HTMLDivElement>(null);
+  const orangeSub1Ref = useRef<HTMLDivElement>(null);
+  const orangeSub2Ref = useRef<HTMLDivElement>(null);
 
-  const isCurrent = usePickupStore((s) => s.isCurrent);
-  const currentNumber = usePickupStore((s) => s.currentNumber);
-  const direction = usePickupStore((s) => s.direction);
-  const projects = usePickupStore((s) => s.projects);
+  const mintMainRef = useRef<HTMLDivElement>(null);
+  const mintSub1Ref = useRef<HTMLDivElement>(null);
+  const mintSub2Ref = useRef<HTMLDivElement>(null);
+
+  // Content layers refs
+  const privexTextRef = useRef<HTMLDivElement>(null);
+  const nagarikTextRef = useRef<HTMLDivElement>(null);
+  const summaidTextRef = useRef<HTMLDivElement>(null);
+
   const setGlobalBgColor = usePickupStore((s) => s.setGlobalBgColor);
 
-  const activeProject = projects[currentNumber - 1] || projects[0];
-  const [displayedProject, setDisplayedProject] = useState<ProjectData>(activeProject);
+  useGSAP(
+    () => {
+      if (!triggerRef.current || !pinnedRef.current) return;
 
-  // Base background starts at About blue (#55b1ff) so there is ZERO hard cut
-  const [baseBgColor, setBaseBgColor] = useState<string>(ABOUT_BG_COLOR);
+      const creamMain = creamMainRef.current;
+      const creamSub1 = creamSub1Ref.current;
+      const creamSub2 = creamSub2Ref.current;
 
-  const prevNumberRef = useRef<number>(currentNumber);
-  const hasInitializedRef = useRef<boolean>(false);
-  const entryTimelineRef = useRef<gsap.core.Timeline | null>(null);
-  const rewindTimelineRef = useRef<gsap.core.Timeline | null>(null);
-  const collisionTimelineRef = useRef<gsap.core.Timeline | null>(null);
+      const orangeMain = orangeMainRef.current;
+      const orangeSub1 = orangeSub1Ref.current;
+      const orangeSub2 = orangeSub2Ref.current;
 
-  // ─── Step 1: Upward "Rewind" Animation Handler ───
-  const handleRewindToAbout = useCallback((completeRelease: () => void) => {
-    const circleEl = entryCircleRef.current;
-    const baseBgEl = baseBgRef.current;
+      const mintMain = mintMainRef.current;
+      const mintSub1 = mintSub1Ref.current;
+      const mintSub2 = mintSub2Ref.current;
 
-    // Kill any active forward tweens
-    if (entryTimelineRef.current) entryTimelineRef.current.kill();
-    if (collisionTimelineRef.current) collisionTimelineRef.current.kill();
-    if (rewindTimelineRef.current) rewindTimelineRef.current.kill();
+      const privexText = privexTextRef.current;
+      const nagarikText = nagarikTextRef.current;
+      const summaidText = summaidTextRef.current;
 
-    const viewportHypot = Math.hypot(window.innerWidth, window.innerHeight);
-    const blastTargetScale = (viewportHypot * 2.6) / 64;
-
-    // Ensure circle is primed at max scale and base is blue
-    if (baseBgEl) baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
-    if (circleEl) {
-      gsap.set(circleEl, {
-        scale: blastTargetScale,
-        opacity: 1,
-        backgroundColor: "#F9F6F0",
-      });
-    }
-
-    const rewindTl = gsap.timeline({
-      onComplete: () => {
-        // Reset state after circle has shrunken to 0
-        hasInitializedRef.current = false;
-        prevNumberRef.current = 1;
-        setBaseBgColor(ABOUT_BG_COLOR);
-        if (baseBgEl) baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
-
-        // Step 3: ClearProps on Exit
-        // Strip leftover inline styles off text and circle, returning them to clean default CSS states
-        const textElements = [
-          titleRef.current,
-          categoryRef.current,
-          descRef.current,
-          numberBadgeRef.current,
-        ];
-        gsap.set(textElements, { clearProps: "all" });
-        if (circleEl) {
-          gsap.set(circleEl, { clearProps: "all" });
-          gsap.set(circleEl, { scale: 0, opacity: 0 });
-        }
-
-        // ONLY inside onComplete:
-        // a) Call lenis.start()
-        // b) Call leave() on Zustand store
-        completeRelease();
-      },
-    });
-
-    // 1. Fade and translate out Privex typography
-    rewindTl.to(
-      [titleRef.current, categoryRef.current, descRef.current, numberBadgeRef.current],
-      {
-        y: 40,
-        opacity: 0,
-        duration: 0.25,
-        ease: "power2.in",
-      }
-    );
-
-    // 2. Shrink the Cream bubble from its max size back down to 0
-    rewindTl.to(
-      circleEl,
-      {
+      // 1. Explicit initial states
+      gsap.set([creamMain, orangeMain, mintMain], {
         scale: 0,
-        duration: 0.85,
-        ease: "power3.out",
-      },
-      "-=0.15"
-    );
-
-    rewindTimelineRef.current = rewindTl;
-  }, []);
-
-  // Connect two-way scroll hijack hook with rewind callback
-  usePickupHijack(sectionRef, {
-    onRewindToAbout: handleRewindToAbout,
-  });
-
-  // ─── Initial Entrance Blast / Footer Re-entry Animation ───
-  useEffect(() => {
-    if (!isCurrent) {
-      hasInitializedRef.current = false;
-      return;
-    }
-
-    // Exact moment store triggers enter() or enterFromBottom() for the first time
-    if (!hasInitializedRef.current && isCurrent) {
-      hasInitializedRef.current = true;
-
-      const circleEl = entryCircleRef.current;
-      const baseBgEl = baseBgRef.current;
-      const textElements = [
-        titleRef.current,
-        categoryRef.current,
-        descRef.current,
-        numberBadgeRef.current,
-      ];
-      if (!circleEl || !baseBgEl) return;
-
-      if (entryTimelineRef.current) entryTimelineRef.current.kill();
-      if (collisionTimelineRef.current) collisionTimelineRef.current.kill();
-      if (rewindTimelineRef.current) rewindTimelineRef.current.kill();
-
-      // Case 1: Re-entering from Footer (scrolling UP into Project 3)
-      if (currentNumber === 3) {
-        prevNumberRef.current = 3;
-        const mintColor = projects[2].color; // "#D8F3DC"
-        setBaseBgColor(mintColor);
-        baseBgEl.style.backgroundColor = mintColor;
-        setGlobalBgColor(mintColor);
-        setDisplayedProject(projects[2]);
-
-        gsap.set(circleEl, { clearProps: "all" });
-        gsap.set(circleEl, { scale: 0, opacity: 0 });
-
-        gsap.set(textElements, { clearProps: "all" });
-        gsap.set(textElements, { y: 0, opacity: 1 });
-        return;
-      }
-
-      // Case 2: Entering from About (scrolling DOWN into Project 1)
-      const viewportHypot = Math.hypot(window.innerWidth, window.innerHeight);
-      const blastTargetScale = (viewportHypot * 2.6) / 64;
-
-      // STEP 1: Force GSAP Initialization on Re-Entry
-      // Explicitly reset all animatable elements BEFORE the timeline starts
-      gsap.set(circleEl, { clearProps: "all" });
-      gsap.set(circleEl, {
-        scale: 0,
-        opacity: 1,
-        backgroundColor: activeProject.color,
+        xPercent: -50,
+        yPercent: -50,
         transformOrigin: "center center",
+        force3D: true,
       });
 
-      gsap.set(textElements, { clearProps: "all" });
-      gsap.set(textElements, {
-        y: 50,
+      gsap.set([creamSub1, creamSub2, orangeSub1, orangeSub2, mintSub1, mintSub2], {
+        scale: 0,
+        xPercent: -50,
+        yPercent: -50,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+
+      gsap.set([privexText, nagarikText, summaidText], {
         opacity: 0,
+        y: 60,
+        force3D: true,
       });
 
-      // Base background stays strictly #55b1ff while circle violently expands
-      baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
+      // 2. Build the master scrubbing timeline
+      const tl = gsap.timeline();
 
-      const entryTl = gsap.timeline({
-        onComplete: () => {
-          setBaseBgColor(activeProject.color);
-          setGlobalBgColor(activeProject.color);
-          setDisplayedProject(activeProject);
-          // Keep circle at max scale over blue base so rewind is instantly primed
-          baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
-          gsap.set(circleEl, {
-            scale: blastTargetScale,
-            opacity: 1,
-            backgroundColor: "#F9F6F0",
-          });
-        },
-      });
-
-      // 1. Violently expand Cream circle from scale 0 to full screen
-      entryTl.fromTo(
-        circleEl,
-        { scale: 0, opacity: 1 },
-        {
-          scale: blastTargetScale,
-          duration: 1.15,
-          ease: "expo.inOut",
-        }
-      );
-
-      // 2. Sequence Privex Content Reveal during tail-end of Entry Blast
-      entryTl.to(
-        titleRef.current,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.85,
-          ease: "power3.out",
-        },
-        "-=0.4"
-      );
-
-      entryTl.to(
-        [categoryRef.current, descRef.current, numberBadgeRef.current],
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.75,
-          stagger: 0.08,
-          ease: "power3.out",
-        },
-        "<+=0.05"
-      );
-
-      entryTimelineRef.current = entryTl;
-      prevNumberRef.current = currentNumber;
-      return;
-    }
-
-    // ─── Liquid Gooey Collision for Project Steps (1 <-> 2 <-> 3) ───
-    if (prevNumberRef.current !== currentNumber && isCurrent) {
-      const prevProject = projects[prevNumberRef.current - 1] || projects[0];
-      const isForward = direction !== "prev";
-
-      const hostEl = hostBubbleRef.current;
-      const invaderEl = invaderBubbleRef.current;
-      const baseBgEl = baseBgRef.current;
-      const circleEl = entryCircleRef.current;
-      if (!hostEl || !invaderEl || !baseBgEl) return;
-
-      if (collisionTimelineRef.current) collisionTimelineRef.current.kill();
-
-      const viewportHypot = Math.hypot(window.innerWidth, window.innerHeight);
-      const blastTargetScale = (viewportHypot * 1.45) / 130;
-      const fullBlastScale = (viewportHypot * 2.6) / 64;
-
-      hostEl.style.backgroundColor = prevProject.color;
-      invaderEl.style.backgroundColor = activeProject.color;
-
-      const startY = isForward ? -260 : 260;
-
-      // Animate out old text
-      if (titleRef.current) {
-        gsap.to(titleRef.current, {
-          y: isForward ? -50 : 50,
-          opacity: 0,
-          duration: 0.28,
-          ease: "power2.in",
-        });
-      }
-
-      const tl = gsap.timeline({
-        onComplete: () => {
-          setBaseBgColor(activeProject.color);
-          baseBgEl.style.backgroundColor = activeProject.color;
-          setGlobalBgColor(activeProject.color);
-          setDisplayedProject(activeProject);
-          gsap.set([hostEl, invaderEl], {
-            scale: 0,
-            scaleX: 1,
-            scaleY: 1,
-            x: 0,
-            y: 0,
-          });
-
-          // If stepping back into Project 1, prime the cream entry bubble over blue
-          if (currentNumber === 1) {
-            baseBgEl.style.backgroundColor = ABOUT_BG_COLOR;
-            if (circleEl) {
-              gsap.set(circleEl, {
-                scale: fullBlastScale,
-                opacity: 1,
-                backgroundColor: "#F9F6F0",
-              });
-            }
-          } else if (circleEl) {
-            gsap.set(circleEl, { scale: 0, opacity: 0 });
-          }
-
-          // Animate in new project text
-          if (titleRef.current) {
-            gsap.fromTo(
-              titleRef.current,
-              { y: isForward ? 50 : -50, opacity: 0 },
-              { y: 0, opacity: 1, duration: 0.75, ease: "power3.out" }
-            );
-          }
-          if (categoryRef.current && descRef.current && numberBadgeRef.current) {
-            gsap.fromTo(
-              [categoryRef.current, descRef.current, numberBadgeRef.current],
-              { y: isForward ? 25 : -25, opacity: 0 },
-              { y: 0, opacity: 1, duration: 0.65, stagger: 0.06, ease: "power2.out" }
-            );
-          }
-        },
-      });
-
-      tl.set(hostEl, {
+      // ─── PHASE 1: Entry to Project 1 (Privex: #F9F6F0 Cream) ───
+      // Cream bubble expands 0 -> 160vmax as user scrolls first ~1000px
+      tl.to(creamMain, {
         scale: 1,
-        scaleX: 1,
-        scaleY: 1,
-        x: 0,
-        y: 0,
-        opacity: 1,
+        duration: 1.6,
+        ease: "power1.inOut",
       });
-      tl.set(invaderEl, {
-        scale: 1,
-        scaleX: 1,
-        scaleY: 1,
-        x: 0,
-        y: startY,
-        opacity: 1,
-      });
+      tl.fromTo(
+        creamSub1,
+        { scale: 0, x: -160, y: -200 },
+        { scale: 1.3, x: 0, y: 0, duration: 1.4, ease: "power1.inOut" },
+        "<"
+      );
+      tl.fromTo(
+        creamSub2,
+        { scale: 0, x: 180, y: 140 },
+        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "power1.inOut" },
+        "<"
+      );
 
-      // Approach
-      tl.to(invaderEl, {
-        y: 0,
-        duration: 0.42,
+      // Privex text reveals during tail-end of Cream expansion
+      tl.to(
+        privexText,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        },
+        "<50%"
+      );
+
+      // Dwell period on Privex
+      tl.to({}, { duration: 1.2 });
+
+      // ─── PHASE 2: Privex -> Project 2 (NagarikOne: #FFD8A8 Orange) ───
+      // Fade out Privex text
+      tl.to(privexText, {
+        opacity: 0,
+        y: -45,
+        duration: 0.5,
         ease: "power2.in",
       });
+
+      // Orange bubble expands over Cream, wiping the screen
       tl.to(
-        hostEl,
+        orangeMain,
         {
-          y: isForward ? -25 : 25,
-          duration: 0.42,
+          scale: 1,
+          duration: 1.6,
           ease: "power1.inOut",
         },
+        "-=0.2"
+      );
+      tl.fromTo(
+        orangeSub1,
+        { scale: 0, x: 140, y: -180 },
+        { scale: 1.3, x: 0, y: 0, duration: 1.4, ease: "power1.inOut" },
+        "<"
+      );
+      tl.fromTo(
+        orangeSub2,
+        { scale: 0, x: -160, y: 130 },
+        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "power1.inOut" },
         "<"
       );
 
-      // Liquid squash & elastic rebound
-      tl.to([hostEl, invaderEl], {
-        scaleX: 1.38,
-        scaleY: 0.72,
-        duration: 0.12,
-        ease: "power1.out",
-      });
-      tl.to([hostEl, invaderEl], {
-        scaleX: 0.88,
-        scaleY: 1.18,
-        duration: 0.16,
-        ease: "sine.inOut",
+      // NagarikOne text reveals during tail-end of Orange expansion
+      tl.to(
+        nagarikText,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        },
+        "<50%"
+      );
+
+      // Dwell period on NagarikOne
+      tl.to({}, { duration: 1.2 });
+
+      // ─── PHASE 3: NagarikOne -> Project 3 (SummAID: #D8F3DC Mint) ───
+      // Fade out NagarikOne text
+      tl.to(nagarikText, {
+        opacity: 0,
+        y: -45,
+        duration: 0.5,
+        ease: "power2.in",
       });
 
-      // Explosion outward
+      // Mint bubble expands over Orange, wiping the screen
       tl.to(
-        invaderEl,
+        mintMain,
         {
-          scale: blastTargetScale,
-          scaleX: blastTargetScale,
-          scaleY: blastTargetScale,
-          duration: 0.82,
-          ease: "power3.out",
+          scale: 1,
+          duration: 1.6,
+          ease: "power1.inOut",
         },
-        "-=0.04"
+        "-=0.2"
       );
-      tl.to(
-        hostEl,
-        {
-          scale: 0,
-          opacity: 0,
-          duration: 0.35,
-          ease: "power2.in",
-        },
+      tl.fromTo(
+        mintSub1,
+        { scale: 0, x: -120, y: 170 },
+        { scale: 1.3, x: 0, y: 0, duration: 1.4, ease: "power1.inOut" },
+        "<"
+      );
+      tl.fromTo(
+        mintSub2,
+        { scale: 0, x: 150, y: -120 },
+        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "power1.inOut" },
         "<"
       );
 
-      collisionTimelineRef.current = tl;
-      prevNumberRef.current = currentNumber;
-    }
-  }, [activeProject, currentNumber, direction, isCurrent, projects, setGlobalBgColor]);
+      // SummAID text reveals during tail-end of Mint expansion
+      tl.to(
+        summaidText,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        },
+        "<50%"
+      );
+
+      // Dwell period on SummAID before smoothly unpinning to Footer
+      tl.to({}, { duration: 1.0 });
+
+      // 3. Create the ScrollTrigger pinning the inner container with pinSpacing: true
+      ScrollTrigger.create({
+        trigger: triggerRef.current,
+        pin: pinnedRef.current,
+        pinSpacing: true,
+        scrub: 1,
+        start: "top top",
+        end: "+=4000",
+        animation: tl,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          if (self.progress > 0.68) {
+            setGlobalBgColor("#D8F3DC");
+          } else if (self.progress > 0.32) {
+            setGlobalBgColor("#FFD8A8");
+          } else if (self.progress > 0.03) {
+            setGlobalBgColor("#F9F6F0");
+          } else {
+            setGlobalBgColor("transparent");
+          }
+        },
+      });
+
+      // Force layout calculation on mount to guarantee perfect pin-spacer calculations
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
+
+      const refreshTimer = setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 100);
+
+      return () => {
+        clearTimeout(refreshTimer);
+      };
+    },
+    { scope: triggerRef }
+  );
 
   return (
-    <section
-      ref={sectionRef}
-      id="pickup-section"
-      className="relative w-full min-h-screen h-screen overflow-hidden select-none z-10"
-      style={{
-        backgroundColor: baseBgColor,
-        minHeight: "100vh",
-        height: "100vh",
-      }}
-    >
-      {/* ─── Inline SVG Gooey Filter ─── */}
-      <svg
-        className="pointer-events-none absolute w-0 h-0 overflow-hidden"
-        aria-hidden="true"
+    <div ref={triggerRef} id="pickup-section" className="relative w-full">
+      <div
+        ref={pinnedRef}
+        className="h-screen w-full relative overflow-hidden bg-transparent z-10"
       >
-        <defs>
-          <filter id="gooey">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="20" result="blur" />
-            <feColorMatrix
-              in="blur"
-              mode="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10"
-              result="gooey"
-            />
-            <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
-          </filter>
-        </defs>
-      </svg>
-
-      {/* ─── Persistent Base Background Color Plane (Starts strictly at #55b1ff) ─── */}
-      <div
-        ref={baseBgRef}
-        className="absolute inset-0 z-0 will-change-transform"
-        style={{
-          backgroundColor: baseBgColor,
-        }}
-      />
-
-      {/* ─── Step 1: Initial Entry Blast Wipe Circle (#F9F6F0 Cream) ─── */}
-      <div
-        ref={entryCircleRef}
-        className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full pointer-events-none z-[5] will-change-transform"
-        style={{
-          backgroundColor: "#F9F6F0",
-          transform: "scale(0)",
-          transformOrigin: "center center",
-        }}
-      />
-
-      {/* ─── Gooey Liquid Collision Layer for Project Steps (z-[6]) ─── */}
-      <div
-        ref={gooeyContainerRef}
-        className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none z-[6]"
-        style={{ filter: "url(#gooey)" }}
-      >
-        {/* Host/Outgoing Bubble */}
-        <div
-          ref={hostBubbleRef}
-          className="absolute rounded-full will-change-transform"
-          style={{
-            width: "140px",
-            height: "140px",
-            transform: "scale(0)",
-            transformOrigin: "center center",
-            backgroundColor: ABOUT_BG_COLOR,
-          }}
-        />
-
-        {/* Invader/Incoming Bubble */}
-        <div
-          ref={invaderBubbleRef}
-          className="absolute rounded-full will-change-transform"
-          style={{
-            width: "130px",
-            height: "130px",
-            transform: "scale(0)",
-            transformOrigin: "center center",
-            backgroundColor: activeProject.color,
-          }}
-        />
-      </div>
-
-      {/* ─── Top-Right Section Counter & Progress (z-20) ─── */}
-      <div className="absolute top-[65px] md:top-[70px] right-6 sm:right-10 md:right-[155px] z-20 pointer-events-none text-right font-[helvetica,Arial,sans-serif]">
-        <div
-          ref={numberBadgeRef}
-          className="flex items-center justify-end gap-2 text-xs md:text-sm tracking-[0.18em] uppercase transition-colors duration-300 font-semibold opacity-0 will-change-transform"
-          style={{
-            color: displayedProject.textColor,
-          }}
+        {/* ─── Inline SVG Gooey Filter ─── */}
+        <svg
+          className="pointer-events-none absolute w-0 h-0 overflow-hidden"
+          aria-hidden="true"
         >
-          <span className="text-xl leading-none font-bold">・</span>
-          <span>SELECTED</span>
-          <span>PROJECT</span>
-          <span className="font-mono text-sm md:text-base font-bold">
-            0{displayedProject.num}
-          </span>
-          <span className="opacity-40 font-mono text-xs">/ 03</span>
+          <defs>
+            <filter id="gooey-pickup">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="blur" />
+              <feColorMatrix
+                in="blur"
+                mode="matrix"
+                values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10"
+                result="gooey"
+              />
+              <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
+            </filter>
+          </defs>
+        </svg>
+
+        {/* ─── Base Background: About Blue (#55b1ff) ─── */}
+        <div
+          className="absolute inset-0 z-0 will-change-transform"
+          style={{ backgroundColor: ABOUT_BG_COLOR }}
+        />
+
+        {/* ═══════════════════════════════════════════════════════════
+            LAYER 1: Project 1 — Privex (#F9F6F0 Cream)
+            ═══════════════════════════════════════════════════════════ */}
+        {/* Cream Gooey Bubble Layer (z-[5]) */}
+        <div
+          className="absolute inset-0 z-[5] flex items-center justify-center pointer-events-none overflow-hidden"
+          style={{ filter: "url(#gooey-pickup)" }}
+        >
+          <div
+            ref={creamSub1Ref}
+            className="absolute rounded-full bg-[#F9F6F0] will-change-transform"
+            style={{ width: "260px", height: "260px", top: "50%", left: "50%" }}
+          />
+          <div
+            ref={creamSub2Ref}
+            className="absolute rounded-full bg-[#F9F6F0] will-change-transform"
+            style={{ width: "200px", height: "200px", top: "50%", left: "50%" }}
+          />
+          <div
+            ref={creamMainRef}
+            className="absolute rounded-full bg-[#F9F6F0] will-change-transform"
+            style={{ width: "160vmax", height: "160vmax", top: "50%", left: "50%" }}
+          />
+        </div>
+
+        {/* Privex Text Content (z-10) */}
+        <div
+          ref={privexTextRef}
+          className="absolute inset-0 z-10 pointer-events-none will-change-transform"
+        >
+          {/* Top-Right Badge */}
+          <div className="absolute top-[65px] md:top-[70px] right-6 sm:right-10 md:right-[155px] text-right font-[helvetica,Arial,sans-serif]">
+            <div
+              className="flex items-center justify-end gap-2 text-xs md:text-sm tracking-[0.18em] uppercase font-semibold"
+              style={{ color: PICKUP_PROJECTS[0].textColor }}
+            >
+              <span className="text-xl leading-none font-bold">・</span>
+              <span>SELECTED</span>
+              <span>PROJECT</span>
+              <span className="font-mono text-sm md:text-base font-bold">01</span>
+              <span className="opacity-40 font-mono text-xs">/ 03</span>
+            </div>
+          </div>
+
+          {/* Center Title */}
+          <div className="absolute inset-0 flex items-center justify-center px-4">
+            <h2
+              className="text-[clamp(5.5rem,21vmin,19rem)] leading-[0.88] tracking-[-0.01em] text-center uppercase select-none drop-shadow-sm"
+              style={{
+                fontFamily: "var(--font-six-caps)",
+                color: PICKUP_PROJECTS[0].textColor,
+              }}
+            >
+              {PICKUP_PROJECTS[0].title}
+            </h2>
+          </div>
+
+          {/* Bottom-Left Description */}
+          <div className="absolute bottom-10 md:bottom-[86px] left-6 sm:left-10 md:left-12 max-w-[340px] md:max-w-md">
+            <span
+              className="block text-xs md:text-sm font-bold tracking-wider mb-2 uppercase"
+              style={{ color: PICKUP_PROJECTS[0].textColor }}
+            >
+              {PICKUP_PROJECTS[0].category}
+            </span>
+            <p
+              className="text-xs md:text-sm font-[helvetica,Arial,sans-serif] leading-relaxed tracking-wide"
+              style={{ color: PICKUP_PROJECTS[0].textColor }}
+            >
+              {PICKUP_PROJECTS[0].desc}
+            </p>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════
+            LAYER 2: Project 2 — NagarikOne (#FFD8A8 Orange)
+            ═══════════════════════════════════════════════════════════ */}
+        {/* Orange Gooey Bubble Layer (z-[20], expands over Privex) */}
+        <div
+          className="absolute inset-0 z-[20] flex items-center justify-center pointer-events-none overflow-hidden"
+          style={{ filter: "url(#gooey-pickup)" }}
+        >
+          <div
+            ref={orangeSub1Ref}
+            className="absolute rounded-full bg-[#FFD8A8] will-change-transform"
+            style={{ width: "260px", height: "260px", top: "50%", left: "50%" }}
+          />
+          <div
+            ref={orangeSub2Ref}
+            className="absolute rounded-full bg-[#FFD8A8] will-change-transform"
+            style={{ width: "200px", height: "200px", top: "50%", left: "50%" }}
+          />
+          <div
+            ref={orangeMainRef}
+            className="absolute rounded-full bg-[#FFD8A8] will-change-transform"
+            style={{ width: "160vmax", height: "160vmax", top: "50%", left: "50%" }}
+          />
+        </div>
+
+        {/* NagarikOne Text Content (z-30) */}
+        <div
+          ref={nagarikTextRef}
+          className="absolute inset-0 z-30 pointer-events-none will-change-transform"
+        >
+          {/* Top-Right Badge */}
+          <div className="absolute top-[65px] md:top-[70px] right-6 sm:right-10 md:right-[155px] text-right font-[helvetica,Arial,sans-serif]">
+            <div
+              className="flex items-center justify-end gap-2 text-xs md:text-sm tracking-[0.18em] uppercase font-semibold"
+              style={{ color: PICKUP_PROJECTS[1].textColor }}
+            >
+              <span className="text-xl leading-none font-bold">・</span>
+              <span>SELECTED</span>
+              <span>PROJECT</span>
+              <span className="font-mono text-sm md:text-base font-bold">02</span>
+              <span className="opacity-40 font-mono text-xs">/ 03</span>
+            </div>
+          </div>
+
+          {/* Center Title */}
+          <div className="absolute inset-0 flex items-center justify-center px-4">
+            <h2
+              className="text-[clamp(5.5rem,21vmin,19rem)] leading-[0.88] tracking-[-0.01em] text-center uppercase select-none drop-shadow-sm"
+              style={{
+                fontFamily: "var(--font-six-caps)",
+                color: PICKUP_PROJECTS[1].textColor,
+              }}
+            >
+              {PICKUP_PROJECTS[1].title}
+            </h2>
+          </div>
+
+          {/* Bottom-Left Description */}
+          <div className="absolute bottom-10 md:bottom-[86px] left-6 sm:left-10 md:left-12 max-w-[340px] md:max-w-md">
+            <span
+              className="block text-xs md:text-sm font-bold tracking-wider mb-2 uppercase"
+              style={{ color: PICKUP_PROJECTS[1].textColor }}
+            >
+              {PICKUP_PROJECTS[1].category}
+            </span>
+            <p
+              className="text-xs md:text-sm font-[helvetica,Arial,sans-serif] leading-relaxed tracking-wide"
+              style={{ color: PICKUP_PROJECTS[1].textColor }}
+            >
+              {PICKUP_PROJECTS[1].desc}
+            </p>
+          </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════
+            LAYER 3: Project 3 — SummAID (#D8F3DC Mint)
+            ═══════════════════════════════════════════════════════════ */}
+        {/* Mint Gooey Bubble Layer (z-[40], expands over NagarikOne) */}
+        <div
+          className="absolute inset-0 z-[40] flex items-center justify-center pointer-events-none overflow-hidden"
+          style={{ filter: "url(#gooey-pickup)" }}
+        >
+          <div
+            ref={mintSub1Ref}
+            className="absolute rounded-full bg-[#D8F3DC] will-change-transform"
+            style={{ width: "260px", height: "260px", top: "50%", left: "50%" }}
+          />
+          <div
+            ref={mintSub2Ref}
+            className="absolute rounded-full bg-[#D8F3DC] will-change-transform"
+            style={{ width: "200px", height: "200px", top: "50%", left: "50%" }}
+          />
+          <div
+            ref={mintMainRef}
+            className="absolute rounded-full bg-[#D8F3DC] will-change-transform"
+            style={{ width: "160vmax", height: "160vmax", top: "50%", left: "50%" }}
+          />
+        </div>
+
+        {/* SummAID Text Content (z-50) */}
+        <div
+          ref={summaidTextRef}
+          className="absolute inset-0 z-50 pointer-events-none will-change-transform"
+        >
+          {/* Top-Right Badge */}
+          <div className="absolute top-[65px] md:top-[70px] right-6 sm:right-10 md:right-[155px] text-right font-[helvetica,Arial,sans-serif]">
+            <div
+              className="flex items-center justify-end gap-2 text-xs md:text-sm tracking-[0.18em] uppercase font-semibold"
+              style={{ color: PICKUP_PROJECTS[2].textColor }}
+            >
+              <span className="text-xl leading-none font-bold">・</span>
+              <span>SELECTED</span>
+              <span>PROJECT</span>
+              <span className="font-mono text-sm md:text-base font-bold">03</span>
+              <span className="opacity-40 font-mono text-xs">/ 03</span>
+            </div>
+          </div>
+
+          {/* Center Title */}
+          <div className="absolute inset-0 flex items-center justify-center px-4">
+            <h2
+              className="text-[clamp(5.5rem,21vmin,19rem)] leading-[0.88] tracking-[-0.01em] text-center uppercase select-none drop-shadow-sm"
+              style={{
+                fontFamily: "var(--font-six-caps)",
+                color: PICKUP_PROJECTS[2].textColor,
+              }}
+            >
+              {PICKUP_PROJECTS[2].title}
+            </h2>
+          </div>
+
+          {/* Bottom-Left Description */}
+          <div className="absolute bottom-10 md:bottom-[86px] left-6 sm:left-10 md:left-12 max-w-[340px] md:max-w-md">
+            <span
+              className="block text-xs md:text-sm font-bold tracking-wider mb-2 uppercase"
+              style={{ color: PICKUP_PROJECTS[2].textColor }}
+            >
+              {PICKUP_PROJECTS[2].category}
+            </span>
+            <p
+              className="text-xs md:text-sm font-[helvetica,Arial,sans-serif] leading-relaxed tracking-wide"
+              style={{ color: PICKUP_PROJECTS[2].textColor }}
+            >
+              {PICKUP_PROJECTS[2].desc}
+            </p>
+          </div>
         </div>
       </div>
-
-      {/* ─── Center Giant Display Project Title in Six Caps (z-20) ─── */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 px-4">
-        <div className="overflow-hidden py-4">
-          <h2
-            ref={titleRef}
-            className="text-[clamp(5.5rem,21vmin,19rem)] leading-[0.88] tracking-[-0.01em] text-center uppercase select-none will-change-transform transition-colors duration-300 drop-shadow-sm opacity-0"
-            style={{
-              fontFamily: "var(--font-six-caps)",
-              color: displayedProject.textColor,
-            }}
-          >
-            {displayedProject.title}
-          </h2>
-        </div>
-      </div>
-
-      {/* ─── Bottom-Left Category & Project Brief (z-20) ─── */}
-      <div className="absolute bottom-10 md:bottom-[86px] left-6 sm:left-10 md:left-12 z-20 pointer-events-none max-w-[340px] md:max-w-md">
-        <div>
-          <span
-            ref={categoryRef}
-            className="block text-xs md:text-sm font-bold tracking-wider mb-2 uppercase transition-colors duration-300 opacity-0 will-change-transform"
-            style={{
-              color: displayedProject.textColor,
-            }}
-          >
-            {displayedProject.category}
-          </span>
-          <p
-            ref={descRef}
-            className="text-xs md:text-sm font-[helvetica,Arial,sans-serif] leading-relaxed tracking-wide transition-colors duration-300 opacity-0 will-change-transform"
-            style={{
-              color: displayedProject.textColor,
-            }}
-          >
-            {displayedProject.desc}
-          </p>
-        </div>
-      </div>
-
-      {/* ─── Interactive Click Target / Project Preview Button ─── */}
-      <button
-        type="button"
-        aria-label={`View ${displayedProject.title}`}
-        className="absolute inset-0 w-full h-full z-30 cursor-pointer bg-transparent border-0 outline-none"
-        onClick={() => {
-          // Future detail view or drawer
-        }}
-      />
-    </section>
+    </div>
   );
 }

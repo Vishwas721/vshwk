@@ -153,7 +153,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative min-h-[300vh] w-full overflow-x-hidden bg-[#f0efeb]">
+    <main className="relative w-full bg-[#f0efeb]">
       {/* ─── Top-Left Branding Logo in Six Caps ─── */}
       <HeaderLogo />
 
