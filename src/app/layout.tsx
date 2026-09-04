@@ -2,6 +2,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { Inter } from "next/font/google";
 import GlobalCanvas from "@/components/webgl/GlobalCanvas";
+import DynamicBackground from "@/components/layout/DynamicBackground";
 import SmoothScrollProvider from "@/components/dom/SmoothScrollProvider";
 import Sidebar from "@/components/layout/Sidebar";
 import SidebarNavigation from "@/components/dom/SidebarNavigation";
@@ -51,6 +52,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Sidebar />
         {/* The persistent soft off-white/cream canvas with WebGL shaders */}
         <GlobalCanvas />
+        {/* Dynamic full-screen background synchronized with active project */}
+        <DynamicBackground />
       </body>
     </html>
   );

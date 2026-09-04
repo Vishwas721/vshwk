@@ -157,8 +157,10 @@ export default function Home() {
       {/* ─── Top-Left Branding Logo in Six Caps ─── */}
       <HeaderLogo />
 
-      {/* ─── Hero Section ─── */}
-      <section ref={heroRef} className="relative w-full min-h-screen z-0">
+      {/* ─── Hero and About Realm (Clipped at bottom to prevent blue circle bleeding downward) ─── */}
+      <div className="relative overflow-hidden w-full">
+        {/* ─── Hero Section ─── */}
+        <section ref={heroRef} className="relative w-full min-h-screen z-0">
         {/* ─── Background Blobs Layer (Z-Index: 0, securely behind typography & card) ─── */}
         <div className="absolute inset-0 pointer-events-none z-0 overflow-visible">
           {/* Yellow Circle: hero-bg-circle-01 ($yellow: #ffd955) */}
@@ -280,8 +282,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── Brief About Introduction Section ─── */}
-      <HomeBriefAbout />
+        {/* ─── Brief About Introduction Section ─── */}
+        <HomeBriefAbout />
+      </div>
 
       {/* ─── Selected Projects Pickup Section (Hijacked Presentation) ─── */}
       <ProjectsPickupSection />

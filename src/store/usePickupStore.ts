@@ -46,11 +46,15 @@ export interface PickupState {
   scene: string;
   isAnimationActive: boolean;
   isCurrent: boolean;
+  isRewinding: boolean;
+  globalBgColor: string;
   projects: ProjectData[];
   enter: () => void;
   leave: () => void;
   setScene: (sceneName: string) => void;
   setCurrentNumber: (num: number, direction?: "next" | "prev" | "init") => void;
+  setGlobalBgColor: (color: string) => void;
+  setIsRewinding: (isRewinding: boolean) => void;
   next: () => boolean;
   prev: () => boolean;
   setAnimationActive: (active: boolean) => void;
@@ -62,22 +66,28 @@ export const usePickupStore = create<PickupState>((set, get) => ({
   scene: "",
   isAnimationActive: false,
   isCurrent: false,
+  isRewinding: false,
+  globalBgColor: "transparent",
   projects: PICKUP_PROJECTS,
 
   enter: () =>
     set({
       isAnimationActive: true,
       isCurrent: true,
+      isRewinding: false,
       direction: "init",
       currentNumber: 1,
       scene: "next01",
+      globalBgColor: "#F9F6F0",
     }),
 
   leave: () =>
     set({
       isAnimationActive: false,
       isCurrent: false,
+      isRewinding: false,
       scene: "",
+      // Note: globalBgColor is preserved on leave so downward exits remain Mint
     }),
 
   setScene: (sceneName: string) =>
@@ -85,11 +95,24 @@ export const usePickupStore = create<PickupState>((set, get) => ({
       scene: sceneName,
     }),
 
-  setCurrentNumber: (num: number, direction: "next" | "prev" | "init" = "next") =>
+  setCurrentNumber: (num: number, direction: "next" | "prev" | "init" = "next") => {
+    const clamped = Math.max(1, Math.min(3, num));
     set({
-      currentNumber: Math.max(1, Math.min(3, num)),
+      currentNumber: clamped,
       direction,
-      scene: `next0${num}`,
+      scene: `next0${clamped}`,
+      globalBgColor: PICKUP_PROJECTS[clamped - 1].color,
+    });
+  },
+
+  setGlobalBgColor: (color: string) =>
+    set({
+      globalBgColor: color,
+    }),
+
+  setIsRewinding: (isRewinding: boolean) =>
+    set({
+      isRewinding,
     }),
 
   next: () => {
@@ -100,6 +123,7 @@ export const usePickupStore = create<PickupState>((set, get) => ({
         currentNumber: nextNum,
         direction: "next",
         scene: `next0${nextNum}`,
+        globalBgColor: PICKUP_PROJECTS[nextNum - 1].color,
       });
       return true;
     }
@@ -114,6 +138,7 @@ export const usePickupStore = create<PickupState>((set, get) => ({
         currentNumber: prevNum,
         direction: "prev",
         scene: `prev0${prevNum}`,
+        globalBgColor: PICKUP_PROJECTS[prevNum - 1].color,
       });
       return true;
     }

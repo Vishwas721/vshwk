@@ -9,6 +9,7 @@ interface UsePickupHijackOptions {
   wheelThreshold?: number;
   touchThreshold?: number;
   cooldownMs?: number;
+  onRewindToAbout?: (completeRelease: () => void) => void;
 }
 
 /**
@@ -17,9 +18,14 @@ interface UsePickupHijackOptions {
  * Implements bidirectional state-machine scroll interception with smooth Lenis control:
  * 1. Scrolling down from About: Locks at Project 1 (Privex), snaps viewport, stops Lenis.
  * 2. Scrolling down steps Project 1 -> 2 -> 3.
- * 3. Scrolling down past Project 3 (SummAID): Calls lenis.start() and smoothly glides to footer.
+ * 3. Scrolling down past Project 3 (SummAID):
+ *    - Keeps globalBgColor Mint (#D8F3DC) to eliminate blue bleed.
+ *    - Smoothly glides to footer and calls lenis.start().
  * 4. Scrolling up steps Project 3 -> 2 -> 1.
- * 5. Scrolling up from Project 1: Calls lenis.start() and smoothly glides back into About.
+ * 5. Scrolling up from Project 1:
+ *    - Does NOT immediately call lenis.start().
+ *    - Triggers onRewindToAbout to shrink the cream circle and reveal the blue About section.
+ *    - Calls lenis.start() and releases to About only AFTER the animation completes.
  * 6. Enforces a 1200ms cooldown lockout between interactions to prevent state thrashing.
  */
 export function usePickupHijack(
@@ -30,6 +36,7 @@ export function usePickupHijack(
     wheelThreshold = 50,
     touchThreshold = 50,
     cooldownMs = 1200,
+    onRewindToAbout,
   } = options;
 
   const lenis = useLenis();
@@ -38,6 +45,7 @@ export function usePickupHijack(
   const next = usePickupStore((s) => s.next);
   const prev = usePickupStore((s) => s.prev);
   const setCurrentNumber = usePickupStore((s) => s.setCurrentNumber);
+  const setGlobalBgColor = usePickupStore((s) => s.setGlobalBgColor);
 
   const isLockedRef = useRef(false);
   const isCoolingDownRef = useRef(false);
@@ -108,6 +116,9 @@ export function usePickupHijack(
     isLockedRef.current = false;
     leave();
 
+    // CRITICAL: Ensure base background REMAINS Mint (#D8F3DC) to eliminate blue bleed
+    setGlobalBgColor("#D8F3DC");
+
     const exitTarget = section.offsetTop + section.offsetHeight + 80;
     const scrollObj = { y: window.scrollY };
 
@@ -137,7 +148,7 @@ export function usePickupHijack(
         }, 400);
       },
     });
-  }, [leave, lenis, sectionRef]);
+  }, [leave, lenis, sectionRef, setGlobalBgColor]);
 
   // Release lock upward towards About section
   const releaseUpward = useCallback(() => {
@@ -147,6 +158,7 @@ export function usePickupHijack(
     isCoolingDownRef.current = true;
     isLockedRef.current = false;
     leave();
+    setGlobalBgColor("transparent");
 
     const exitTopTarget = Math.max(0, section.offsetTop - window.innerHeight * 0.45);
     const scrollObj = { y: window.scrollY };
@@ -157,7 +169,7 @@ export function usePickupHijack(
 
     scrollTweenRef.current = gsap.to(scrollObj, {
       y: exitTopTarget,
-      duration: 0.9,
+      duration: 0.85,
       ease: "power2.inOut",
       onUpdate: () => {
         window.scrollTo(0, scrollObj.y);
@@ -177,7 +189,7 @@ export function usePickupHijack(
         }, 400);
       },
     });
-  }, [leave, lenis, sectionRef]);
+  }, [leave, lenis, sectionRef, setGlobalBgColor]);
 
   // Handle downward user gesture
   const handleScrollDown = useCallback(() => {
@@ -210,10 +222,20 @@ export function usePickupHijack(
         isCoolingDownRef.current = false;
       }, cooldownMs);
     } else {
-      // At Project 1 (Privex) and scrolling up: Release to About section!
-      releaseUpward();
+      // At Project 1 (Privex) and scrolling UP:
+      // Do NOT immediately call lenis.start()!
+      // Trigger the Upward Rewind timeline first
+      isCoolingDownRef.current = true;
+
+      if (onRewindToAbout) {
+        onRewindToAbout(() => {
+          releaseUpward();
+        });
+      } else {
+        releaseUpward();
+      }
     }
-  }, [cooldownMs, prev, releaseUpward]);
+  }, [cooldownMs, onRewindToAbout, prev, releaseUpward]);
 
   // Monitor viewport scroll to catch entry from above or below
   useLenis(() => {
@@ -314,5 +336,7 @@ export function usePickupHijack(
 
   return {
     isLocked: isLockedRef.current,
+    releaseUpward,
+    releaseDownward,
   };
 }
