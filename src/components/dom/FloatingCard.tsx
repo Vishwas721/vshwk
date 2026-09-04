@@ -20,9 +20,10 @@ import { mouseCoordinator } from "@/lib/mouseCoordinator";
  */
 interface FloatingCardProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export default function FloatingCard({ className = "" }: FloatingCardProps) {
+export default function FloatingCard({ className = "", style }: FloatingCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const mouseNorm = useRef({ x: 0, y: 0 });
@@ -109,66 +110,64 @@ export default function FloatingCard({ className = "" }: FloatingCardProps) {
       ref={cardRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`absolute z-20 cursor-pointer select-none ${className}`}
+      className={`relative cursor-pointer select-none ${className}`}
       style={{
-        /* Anchored lower down so only the top edge peeks over the date text */
-        top: "clamp(380px, 35vw, 500px)",
-        left: "clamp(16px, 6vw, 90px)",
-        width: "clamp(212px, 22.8vw, 293px)",
-        height: "clamp(302px, 31.25vw, 400px)",
+        width: "clamp(165px, 16vw, 215px)",
+        height: "clamp(240px, 23vw, 315px)",
         perspective: "1000px",
+        ...style,
       }}
     >
       <Link href="/about" className="block w-full h-full cursor-pointer" aria-label="Learn more about Vishwas K">
         <div
           ref={innerRef}
-          className="w-full h-full rounded-[14px] p-[26px_18px] relative overflow-hidden bg-[#ffabb7] text-[#302c1a] will-change-transform shadow-[0_20px_50px_rgba(48,44,26,0.18)]"
+          className="w-full h-full rounded-[14px] p-[18px_14px] sm:p-[20px_16px] md:p-[24px_18px] relative overflow-hidden bg-[#ffabb7] text-[#302c1a] will-change-transform shadow-[0_20px_50px_rgba(48,44,26,0.18)]"
           style={{
             transformStyle: "preserve-3d",
             transform: "rotate(8deg)",
             backfaceVisibility: "hidden",
           }}
         >
-        {/* Layer 1: Foreground Readable Content (z-10) */}
-        <div className="relative z-10 h-full flex flex-col justify-between">
-          {/* Top: Name section peeking near the date line */}
-          <div>
-            <span className="block text-[28px] md:text-[34px] leading-[0.9] text-[#fff] font-[helvetica,Arial,sans-serif] indent-[-4px]">
-              ・
-            </span>
-            <span className="block text-[16px] md:text-[19px] font-medium leading-[1.2] text-[#fff] font-[helvetica,Arial,sans-serif] tracking-[0.02em]">
-              VISHWAS K
-            </span>
+          {/* Layer 1: Foreground Readable Content (z-10) */}
+          <div className="relative z-10 h-full flex flex-col justify-between">
+            {/* Top: Name section peeking near the date line */}
+            <div>
+              <span className="block text-[24px] md:text-[30px] leading-[0.9] text-[#fff] font-[helvetica,Arial,sans-serif] indent-[-4px]">
+                ・
+              </span>
+              <span className="block text-[14px] md:text-[17px] font-medium leading-[1.2] text-[#fff] font-[helvetica,Arial,sans-serif] tracking-[0.02em]">
+                VISHWAS K
+              </span>
+            </div>
+
+            {/* Middle: Cleanly legible description lines with zero watermark collision */}
+            <div className="text-[#d32254] font-[helvetica,Arial,sans-serif] text-[10px] md:text-[11.5px] font-semibold tracking-[0.03em] leading-[1.32] my-auto">
+              <span className="block">YOU CAN CLICK AND,</span>
+              <span className="block">EXPLORE ABOUT ME.</span>
+              <span className="block">BY THE WAY,</span>
+              <span className="block">WELCOME TO MY</span>
+              <span className="block">DIGITAL SPACE.</span>
+            </div>
+
+            {/* Bottom subtitle indicator */}
+            <div className="text-right pb-1">
+              <span className="text-[9px] md:text-[11px] font-bold font-[helvetica,Arial,sans-serif] tracking-[0.06em] text-[#d32254]">
+                (ABOUT ME)
+              </span>
+            </div>
           </div>
 
-          {/* Middle: Cleanly legible description lines with zero watermark collision */}
-          <div className="text-[#d32254] font-[helvetica,Arial,sans-serif] text-[11px] md:text-[12px] font-semibold tracking-[0.03em] leading-[1.32] my-auto">
-            <span className="block">YOU CAN CLICK AND,</span>
-            <span className="block">EXPLORE ABOUT ME.</span>
-            <span className="block">BY THE WAY,</span>
-            <span className="block">WELCOME TO MY</span>
-            <span className="block">DIGITAL SPACE.</span>
-          </div>
-
-          {/* Bottom subtitle indicator */}
-          <div className="text-right pb-1">
-            <span className="text-[10px] md:text-[11px] font-bold font-[helvetica,Arial,sans-serif] tracking-[0.06em] text-[#d32254]">
-              (ABOUT ME)
+          {/* Layer 2: Background Watermark Text (z-0, opacity-25) */}
+          <div className="absolute bottom-[-8px] left-0 w-full z-0 pointer-events-none select-none overflow-hidden text-[#d32254] opacity-25">
+            <span
+              className="block text-[75px] md:text-[105px] leading-[0.8] tracking-[-0.01em]"
+              style={{ fontFamily: "var(--font-six-caps)" }}
+            >
+              VSHWSK
             </span>
           </div>
         </div>
-
-        {/* Layer 2: Background Watermark Text (z-0, opacity-25) */}
-        <div className="absolute bottom-[-8px] left-0 w-full z-0 pointer-events-none select-none overflow-hidden text-[#d32254] opacity-25">
-          <span
-            className="block text-[85px] md:text-[120px] leading-[0.8] tracking-[-0.01em]"
-            style={{ fontFamily: "var(--font-six-caps)" }}
-          >
-            VSHWSK
-          </span>
-        </div>
-      </div>
-    </Link>
-  </div>
-);
+      </Link>
+    </div>
+  );
 }

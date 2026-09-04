@@ -2,6 +2,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import { Canvas } from "@react-three/fiber";
 import SmoothScrollProvider from "@/components/dom/SmoothScrollProvider";
+import Sidebar from "@/components/layout/Sidebar";
 
 const sixCaps = localFont({
   src: "../../public/fonts/SixCaps-Regular.woff2",
@@ -24,9 +25,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SmoothScrollProvider>
           {children}
         </SmoothScrollProvider>
+        <Sidebar />
         {/* The persistent soft off-white/cream canvas */}
         <Canvas className="!fixed !inset-0 !z-[-1] !bg-[#f0efeb] !pointer-events-none" />
       </body>
     </html>
   );
 }
+

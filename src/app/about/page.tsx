@@ -5,7 +5,6 @@ import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import HeaderLogo from "@/components/dom/HeaderLogo";
-import SidebarNavigation from "@/components/dom/SidebarNavigation";
 import BounceLine from "@/components/dom/BounceLine";
 
 /**
@@ -131,7 +130,6 @@ export default function AboutPage() {
 
       {/* ─── Navigation Elements ─── */}
       <HeaderLogo />
-      <SidebarNavigation />
 
       {/* ─── Page Content (Revealed after Preloader) ─── */}
       <div ref={contentRef} className="relative z-10 w-full">

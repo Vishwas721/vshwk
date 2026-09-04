@@ -9,6 +9,8 @@ interface BounceLineProps {
   delay?: number;
   className?: string;
   strokeColor?: string;
+  autoPlay?: boolean;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -19,7 +21,7 @@ interface BounceLineProps {
  * - Path: M 0,80 Q {ctrlX},{ctrlY} {width},80
  * - On hover/mousemove: Quadratic Bezier curve bends towards cursor
  * - On mouseleave: GSAP elastic spring back: ease: "elastic.out(1, 0.3)" (1.0s duration)
- * - On mount: scaleX: 0 -> 1 line-extend reveal animation from specified origin
+ * - On mount: scaleX: 0 -> 1 line-extend reveal animation from specified origin (when autoPlay is true)
  */
 export default function BounceLine({
   width,
@@ -27,6 +29,8 @@ export default function BounceLine({
   delay = 0,
   className = "",
   strokeColor = "#ffffff",
+  autoPlay = true,
+  style,
 }: BounceLineProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -59,15 +63,17 @@ export default function BounceLine({
     });
 
     // Reveal animation matching legacy fadeInAnimation
-    gsap.to(svg, {
-      duration: 1.0,
-      delay,
-      ease: "power3.out",
-      scaleX: 1,
-    });
+    if (autoPlay) {
+      gsap.to(svg, {
+        duration: 1.0,
+        delay,
+        ease: "power3.out",
+        scaleX: 1,
+      });
+    }
 
     updatePath();
-  }, [width, origin, delay]);
+  }, [width, origin, delay, autoPlay]);
 
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const svg = svgRef.current;
@@ -117,8 +123,9 @@ export default function BounceLine({
       viewBox={`0 0 ${width} 160`}
       className={`absolute left-0 w-full h-[160px] pointer-events-auto cursor-pointer select-none overflow-visible z-10 ${className}`}
       style={{
-        top: "-80px", // Centers baseline (80px) precisely at parent's top-0 boundary
+        top: "-80px", // Centers baseline (80px) precisely at parent's boundary
         transformOrigin: origin,
+        ...style,
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}

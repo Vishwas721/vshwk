@@ -8,7 +8,7 @@ import { mouseCoordinator } from "@/lib/mouseCoordinator";
 import FloatingCard from "@/components/dom/FloatingCard";
 import BounceLine from "@/components/dom/BounceLine";
 import HeaderLogo from "@/components/dom/HeaderLogo";
-import SidebarNavigation from "@/components/dom/SidebarNavigation";
+import HomeBriefAbout from "@/components/home/HomeBriefAbout";
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -131,9 +131,6 @@ export default function Home() {
       {/* ─── Top-Left Branding Logo in Six Caps ─── */}
       <HeaderLogo />
 
-      {/* ─── Right-Edge Sidebar Navigation & Scroll Indicator ─── */}
-      <SidebarNavigation />
-
       {/* ─── Hero Section ─── */}
       <section ref={heroRef} className="relative w-full min-h-screen z-0">
         {/* ─── Background Blobs Layer (Z-Index: 0, securely behind typography & card) ─── */}
@@ -234,7 +231,7 @@ export default function Home() {
             </div>
 
             {/* ─── Line 3: AI & FULL-STACK (wrapper-03) ─── */}
-            <div className="relative block mb-6 md:mb-8 ml-0 sm:ml-[clamp(0px,32.34vw,414px)] max-w-[clamp(450px,54.53vw,698px)]">
+            <div className="relative block mb-6 md:mb-8 ml-[170px] sm:ml-[clamp(0px,32.34vw,414px)] max-w-[clamp(450px,54.53vw,698px)] whitespace-nowrap">
               <BounceLine width={700} origin="left" delay={0.3} strokeColor="#ffffff" />
               <span className="block text-[clamp(4.5rem,14.06vw,11.25rem)] text-white pt-2 md:pt-4">
                 AI & FULL-STACK
@@ -242,7 +239,7 @@ export default function Home() {
             </div>
 
             {/* ─── Line 4: ENGINEER (wrapper-04) ─── */}
-            <div className="relative block ml-0 sm:ml-[clamp(0px,16.09vw,206px)] max-w-[clamp(240px,26.25vw,336px)]">
+            <div className="relative block ml-[90px] sm:ml-[clamp(0px,16.09vw,206px)] max-w-[clamp(240px,26.25vw,336px)] whitespace-nowrap">
               <BounceLine width={350} origin="right" delay={0.4} strokeColor="#ffffff" />
               <span className="block text-[clamp(4.5rem,14.06vw,11.25rem)] text-white pt-2 md:pt-4">
                 ENGINEER
@@ -250,10 +247,15 @@ export default function Home() {
             </div>
           </h1>
 
-          {/* ─── 3. Pink Floating 3D Tilt Card (Shifted right to completely clear 'AI & FULL-STACK' and 'ENGINEER') ─── */}
-          <FloatingCard className="translate-x-[20vw] md:translate-x-[24vw] lg:translate-x-[28vw]" />
+          {/* ─── 3. Pink Floating 3D Tilt Card (Pinned strictly to left wall, hanging off Line 2 date) ─── */}
+          <div className="absolute left-4 sm:left-8 md:left-12 lg:left-[5vw] top-[235px] sm:top-[270px] md:top-[320px] lg:top-[375px] xl:top-[400px] z-20 pointer-events-auto">
+            <FloatingCard />
+          </div>
         </div>
       </section>
+
+      {/* ─── Brief About Introduction Section ─── */}
+      <HomeBriefAbout />
 
       {/* ─── Subsequent Section (Layered at z-10 so expanded blue blob covers the background behind it) ─── */}
       <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-white px-6">
