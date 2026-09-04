@@ -1,7 +1,7 @@
 import "./globals.css";
 import localFont from "next/font/local";
 import { Inter } from "next/font/google";
-import { Canvas } from "@react-three/fiber";
+import GlobalCanvas from "@/components/webgl/GlobalCanvas";
 import SmoothScrollProvider from "@/components/dom/SmoothScrollProvider";
 import Sidebar from "@/components/layout/Sidebar";
 import SidebarNavigation from "@/components/dom/SidebarNavigation";
@@ -49,8 +49,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </SmoothScrollProvider>
         <SidebarNavigation />
         <Sidebar />
-        {/* The persistent soft off-white/cream canvas */}
-        <Canvas frameloop="always" className="!fixed !inset-0 !z-[-1] !bg-[#f0efeb] !pointer-events-none" />
+        {/* The persistent soft off-white/cream canvas with WebGL shaders */}
+        <GlobalCanvas />
       </body>
     </html>
   );

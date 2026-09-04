@@ -9,6 +9,7 @@ import FloatingCard from "@/components/dom/FloatingCard";
 import BounceLine from "@/components/dom/BounceLine";
 import HeaderLogo from "@/components/dom/HeaderLogo";
 import HomeBriefAbout from "@/components/home/HomeBriefAbout";
+import ProjectsPickupSection from "@/components/ProjectsPickupSection";
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -282,15 +283,42 @@ export default function Home() {
       {/* ─── Brief About Introduction Section ─── */}
       <HomeBriefAbout />
 
-      {/* ─── Subsequent Section (Layered at z-10 so expanded blue blob covers the background behind it) ─── */}
-      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center text-white px-6">
-        <span className="opacity-40 tracking-[0.2em] font-mono text-sm mb-4">
-          ↓ SCROLL DOWN TO EXPLORE
-        </span>
-        <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white/90">
-          SELECTED WORKS
-        </h2>
-      </section>
+      {/* ─── Selected Projects Pickup Section (Hijacked Presentation) ─── */}
+      <ProjectsPickupSection />
+
+      {/* ─── Footer / Contact Section (Landing target after exiting Project 3) ─── */}
+      <footer className="relative z-10 min-h-screen w-full flex flex-col justify-between bg-[#302c1a] text-[#f0efeb] px-6 sm:px-12 py-16 md:py-24">
+        <div className="flex flex-col gap-4">
+          <span className="text-xs md:text-sm font-mono tracking-[0.2em] opacity-60">
+            ・ NEXT PHASE / CONTACT
+          </span>
+          <h2
+            className="text-[clamp(4.5rem,14vw,12rem)] leading-[0.88] uppercase tracking-[-0.01em] select-none text-[#ffd955]"
+            style={{ fontFamily: "var(--font-six-caps)" }}
+          >
+            LET&apos;S WORK TOGETHER
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-[#f0efeb]/20 text-xs md:text-sm font-[helvetica,Arial,sans-serif] tracking-wide">
+          <div>
+            <span className="block font-bold mb-2 opacity-50 uppercase">GET IN TOUCH</span>
+            <a
+              href="mailto:hello@vishwas.dev"
+              className="hover:underline text-base font-semibold text-[#f0efeb]"
+            >
+              hello@vishwas.dev
+            </a>
+          </div>
+          <div>
+            <span className="block font-bold mb-2 opacity-50 uppercase">LOCATION</span>
+            <p>BASED IN INDIA — AVAILABLE WORLDWIDE</p>
+          </div>
+          <div className="flex items-end justify-between md:justify-end gap-6">
+            <span className="opacity-50">© 2026 VISHWAS K</span>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }
