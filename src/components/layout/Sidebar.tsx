@@ -108,6 +108,7 @@ export default function Sidebar() {
   const openareaRef = useRef<HTMLSpanElement>(null);
   const line01Ref = useRef<HTMLSpanElement>(null);
   const line02Ref = useRef<HTMLSpanElement>(null);
+  const isFirstRender = useRef(true);
 
   useGSAP(
     () => {
@@ -121,6 +122,31 @@ export default function Sidebar() {
 
       const isMobile = window.innerWidth <= 767;
 
+      // Ensure Tailwind translate utility does not conflict with GSAP transform
+      if (rootRef.current) {
+        rootRef.current.style.translate = "none";
+      }
+
+      // On initial mount, establish clean off-screen state without running close animation
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        if (rootRef.current) {
+          gsap.set(rootRef.current, { xPercent: 100 });
+          rootRef.current.style.pointerEvents = "none";
+        }
+        if (btnRef.current) {
+          gsap.set(btnRef.current, { autoAlpha: 0, scale: 0.8 });
+          btnRef.current.style.pointerEvents = "none";
+        }
+        if (contentsRef.current) {
+          gsap.set(contentsRef.current, { autoAlpha: 0 });
+          contentsRef.current.style.pointerEvents = "none";
+        }
+        gsap.set(".sidebar-item-wrapper", { y: 180 });
+        gsap.set(".sidebar-title-item", { y: 40, opacity: 0 });
+        return;
+      }
+
       if (isSidebarOpen) {
         if (!isMobile) {
           // ─── Desktop Open Animation ───
@@ -128,7 +154,7 @@ export default function Sidebar() {
           if (rootRef.current) {
             rootRef.current.style.pointerEvents = "auto";
             gsap.to(rootRef.current, {
-              x: "0%",
+              xPercent: 0,
               duration: 0.3,
               delay: 0.16,
               ease: kuritaEase,
@@ -202,7 +228,7 @@ export default function Sidebar() {
           if (rootRef.current) {
             rootRef.current.style.pointerEvents = "auto";
             gsap.to(rootRef.current, {
-              x: "0%",
+              xPercent: 0,
               duration: 0.3,
               delay: 0.16,
               ease: kuritaEase,
@@ -267,7 +293,7 @@ export default function Sidebar() {
           // Desktop Close
           if (rootRef.current) {
             gsap.to(rootRef.current, {
-              x: "100%",
+              xPercent: 100,
               duration: 0.3,
               delay: 0,
               ease: kuritaEase,
@@ -336,7 +362,7 @@ export default function Sidebar() {
           // Mobile Close
           if (rootRef.current) {
             gsap.to(rootRef.current, {
-              x: "100%",
+              xPercent: 100,
               duration: 0.3,
               delay: 0,
               ease: kuritaEase,
@@ -421,8 +447,7 @@ export default function Sidebar() {
         data-lenis-prevent="true"
         data-lenis-prevent-wheel="true"
         aria-label="Site navigation menu"
-        className="fixed top-0 right-0 h-[100dvh] w-[560px] max-[767px]:w-full z-[999] pl-[50px] max-[767px]:pl-0 overscroll-contain bg-[#dfded9] pointer-events-none will-change-transform"
-        style={{ transform: isSidebarOpen ? "translateX(0%)" : "translateX(100%)" }}
+        className="fixed top-0 right-0 h-[100dvh] w-[560px] max-[767px]:w-full z-[999] pl-[50px] max-[767px]:pl-0 overscroll-contain bg-[#dfded9] pointer-events-none translate-x-full will-change-transform"
       >
         {/* 
           ─── The Close Button ("X") ───

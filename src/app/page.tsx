@@ -77,30 +77,27 @@ export default function Home() {
         ease: "power3.out",
       });
 
-      // Scroll-based expansion: starts from scale: 1 (natural CSS size) and expands to 18
-      // scrub: true ensures fluid tracking with zero lag, and immediateRender: false prevents shrinking to 0
-      const tl = gsap.timeline({
+      const calculateTargetScale = () => {
+        if (typeof window === "undefined") return 18;
+        const maxDim = Math.max(window.innerWidth, window.innerHeight);
+        const baseSize = blueCircle?.offsetWidth || 800;
+        return Math.max(18, (maxDim * 3) / baseSize);
+      };
+
+      // Scroll-based expansion: starts from scale: 1 (natural CSS size) and expands smoothly
+      // scrub: 1.2 ensures smooth momentum without stuttering when scrubbing back to top
+      gsap.to(blueCircle, {
+        scale: () => calculateTargetScale(),
+        force3D: true,
+        ease: "none",
         scrollTrigger: {
           trigger: hero,
           start: "top top",
           end: "bottom top",
-          scrub: true,
+          scrub: 1.2,
           invalidateOnRefresh: true,
         },
       });
-
-      tl.fromTo(
-        blueCircle,
-        {
-          scale: 1, // Baseline: natural CSS size, NEVER shrinks smaller than 1
-        },
-        {
-          scale: 18, // Massive scale expansion to cover entire viewport background
-          transformOrigin: "center center",
-          ease: "none",
-          immediateRender: false,
-        }
-      );
 
       // Force layout calculation on mount to fix the invisible canvas/shapes bug
       requestAnimationFrame(() => {
@@ -194,7 +191,7 @@ export default function Home() {
           >
             <div
               ref={blueCircleRef}
-              className="rounded-full bg-[#55b1ff] will-change-transform"
+              className="rounded-full bg-[#55b1ff] will-change-transform pointer-events-none select-none"
               style={{
                 width: "clamp(680px, 80.78vw, 1250px)",
                 height: "clamp(680px, 80.78vw, 1250px)",
