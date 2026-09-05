@@ -90,146 +90,156 @@ export default function ProjectsPickupSection() {
         force3D: true,
       });
 
-      // 2. Build the master scrubbing timeline
-      const tl = gsap.timeline();
+      // 2. Build the master scrubbing timeline with continuous flow and zero dead zones
+      const tl = gsap.timeline({
+        defaults: { ease: "none" },
+      });
 
       // ─── PHASE 1: Entry to Project 1 (Privex: #F9F6F0 Cream) ───
-      // Cream bubble expands 0 -> 160vmax as user scrolls first ~1000px
+      // Cream bubble expands 0 -> 160vmax
       tl.to(creamMain, {
         scale: 1,
-        duration: 1.6,
-        ease: "power1.inOut",
+        duration: 1.5,
+        ease: "none",
       });
       tl.fromTo(
         creamSub1,
         { scale: 0, x: -160, y: -200 },
-        { scale: 1.3, x: 0, y: 0, duration: 1.4, ease: "power1.inOut" },
+        { scale: 1.3, x: 0, y: 0, duration: 1.5, ease: "none" },
         "<"
       );
       tl.fromTo(
         creamSub2,
         { scale: 0, x: 180, y: 140 },
-        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "power1.inOut" },
+        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "none" },
         "<"
       );
 
-      // Privex text reveals during tail-end of Cream expansion
+      // Privex text reveals as Cream bubble reaches full size
       tl.to(
         privexText,
         {
           opacity: 1,
           y: 0,
           duration: 0.8,
-          ease: "power2.out",
+          ease: "none",
         },
-        "<50%"
+        "-=0.6"
       );
 
-      // Dwell period on Privex
-      tl.to({}, { duration: 1.2 });
-
       // ─── PHASE 2: Privex -> Project 2 (NagarikOne: #FFD8A8 Orange) ───
-      // Fade out Privex text
-      tl.to(privexText, {
-        opacity: 0,
-        y: -45,
-        duration: 0.5,
-        ease: "power2.in",
-      });
+      // Privex text fades out and moves up
+      tl.to(
+        privexText,
+        {
+          opacity: 0,
+          y: -40,
+          duration: 0.6,
+          ease: "none",
+        },
+        "+=0.2"
+      );
 
-      // Orange bubble expands over Cream, wiping the screen
+      // Orange bubble expands over Cream, aggressively overlapping text fadeout
       tl.to(
         orangeMain,
         {
           scale: 1,
-          duration: 1.6,
-          ease: "power1.inOut",
+          duration: 1.5,
+          ease: "none",
         },
-        "-=0.2"
+        "-=0.4"
       );
       tl.fromTo(
         orangeSub1,
         { scale: 0, x: 140, y: -180 },
-        { scale: 1.3, x: 0, y: 0, duration: 1.4, ease: "power1.inOut" },
+        { scale: 1.3, x: 0, y: 0, duration: 1.5, ease: "none" },
         "<"
       );
       tl.fromTo(
         orangeSub2,
         { scale: 0, x: -160, y: 130 },
-        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "power1.inOut" },
+        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "none" },
         "<"
       );
 
-      // NagarikOne text reveals during tail-end of Orange expansion
+      // NagarikOne text reveals as Orange bubble reaches full cover
       tl.to(
         nagarikText,
         {
           opacity: 1,
           y: 0,
           duration: 0.8,
-          ease: "power2.out",
+          ease: "none",
         },
-        "<50%"
+        "-=0.6"
       );
 
-      // Dwell period on NagarikOne
-      tl.to({}, { duration: 1.2 });
-
       // ─── PHASE 3: NagarikOne -> Project 3 (SummAID: #D8F3DC Mint) ───
-      // Fade out NagarikOne text
-      tl.to(nagarikText, {
-        opacity: 0,
-        y: -45,
-        duration: 0.5,
-        ease: "power2.in",
-      });
+      // NagarikOne text fades out and moves up
+      tl.to(
+        nagarikText,
+        {
+          opacity: 0,
+          y: -40,
+          duration: 0.6,
+          ease: "none",
+        },
+        "+=0.2"
+      );
 
-      // Mint bubble expands over Orange, wiping the screen
+      // Mint bubble expands over Orange, aggressively overlapping text fadeout
       tl.to(
         mintMain,
         {
           scale: 1,
-          duration: 1.6,
-          ease: "power1.inOut",
+          duration: 1.5,
+          ease: "none",
         },
-        "-=0.2"
+        "-=0.4"
       );
       tl.fromTo(
         mintSub1,
         { scale: 0, x: -120, y: 170 },
-        { scale: 1.3, x: 0, y: 0, duration: 1.4, ease: "power1.inOut" },
+        { scale: 1.3, x: 0, y: 0, duration: 1.5, ease: "none" },
         "<"
       );
       tl.fromTo(
         mintSub2,
         { scale: 0, x: 150, y: -120 },
-        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "power1.inOut" },
+        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "none" },
         "<"
       );
 
-      // SummAID text reveals during tail-end of Mint expansion
+      // SummAID text reveals as Mint bubble reaches full cover
       tl.to(
         summaidText,
         {
           opacity: 1,
           y: 0,
           duration: 0.8,
-          ease: "power2.out",
+          ease: "none",
         },
-        "<50%"
+        "-=0.6"
       );
 
-      // Dwell period on SummAID before smoothly unpinning to Footer
-      tl.to({}, { duration: 1.0 });
+      // Settle on SummAID before smoothly unpinning to Footer
+      tl.to(
+        {},
+        {
+          duration: 0.4,
+          ease: "none",
+        }
+      );
 
       // 3. Create the ScrollTrigger pinning the inner container with pinSpacing: true
       ScrollTrigger.create({
         trigger: triggerRef.current,
-        pin: pinnedRef.current,
-        pinSpacing: true,
-        scrub: 1,
+        pin: pinnedRef.current, // Pin the inner container specifically
+        pinSpacing: true,       // Force GSAP to pad the DOM so the footer doesn't overlap
+        scrub: 1.2,
         start: "top top",
-        end: "+=4000",
+        end: () => "+=" + window.innerHeight * 4,
         animation: tl,
         anticipatePin: 1,
         invalidateOnRefresh: true,
