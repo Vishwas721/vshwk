@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeaderLogo from "@/components/dom/HeaderLogo";
 import BounceLine from "@/components/dom/BounceLine";
+import SkillsMatrixSection from "@/components/about/SkillsMatrixSection";
 import CertificatesSection from "@/components/about/CertificatesSection";
 
 // Register ScrollTrigger client-side
@@ -21,9 +22,11 @@ if (typeof window !== "undefined") {
  * - Replicated 2D Kurita Structural Layout:
  *   - AboutMainVisualSection: HELLO, WORLD / VISHWAS K / IS FULL-STACK / AI ENGINEER AT REVA UNIVERSITY
  *   - Floating Profile Card with institution details
+ * - 3-Tier Interactive Skills Matrix Section (Cream #F9F6F0 -> Pale Lavender #E6E6FA -> Soft Mint #E0F4E8)
+ *   with M-Trust style scattered floating cards hover effect
  * - "The Eclipse Inversion" transition:
  *   - Scrubbed expanding black circular void (w-[150vw] h-[150vw]) anchored at the boundary
- *   - Curved wipe swallowing the light beige theme into pure black
+ *   - Curved wipe swallowing the light theme into pure black
  *   - Seamless staggered entrance of the dark-mode CertificatesSection
  * - CertificatesSection (Legacy AwardSection.vue 1:1 clone)
  * - Harmonious dark-mode footer
@@ -31,6 +34,7 @@ if (typeof window !== "undefined") {
 export default function AboutPage() {
   const pageWrapperRef = useRef<HTMLDivElement>(null);
   const heroSectionRef = useRef<HTMLElement>(null);
+  const skillsMatrixRef = useRef<HTMLElement>(null);
   const eclipseCircleRef = useRef<HTMLDivElement>(null);
   const certsSectionRef = useRef<HTMLElement>(null);
 
@@ -68,7 +72,7 @@ export default function AboutPage() {
         },
       });
 
-      // Step 2: Scrubbed expanding black circle wipe (curved wipe covering beige)
+      // Step 2: Scrubbed expanding black circle wipe (curved wipe covering light theme)
       tl.to(eclipseCircleRef.current, {
         scale: 2.2,
         ease: "none",
@@ -201,6 +205,11 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* ─── 3-Tier Interactive Skills Matrix Section ─── */}
+        <div className="relative w-full">
+          <SkillsMatrixSection ref={skillsMatrixRef} />
 
           {/* ─── The Eclipse Inversion: Expanding Black Geometric Void (z-20) ─── */}
           <div
@@ -208,7 +217,7 @@ export default function AboutPage() {
             className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-[150vw] h-[150vw] rounded-full bg-black z-20 will-change-transform"
             aria-hidden="true"
           />
-        </section>
+        </div>
 
         {/* ─── Certificates Section (z-30, revealed after eclipse expands) ─── */}
         <CertificatesSection ref={certsSectionRef} />
