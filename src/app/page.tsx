@@ -9,7 +9,7 @@ import FloatingCard from "@/components/dom/FloatingCard";
 import BounceLine from "@/components/dom/BounceLine";
 import HeaderLogo from "@/components/dom/HeaderLogo";
 import HomeBriefAbout from "@/components/home/HomeBriefAbout";
-import ProjectsPickupSection from "@/components/ProjectsPickupSection";
+import SelectedProjectsSection from "@/components/home/SelectedProjectsSection";
 import SelectProjectCardsSection from "@/components/home/SelectProjectCardsSection";
 import ContactSection from "@/components/home/ContactSection";
 
@@ -268,8 +268,8 @@ export default function Home() {
         <HomeBriefAbout />
       </div>
 
-      {/* ─── Selected Projects Pickup Section (Hijacked Presentation) ─── */}
-      <ProjectsPickupSection />
+      {/* ─── Selected Projects Section (Cinematic Full-Screen Snapping & Mask Reveal) ─── */}
+      <SelectedProjectsSection />
 
       {/* ─── Selected Projects Cards Section (Dual Marquee & Floating Cards) ─── */}
       <SelectProjectCardsSection />
