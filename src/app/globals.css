@@ -47,3 +47,18 @@ body::-webkit-scrollbar {
   -webkit-appearance: none;
 }
 
+/* Selected Project Cards Responsive Absolute Staging */
+.project-card-item {
+  top: var(--top-m);
+  left: var(--left-m, auto);
+  right: var(--right-m, auto);
+}
+
+@media (min-width: 768px) {
+  .project-card-item {
+    top: var(--top-d);
+    left: var(--left-d, auto);
+    right: var(--right-d, auto);
+  }
+}
+

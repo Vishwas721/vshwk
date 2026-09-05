@@ -10,6 +10,7 @@ import BounceLine from "@/components/dom/BounceLine";
 import HeaderLogo from "@/components/dom/HeaderLogo";
 import HomeBriefAbout from "@/components/home/HomeBriefAbout";
 import ProjectsPickupSection from "@/components/ProjectsPickupSection";
+import SelectProjectCardsSection from "@/components/home/SelectProjectCardsSection";
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -286,7 +287,10 @@ export default function Home() {
       {/* ─── Selected Projects Pickup Section (Hijacked Presentation) ─── */}
       <ProjectsPickupSection />
 
-      {/* ─── Footer / Contact Section (Landing target after exiting Project 3) ─── */}
+      {/* ─── Selected Projects Cards Section (Dual Marquee & Floating Cards) ─── */}
+      <SelectProjectCardsSection />
+
+      {/* ─── Footer / Contact Section (Landing target after exiting Projects) ─── */}
       <footer className="relative z-10 min-h-screen w-full flex flex-col justify-between bg-[#302c1a] text-[#f0efeb] px-6 sm:px-12 py-16 md:py-24">
         <div className="flex flex-col gap-4">
           <span className="text-xs md:text-sm font-mono tracking-[0.2em] opacity-60">
