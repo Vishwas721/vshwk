@@ -64,40 +64,33 @@ export default function AboutPage() {
       )
         return;
 
-      // 1. Pin the Hero while scrolling through the 75vh spacer until Skills completely overlaps
-      ScrollTrigger.create({
-        trigger: heroPinContainerRef.current,
-        start: "top top",
-        end: "+=175vh", // 75vh spacer runway + 100vh until Skills completely covers
-        pin: heroSectionRef.current,
-        pinSpacing: false,
-      });
-
-      // 2. The Hero "Fall-Back" Tween (scrubbed over the 75vh runway)
+      // 1. The Hero "Z-Axis Depth Drop" (Delayed until user scrolls through the entire Hero)
       gsap.fromTo(
         heroSectionRef.current,
         {
           scale: 1,
           borderRadius: "0rem",
           filter: "brightness(1)",
-          transformOrigin: "top center",
+          transformOrigin: "center bottom",
         },
         {
           scale: 0.85,
           borderRadius: "3rem",
           filter: "brightness(0.6)",
-          transformOrigin: "top center",
+          transformOrigin: "center bottom",
           ease: "none",
           scrollTrigger: {
             trigger: heroPinContainerRef.current,
-            start: "top top",
-            end: "+=75vh", // Exactly during the 75vh spacer runway!
+            start: "bottom bottom",
+            end: "+=75vh",
+            pin: true,
+            pinSpacing: false,
             scrub: true,
           },
         }
       );
 
-      // 3. "The Brutalist Horizon Wipe" ScrollTrigger Master Timeline
+      // 2. "The Brutalist Horizon Wipe" ScrollTrigger Master Timeline
       if (horizonSpacerRef.current && horizonRef.current) {
         // Initial state: razor-thin horizontal line, flat, horizontally collapsed, hidden
         gsap.set(horizonRef.current, {
@@ -132,7 +125,7 @@ export default function AboutPage() {
         });
       }
 
-      // 4. "The Eclipse Inversion" ScrollTrigger Master Timeline
+      // 3. "The Eclipse Inversion" ScrollTrigger Master Timeline
       if (eclipseCircleRef.current && certsSectionRef.current) {
         // Initial state of the Eclipse Inversion circle
         gsap.set(eclipseCircleRef.current, {
