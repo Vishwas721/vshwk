@@ -11,6 +11,7 @@ import HeaderLogo from "@/components/dom/HeaderLogo";
 import HomeBriefAbout from "@/components/home/HomeBriefAbout";
 import ProjectsPickupSection from "@/components/ProjectsPickupSection";
 import SelectProjectCardsSection from "@/components/home/SelectProjectCardsSection";
+import ContactSection from "@/components/home/ContactSection";
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -71,32 +72,15 @@ export default function Home() {
         ease: "power3.out",
       });
 
-      gsap.from(blueCircle, {
-        scale: 0,
-        duration: 1.1,
-        delay: 0.4,
-        ease: "power3.out",
-      });
-
-      const calculateTargetScale = () => {
-        if (typeof window === "undefined") return 18;
-        const maxDim = Math.max(window.innerWidth, window.innerHeight);
-        const baseSize = blueCircle?.offsetWidth || 800;
-        return Math.max(18, (maxDim * 3) / baseSize);
-      };
-
-      // Scroll-based expansion: starts from scale: 1 (natural CSS size) and expands smoothly
-      // scrub: 1.2 ensures smooth momentum without stuttering when scrubbing back to top
+      // Scroll-based expansion: assumes scale: 1 baseline in CSS, scales smoothly on scroll
       gsap.to(blueCircle, {
-        scale: () => calculateTargetScale(),
-        force3D: true,
+        scale: 4,
         ease: "none",
         scrollTrigger: {
           trigger: hero,
           start: "top top",
           end: "bottom top",
-          scrub: 1.2,
-          invalidateOnRefresh: true,
+          scrub: true,
         },
       });
 
@@ -290,39 +274,9 @@ export default function Home() {
       {/* ─── Selected Projects Cards Section (Dual Marquee & Floating Cards) ─── */}
       <SelectProjectCardsSection />
 
-      {/* ─── Footer / Contact Section (Landing target after exiting Projects) ─── */}
-      <footer className="relative z-10 min-h-screen w-full flex flex-col justify-between bg-[#302c1a] text-[#f0efeb] px-6 sm:px-12 py-16 md:py-24">
-        <div className="flex flex-col gap-4">
-          <span className="text-xs md:text-sm font-mono tracking-[0.2em] opacity-60">
-            ・ NEXT PHASE / CONTACT
-          </span>
-          <h2
-            className="text-[clamp(4.5rem,14vw,12rem)] leading-[0.88] uppercase tracking-[-0.01em] select-none text-[#ffd955]"
-            style={{ fontFamily: "var(--font-six-caps)" }}
-          >
-            LET&apos;S WORK TOGETHER
-          </h2>
-        </div>
+      {/* ─── Footer / Contact Section (Pink Bubble Bloom & Draggable Cards) ─── */}
+      <ContactSection />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-[#f0efeb]/20 text-xs md:text-sm font-[helvetica,Arial,sans-serif] tracking-wide">
-          <div>
-            <span className="block font-bold mb-2 opacity-50 uppercase">GET IN TOUCH</span>
-            <a
-              href="mailto:hello@vishwas.dev"
-              className="hover:underline text-base font-semibold text-[#f0efeb]"
-            >
-              hello@vishwas.dev
-            </a>
-          </div>
-          <div>
-            <span className="block font-bold mb-2 opacity-50 uppercase">LOCATION</span>
-            <p>BASED IN INDIA — AVAILABLE WORLDWIDE</p>
-          </div>
-          <div className="flex items-end justify-between md:justify-end gap-6">
-            <span className="opacity-50">© 2026 VISHWAS K</span>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }

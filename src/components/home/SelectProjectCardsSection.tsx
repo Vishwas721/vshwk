@@ -131,10 +131,7 @@ export default function SelectProjectCardsSection() {
   const cardsAreaRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Step 3 & Step 4: Kinetic Liquid Drop Splash & Shockwave refs
-  const splashWipeRef = useRef<HTMLDivElement>(null);
-  const splashRingRef = useRef<HTMLDivElement>(null);
-  const darkUnderlayRef = useRef<HTMLDivElement>(null);
+  // Kinetic shockwave card surfaces ref
   const cardSurfaceRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useGSAP(
@@ -142,29 +139,7 @@ export default function SelectProjectCardsSection() {
       const line1 = line1Ref.current;
       const line2 = line2Ref.current;
       const section = sectionRef.current;
-      const splashWipe = splashWipeRef.current;
-      const splashRing = splashRingRef.current;
-      const darkUnderlay = darkUnderlayRef.current;
       if (!line1 || !line2 || !section) return;
-
-      // Initial states for Splash Wipe and Shockwave elements
-      gsap.set(splashWipe, {
-        scaleX: 0,
-        scaleY: 0,
-        transformOrigin: "50% 0%",
-        force3D: true,
-      });
-
-      gsap.set(splashRing, {
-        scale: 0.1,
-        opacity: 0,
-        transformOrigin: "50% 0%",
-        force3D: true,
-      });
-
-      gsap.set(darkUnderlay, {
-        opacity: 1,
-      });
 
       // ─── 1. Continuous TimeScale Dual Marquee ───
       // Line 1: moves continuously to the LEFT (xPercent: -50)
@@ -234,57 +209,23 @@ export default function SelectProjectCardsSection() {
         );
       });
 
-      // ─── 3. Splash Wipe & Kinetic Shockwave (Steps 3 & 4) ───
+      // ─── 3. Kinetic Shockwave (Card Bounce upon entering) ───
       let hasShockwaved = false;
 
       ScrollTrigger.create({
         trigger: section,
-        start: "top 95%",
+        start: "top 90%",
         onEnter: () => {
           if (hasShockwaved) return;
           hasShockwaved = true;
 
-          // Step 3: The Splash Wipe (expanding oval wipes screen into #f0efeb)
-          gsap.fromTo(
-            splashWipe,
-            { scaleX: 0, scaleY: 0 },
-            {
-              scaleX: 1,
-              scaleY: 1,
-              duration: 0.85,
-              ease: "power3.out",
-              force3D: true,
-            }
-          );
-
-          // Impact ripple ring in mint (#D8F3DC)
-          gsap.fromTo(
-            splashRing,
-            { scale: 0.15, opacity: 1 },
-            {
-              scale: 4.8,
-              opacity: 0,
-              duration: 0.68,
-              ease: "power2.out",
-              force3D: true,
-            }
-          );
-
-          // Seamlessly dissolve dark underlay as splash expands
-          gsap.to(darkUnderlay, {
-            opacity: 0,
-            duration: 0.8,
-            ease: "power2.out",
-          });
-
-          // Step 4: The Kinetic Shockwave (elastic physical bounce on cards)
           const validSurfaces = cardSurfaceRefs.current.filter(Boolean);
           if (validSurfaces.length > 0) {
             gsap.fromTo(
               validSurfaces,
               { y: 0 },
               {
-                y: -32,
+                y: -28,
                 duration: 0.16,
                 ease: "power2.out",
                 stagger: {
@@ -294,7 +235,7 @@ export default function SelectProjectCardsSection() {
                 onComplete: () => {
                   gsap.to(validSurfaces, {
                     y: 0,
-                    duration: 1.25,
+                    duration: 1.2,
                     ease: "elastic.out(1.15, 0.35)",
                     stagger: {
                       amount: 0.16,
@@ -308,9 +249,6 @@ export default function SelectProjectCardsSection() {
         },
         onLeaveBack: () => {
           hasShockwaved = false;
-          gsap.set(splashWipe, { scaleX: 0, scaleY: 0 });
-          gsap.set(splashRing, { scale: 0.1, opacity: 0 });
-          gsap.set(darkUnderlay, { opacity: 1 });
           const validSurfaces = cardSurfaceRefs.current.filter(Boolean);
           gsap.set(validSurfaces, { y: 0 });
         },
@@ -326,33 +264,6 @@ export default function SelectProjectCardsSection() {
       aria-label="Selected Projects Gallery"
       className="relative w-full bg-[#f0efeb] text-[#302c1a] pt-28 md:pt-36 pb-32 overflow-hidden z-10 select-none"
     >
-      {/* ─── Dark Underlay (Seamless continuation from exit of pinned section) ─── */}
-      <div
-        ref={darkUnderlayRef}
-        className="absolute inset-0 bg-[#302c1a] pointer-events-none z-0 will-change-transform"
-      />
-
-      {/* ─── Step 3: Expanding Splash Wipe Oval (Anchor at top center) ─── */}
-      <div
-        ref={splashWipeRef}
-        className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none z-[1] rounded-full bg-[#f0efeb] will-change-transform"
-        style={{
-          width: "250vmax",
-          height: "250vmax",
-          transformOrigin: "50% 0%",
-        }}
-      />
-
-      {/* ─── Splash Impact Ripple Ring (Mint #D8F3DC) ─── */}
-      <div
-        ref={splashRingRef}
-        className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-[#D8F3DC] shadow-[0_0_25px_rgba(216,243,220,0.85)] pointer-events-none z-[2] will-change-transform"
-        style={{
-          width: "180px",
-          height: "90px",
-          transformOrigin: "50% 0%",
-        }}
-      />
 
       {/* ─── Top Read-Area Metadata Badge (Clearance for Fixed Scrollbar) ─── */}
       <div className="relative z-10 flex items-center justify-end pr-24 sm:pr-28 md:pr-36 pl-6 mb-6 md:mb-8 text-right font-[helvetica,Arial,sans-serif]">
@@ -493,6 +404,10 @@ export default function SelectProjectCardsSection() {
           ))}
         </div>
       </div>
+
+      {/* ─── Step 1: Dedicated Breathing Room Spacer before Footer ─── */}
+      <div className="w-full h-[60vh] md:h-[75vh] pointer-events-none" />
     </section>
+
   );
 }

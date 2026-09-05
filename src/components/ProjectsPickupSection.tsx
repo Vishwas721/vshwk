@@ -22,30 +22,37 @@ const ABOUT_BG_COLOR = "#55b1ff";
  * Fixed Layout Architecture:
  * - Outer Wrapper (Trigger): <div ref={triggerRef} className="relative w-full">
  * - Inner Wrapper (Pinned Canvas): <div ref={pinnedRef} className="h-screen w-full relative overflow-hidden bg-transparent z-10">
- * - pinSpacing: true guarantees GSAP creates the exact 4000px track without collapsing the layout or blanking.
+ * - pinSpacing: true guarantees GSAP creates the exact track without collapsing the layout or blanking.
+ *
+ * Optimizations:
+ * - 100% continuous fluid timeline with zero dead zones or static pauses (all tweens use ease: "none").
+ * - Tight position parameter chaining: every pixel of scrolling translates directly into visual progression.
+ * - Organic skin-tone (#f0efeb) bubble wipe exit directly into SelectProjectCardsSection, eliminating all black flashes.
  */
 export default function ProjectsPickupSection() {
   const triggerRef = useRef<HTMLDivElement>(null);
   const pinnedRef = useRef<HTMLDivElement>(null);
   const lenis = useLenis();
-  const hasDroppedRef = useRef(false);
 
-  // Kinetic Liquid Drop & Exit Backdrop refs
-  const liquidDropRef = useRef<HTMLDivElement>(null);
-  const exitBackdropRef = useRef<HTMLDivElement>(null);
-
-  // Bubble layer refs
+  // Bubble layer refs: Project 1 (Cream: #F9F6F0)
   const creamMainRef = useRef<HTMLDivElement>(null);
   const creamSub1Ref = useRef<HTMLDivElement>(null);
   const creamSub2Ref = useRef<HTMLDivElement>(null);
 
+  // Bubble layer refs: Project 2 (Orange: #FFD8A8)
   const orangeMainRef = useRef<HTMLDivElement>(null);
   const orangeSub1Ref = useRef<HTMLDivElement>(null);
   const orangeSub2Ref = useRef<HTMLDivElement>(null);
 
+  // Bubble layer refs: Project 3 (Mint: #D8F3DC)
   const mintMainRef = useRef<HTMLDivElement>(null);
   const mintSub1Ref = useRef<HTMLDivElement>(null);
   const mintSub2Ref = useRef<HTMLDivElement>(null);
+
+  // Bubble layer refs: Exit Wipe (Skin: #f0efeb)
+  const skinMainRef = useRef<HTMLDivElement>(null);
+  const skinSub1Ref = useRef<HTMLDivElement>(null);
+  const skinSub2Ref = useRef<HTMLDivElement>(null);
 
   // Content layers refs
   const privexTextRef = useRef<HTMLDivElement>(null);
@@ -70,15 +77,16 @@ export default function ProjectsPickupSection() {
       const mintSub1 = mintSub1Ref.current;
       const mintSub2 = mintSub2Ref.current;
 
+      const skinMain = skinMainRef.current;
+      const skinSub1 = skinSub1Ref.current;
+      const skinSub2 = skinSub2Ref.current;
+
       const privexText = privexTextRef.current;
       const nagarikText = nagarikTextRef.current;
       const summaidText = summaidTextRef.current;
 
-      const liquidDrop = liquidDropRef.current;
-      const exitBackdrop = exitBackdropRef.current;
-
       // 1. Explicit initial states
-      gsap.set([creamMain, orangeMain, mintMain], {
+      gsap.set([creamMain, orangeMain, mintMain, skinMain], {
         scale: 0,
         xPercent: -50,
         yPercent: -50,
@@ -86,13 +94,25 @@ export default function ProjectsPickupSection() {
         force3D: true,
       });
 
-      gsap.set([creamSub1, creamSub2, orangeSub1, orangeSub2, mintSub1, mintSub2], {
-        scale: 0,
-        xPercent: -50,
-        yPercent: -50,
-        transformOrigin: "center center",
-        force3D: true,
-      });
+      gsap.set(
+        [
+          creamSub1,
+          creamSub2,
+          orangeSub1,
+          orangeSub2,
+          mintSub1,
+          mintSub2,
+          skinSub1,
+          skinSub2,
+        ],
+        {
+          scale: 0,
+          xPercent: -50,
+          yPercent: -50,
+          transformOrigin: "center center",
+          force3D: true,
+        }
+      );
 
       gsap.set([privexText, nagarikText, summaidText], {
         opacity: 0,
@@ -100,20 +120,7 @@ export default function ProjectsPickupSection() {
         force3D: true,
       });
 
-      gsap.set(liquidDrop, {
-        scale: 0,
-        opacity: 0,
-        xPercent: -50,
-        yPercent: -50,
-        transformOrigin: "center center",
-        force3D: true,
-      });
-
-      gsap.set(exitBackdrop, {
-        opacity: 0,
-      });
-
-      // 2. Build the master scrubbing timeline with continuous flow and zero dead zones
+      // 2. Continuous scrubbed master timeline with zero dead zones
       const tl = gsap.timeline({
         defaults: { ease: "none" },
       });
@@ -122,264 +129,193 @@ export default function ProjectsPickupSection() {
       // Cream bubble expands 0 -> 160vmax
       tl.to(creamMain, {
         scale: 1,
-        duration: 1.5,
+        duration: 1.0,
         ease: "none",
       });
       tl.fromTo(
         creamSub1,
         { scale: 0, x: -160, y: -200 },
-        { scale: 1.3, x: 0, y: 0, duration: 1.5, ease: "none" },
+        { scale: 1.3, x: 0, y: 0, duration: 1.0, ease: "none" },
         "<"
       );
       tl.fromTo(
         creamSub2,
         { scale: 0, x: 180, y: 140 },
-        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "none" },
+        { scale: 1.1, x: 0, y: 0, duration: 1.0, ease: "none" },
         "<"
       );
 
-      // Privex text reveals as Cream bubble reaches full size
+      // Privex text reveals seamlessly as Cream bubble reaches full cover
       tl.to(
         privexText,
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
+          duration: 0.5,
           ease: "none",
         },
-        "-=0.6"
+        "-=0.5"
       );
 
       // ─── PHASE 2: Privex -> Project 2 (NagarikOne: #FFD8A8 Orange) ───
-      // Privex text fades out and moves up
-      tl.to(
-        privexText,
-        {
-          opacity: 0,
-          y: -40,
-          duration: 0.6,
-          ease: "none",
-        },
-        "+=0.2"
-      );
-
-      // Orange bubble expands over Cream, aggressively overlapping text fadeout
+      // Immediately start Orange bubble expansion with ZERO dead-zone hold
       tl.to(
         orangeMain,
         {
           scale: 1,
-          duration: 1.5,
+          duration: 1.0,
           ease: "none",
         },
-        "-=0.4"
+        ">"
       );
       tl.fromTo(
         orangeSub1,
         { scale: 0, x: 140, y: -180 },
-        { scale: 1.3, x: 0, y: 0, duration: 1.5, ease: "none" },
+        { scale: 1.3, x: 0, y: 0, duration: 1.0, ease: "none" },
         "<"
       );
       tl.fromTo(
         orangeSub2,
         { scale: 0, x: -160, y: 130 },
-        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "none" },
+        { scale: 1.1, x: 0, y: 0, duration: 1.0, ease: "none" },
         "<"
       );
 
-      // NagarikOne text reveals as Orange bubble reaches full cover
+      // Privex text fades out concurrently as Orange bubble expands
+      tl.to(
+        privexText,
+        {
+          opacity: 0,
+          y: -40,
+          duration: 0.4,
+          ease: "none",
+        },
+        "<"
+      );
+
+      // NagarikOne text reveals seamlessly as Orange bubble reaches full cover
       tl.to(
         nagarikText,
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
+          duration: 0.5,
           ease: "none",
         },
-        "-=0.6"
+        "-=0.5"
       );
 
       // ─── PHASE 3: NagarikOne -> Project 3 (SummAID: #D8F3DC Mint) ───
-      // NagarikOne text fades out and moves up
-      tl.to(
-        nagarikText,
-        {
-          opacity: 0,
-          y: -40,
-          duration: 0.6,
-          ease: "none",
-        },
-        "+=0.2"
-      );
-
-      // Mint bubble expands over Orange, aggressively overlapping text fadeout
+      // Immediately start Mint bubble expansion with ZERO dead-zone hold
       tl.to(
         mintMain,
         {
           scale: 1,
-          duration: 1.5,
+          duration: 1.0,
           ease: "none",
         },
-        "-=0.4"
+        ">"
       );
       tl.fromTo(
         mintSub1,
         { scale: 0, x: -120, y: 170 },
-        { scale: 1.3, x: 0, y: 0, duration: 1.5, ease: "none" },
+        { scale: 1.3, x: 0, y: 0, duration: 1.0, ease: "none" },
         "<"
       );
       tl.fromTo(
         mintSub2,
         { scale: 0, x: 150, y: -120 },
-        { scale: 1.1, x: 0, y: 0, duration: 1.5, ease: "none" },
+        { scale: 1.1, x: 0, y: 0, duration: 1.0, ease: "none" },
         "<"
       );
 
-      // SummAID text reveals as Mint bubble reaches full cover
+      // NagarikOne text fades out concurrently as Mint bubble expands
+      tl.to(
+        nagarikText,
+        {
+          opacity: 0,
+          y: -40,
+          duration: 0.4,
+          ease: "none",
+        },
+        "<"
+      );
+
+      // SummAID text reveals seamlessly as Mint bubble reaches full cover
       tl.to(
         summaidText,
         {
           opacity: 1,
           y: 0,
-          duration: 0.8,
+          duration: 0.5,
           ease: "none",
         },
-        "-=0.6"
+        "-=0.5"
       );
 
-      // Settle on SummAID before beginning Implosion
+      // ─── PHASE 4: Project 3 -> Exit (Skin: #f0efeb) ───
+      // Immediately start Skin bubble expansion to cleanly wipe the screen
       tl.to(
-        {},
+        skinMain,
         {
-          duration: 0.6,
+          scale: 1,
+          duration: 1.0,
           ease: "none",
-        }
+        },
+        ">"
+      );
+      tl.fromTo(
+        skinSub1,
+        { scale: 0, x: 130, y: -160 },
+        { scale: 1.3, x: 0, y: 0, duration: 1.0, ease: "none" },
+        "<"
+      );
+      tl.fromTo(
+        skinSub2,
+        { scale: 0, x: -140, y: 140 },
+        { scale: 1.1, x: 0, y: 0, duration: 1.0, ease: "none" },
+        "<"
       );
 
-      // ─── STEP 1: The Implosion (End of Pinned Timeline) ───
-      // 1. Fade out Project 3 text simultaneously
+      // SummAID text fades out concurrently as Skin bubble expands
       tl.to(
         summaidText,
         {
           opacity: 0,
           y: -40,
-          duration: 0.8,
-          ease: "none",
-        }
-      );
-
-      // 2. Seamless dark underlay (#302c1a) fades in behind the shrinking mint bubble
-      tl.to(
-        exitBackdrop,
-        {
-          opacity: 1,
-          duration: 0.8,
+          duration: 0.4,
           ease: "none",
         },
         "<"
       );
 
-      // 3. Mint sub-bubbles collapse
-      tl.to(
-        [mintSub1, mintSub2],
-        {
-          scale: 0,
-          duration: 0.8,
-          ease: "none",
-        },
-        "<"
-      );
-
-      // 4. Main Mint bubble shrinks from full-screen 160vmax down to center
-      tl.to(
-        mintMain,
-        {
-          scale: 0,
-          duration: 1.1,
-          ease: "power2.inOut",
-        },
-        "<"
-      );
-
-      // 5. The dense small mint sphere (w-16 h-16) takes center stage
-      tl.to(
-        liquidDrop,
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 1.1,
-          ease: "power2.inOut",
-        },
-        "<"
-      );
-
-      // Brief pause to establish the dense center droplet before drop release
-      tl.to(
-        {},
-        {
-          duration: 0.3,
-          ease: "none",
-        }
-      );
-
-      // 3. Create the ScrollTrigger pinning the inner container with pinSpacing: true
+      // 3. Pinning ScrollTrigger directly mapping every pixel of scrub to movement
       ScrollTrigger.create({
         trigger: triggerRef.current,
-        pin: pinnedRef.current, // Pin the inner container specifically
-        pinSpacing: true,       // Force GSAP to pad the DOM so following section doesn't overlap
-        scrub: 1.2,
+        pin: pinnedRef.current,
+        pinSpacing: true,
+        scrub: 1.0,
         start: "top top",
-        end: () => "+=" + window.innerHeight * 4.2,
+        end: () => "+=" + window.innerHeight * 3.5,
         animation: tl,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          if (self.progress > 0.68 && self.progress < 0.94) {
+          if (self.progress > 0.75) {
+            setGlobalBgColor("#f0efeb");
+          } else if (self.progress > 0.5) {
             setGlobalBgColor("#D8F3DC");
-          } else if (self.progress >= 0.94) {
-            setGlobalBgColor("#302c1a");
-          } else if (self.progress > 0.32) {
+          } else if (self.progress > 0.25) {
             setGlobalBgColor("#FFD8A8");
-          } else if (self.progress > 0.03) {
+          } else if (self.progress > 0.02) {
             setGlobalBgColor("#F9F6F0");
           } else {
             setGlobalBgColor("transparent");
           }
-
-          // ─── STEP 2: The Gravity Drop & Release ───
-          // When scrub reaches unpinning threshold, trigger rapid heavy downward plunge
-          if (self.progress >= 0.96 && self.direction === 1 && !hasDroppedRef.current) {
-            hasDroppedRef.current = true;
-            lenis?.start();
-
-            gsap.to(liquidDrop, {
-              y: window.innerHeight * 1.15,
-              scaleY: 2.2,
-              scaleX: 0.45,
-              duration: 0.52,
-              ease: "power4.in",
-              force3D: true,
-              overwrite: "auto",
-            });
-          } else if (self.progress < 0.92 && self.direction === -1 && hasDroppedRef.current) {
-            // User scrolled backward: restore resting droplet position
-            hasDroppedRef.current = false;
-            gsap.set(liquidDrop, {
-              y: 0,
-              scaleY: 1,
-              scaleX: 1,
-            });
-          }
         },
         onLeave: () => {
           lenis?.start();
-        },
-        onLeaveBack: () => {
-          hasDroppedRef.current = false;
-          gsap.set(liquidDrop, {
-            y: 0,
-            scaleY: 1,
-            scaleX: 1,
-          });
+          setGlobalBgColor("#f0efeb");
         },
       });
 
@@ -653,21 +589,28 @@ export default function ProjectsPickupSection() {
         </div>
 
         {/* ═══════════════════════════════════════════════════════════
-            LAYER 4: Kinetic Liquid Drop & Exit Backdrop
+            LAYER 4: Exit Wipe — Skin Tone (#f0efeb)
             ═══════════════════════════════════════════════════════════ */}
-        {/* Dark exit backdrop (#302c1a) fades in as the mint bubble implodes */}
+        {/* Skin Gooey Bubble Layer (z-[55], expands cleanly over Mint to exit) */}
         <div
-          ref={exitBackdropRef}
-          className="absolute inset-0 z-[42] bg-[#302c1a] pointer-events-none will-change-transform"
-        />
-
-        {/* Dense small mint sphere (w-16 h-16) in dead center */}
-        <div
-          ref={liquidDropRef}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-[#D8F3DC] shadow-[0_0_45px_rgba(216,243,220,0.9),inset_0_2px_8px_rgba(255,255,255,0.85),0_12px_28px_rgba(0,0,0,0.45)] z-[45] pointer-events-none will-change-transform flex items-center justify-center"
+          className="absolute inset-0 z-[55] flex items-center justify-center pointer-events-none overflow-hidden"
+          style={{ filter: "url(#gooey-pickup)" }}
         >
-          {/* Specular fluid light sheen */}
-          <div className="w-5 h-5 rounded-full bg-white/70 blur-[1px] -translate-x-1.5 -translate-y-1.5" />
+          <div
+            ref={skinSub1Ref}
+            className="absolute rounded-full bg-[#f0efeb] will-change-transform"
+            style={{ width: "260px", height: "260px", top: "50%", left: "50%" }}
+          />
+          <div
+            ref={skinSub2Ref}
+            className="absolute rounded-full bg-[#f0efeb] will-change-transform"
+            style={{ width: "200px", height: "200px", top: "50%", left: "50%" }}
+          />
+          <div
+            ref={skinMainRef}
+            className="absolute rounded-full bg-[#f0efeb] will-change-transform"
+            style={{ width: "160vmax", height: "160vmax", top: "50%", left: "50%" }}
+          />
         </div>
       </div>
     </div>
