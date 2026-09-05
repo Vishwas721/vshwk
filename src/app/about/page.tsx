@@ -1,10 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeaderLogo from "@/components/dom/HeaderLogo";
 import BounceLine from "@/components/dom/BounceLine";
 import CertificatesSection from "@/components/about/CertificatesSection";
+
+// Register ScrollTrigger client-side
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 /**
  * AboutPage — 1:1 Architectural Replica of Hisami Kurita's /about Route
@@ -13,21 +21,88 @@ import CertificatesSection from "@/components/about/CertificatesSection";
  * - Replicated 2D Kurita Structural Layout:
  *   - AboutMainVisualSection: HELLO, WORLD / VISHWAS K / IS FULL-STACK / AI ENGINEER AT REVA UNIVERSITY
  *   - Floating Profile Card with institution details
- *   - AboutIntroSection with requested bio context:
- *     'Final-year B.Tech Information Science and Engineering student at REVA University, Bengaluru.
- *      Building agentic workflows and specializing in Full-Stack web development and AI Engineering (Machine Learning, Computer Vision, NLP).'
- *   - Technical Stack badges & Navigation controls
+ * - "The Eclipse Inversion" transition:
+ *   - Scrubbed expanding black circular void (w-[150vw] h-[150vw]) anchored at the boundary
+ *   - Curved wipe swallowing the light beige theme into pure black
+ *   - Seamless staggered entrance of the dark-mode CertificatesSection
+ * - CertificatesSection (Legacy AwardSection.vue 1:1 clone)
+ * - Harmonious dark-mode footer
  */
 export default function AboutPage() {
+  const pageWrapperRef = useRef<HTMLDivElement>(null);
+  const heroSectionRef = useRef<HTMLElement>(null);
+  const eclipseCircleRef = useRef<HTMLDivElement>(null);
+  const certsSectionRef = useRef<HTMLElement>(null);
+
+  // ─── "The Eclipse Inversion" ScrollTrigger Master Timeline ───
+  useGSAP(
+    () => {
+      if (!eclipseCircleRef.current || !certsSectionRef.current) return;
+
+      // Initial state of the Eclipse Inversion circle
+      gsap.set(eclipseCircleRef.current, {
+        scale: 0,
+        xPercent: -50,
+        yPercent: 50,
+        transformOrigin: "center center",
+      });
+
+      // Target reveal elements inside CertificatesSection
+      const revealItems = certsSectionRef.current.querySelectorAll(
+        ".certificate-reveal-item"
+      );
+
+      // Initial state of certificate items (hidden)
+      gsap.set(revealItems, {
+        opacity: 0,
+        y: 50,
+      });
+
+      // Master Timeline: The Eclipse Inversion + Staggered Entrance
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: certsSectionRef.current,
+          start: "top bottom", // Starts the moment the boundary enters the viewport bottom
+          end: "top 18%",     // Fully engulfs and reveals as the section reaches reading position
+          scrub: true,        // Exact 1:1 scrub tied to scroll wheel
+        },
+      });
+
+      // Step 2: Scrubbed expanding black circle wipe (curved wipe covering beige)
+      tl.to(eclipseCircleRef.current, {
+        scale: 2.2,
+        ease: "none",
+        duration: 1,
+      });
+
+      // Step 3: Staggered reveal of certificates content after screen is engulfed
+      tl.to(
+        revealItems,
+        {
+          opacity: 1,
+          y: 0,
+          stagger: 0.1,
+          ease: "power2.out",
+          duration: 0.8,
+        },
+        ">-0.15" // Begins right as the screen becomes completely engulfed in black
+      );
+    },
+    { scope: pageWrapperRef }
+  );
+
   return (
     <main className="relative min-h-screen w-full bg-[#f0efeb] text-[#302c1a] overflow-x-hidden">
       {/* ─── Navigation Elements ─── */}
       <HeaderLogo />
 
-      {/* ─── Page Content ─── */}
-      <div className="relative z-10 w-full">
+      {/* ─── Page Content Wrapper with Strict Overflow Containment ─── */}
+      <div ref={pageWrapperRef} className="relative z-10 w-full overflow-hidden">
         {/* ─── Hero Section (AboutMainVisualSection) ─── */}
-        <section className="relative w-full min-h-screen px-6 sm:px-10 pt-[92px] pb-[92px] overflow-hidden">
+        <section
+          ref={heroSectionRef}
+          className="relative w-full min-h-screen px-6 sm:px-10 pt-[92px] pb-[92px]"
+        >
           {/* Top Back Link */}
           <div className="mb-8 pt-4">
             <Link
@@ -126,13 +201,20 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
+
+          {/* ─── The Eclipse Inversion: Expanding Black Geometric Void (z-20) ─── */}
+          <div
+            ref={eclipseCircleRef}
+            className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-[150vw] h-[150vw] rounded-full bg-black z-20 will-change-transform"
+            aria-hidden="true"
+          />
         </section>
 
-        {/* ─── Certificates Section (Legacy AwardSection.vue 1:1) ─── */}
-        <CertificatesSection />
+        {/* ─── Certificates Section (z-30, revealed after eclipse expands) ─── */}
+        <CertificatesSection ref={certsSectionRef} />
 
         {/* ─── Bottom Footer Bar ─── */}
-        <footer className="bg-black py-12 px-6 sm:px-10 flex flex-col sm:flex-row justify-between items-center text-[11px] font-mono tracking-[0.15em] text-[#828282] border-t border-[#828282]/20">
+        <footer className="relative z-30 bg-black py-12 px-6 sm:px-10 flex flex-col sm:flex-row justify-between items-center text-[11px] font-mono tracking-[0.15em] text-[#828282] border-t border-[#828282]/20">
           <span>VISHWAS K ・ PORTFOLIO 2026</span>
           <Link href="/" className="hover:text-white transition-colors mt-4 sm:mt-0">
             RETURN TO HOME ↑
