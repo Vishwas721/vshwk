@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useLenis } from "lenis/react";
 import { usePickupStore, PICKUP_PROJECTS } from "@/store/usePickupStore";
 
 if (typeof window !== "undefined") {
@@ -26,6 +27,12 @@ const ABOUT_BG_COLOR = "#55b1ff";
 export default function ProjectsPickupSection() {
   const triggerRef = useRef<HTMLDivElement>(null);
   const pinnedRef = useRef<HTMLDivElement>(null);
+  const lenis = useLenis();
+  const hasDroppedRef = useRef(false);
+
+  // Kinetic Liquid Drop & Exit Backdrop refs
+  const liquidDropRef = useRef<HTMLDivElement>(null);
+  const exitBackdropRef = useRef<HTMLDivElement>(null);
 
   // Bubble layer refs
   const creamMainRef = useRef<HTMLDivElement>(null);
@@ -67,6 +74,9 @@ export default function ProjectsPickupSection() {
       const nagarikText = nagarikTextRef.current;
       const summaidText = summaidTextRef.current;
 
+      const liquidDrop = liquidDropRef.current;
+      const exitBackdrop = exitBackdropRef.current;
+
       // 1. Explicit initial states
       gsap.set([creamMain, orangeMain, mintMain], {
         scale: 0,
@@ -88,6 +98,19 @@ export default function ProjectsPickupSection() {
         opacity: 0,
         y: 60,
         force3D: true,
+      });
+
+      gsap.set(liquidDrop, {
+        scale: 0,
+        opacity: 0,
+        xPercent: -50,
+        yPercent: -50,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+
+      gsap.set(exitBackdrop, {
+        opacity: 0,
       });
 
       // 2. Build the master scrubbing timeline with continuous flow and zero dead zones
@@ -223,11 +246,77 @@ export default function ProjectsPickupSection() {
         "-=0.6"
       );
 
-      // Settle on SummAID before smoothly unpinning to Footer
+      // Settle on SummAID before beginning Implosion
       tl.to(
         {},
         {
-          duration: 0.4,
+          duration: 0.6,
+          ease: "none",
+        }
+      );
+
+      // ─── STEP 1: The Implosion (End of Pinned Timeline) ───
+      // 1. Fade out Project 3 text simultaneously
+      tl.to(
+        summaidText,
+        {
+          opacity: 0,
+          y: -40,
+          duration: 0.8,
+          ease: "none",
+        }
+      );
+
+      // 2. Seamless dark underlay (#302c1a) fades in behind the shrinking mint bubble
+      tl.to(
+        exitBackdrop,
+        {
+          opacity: 1,
+          duration: 0.8,
+          ease: "none",
+        },
+        "<"
+      );
+
+      // 3. Mint sub-bubbles collapse
+      tl.to(
+        [mintSub1, mintSub2],
+        {
+          scale: 0,
+          duration: 0.8,
+          ease: "none",
+        },
+        "<"
+      );
+
+      // 4. Main Mint bubble shrinks from full-screen 160vmax down to center
+      tl.to(
+        mintMain,
+        {
+          scale: 0,
+          duration: 1.1,
+          ease: "power2.inOut",
+        },
+        "<"
+      );
+
+      // 5. The dense small mint sphere (w-16 h-16) takes center stage
+      tl.to(
+        liquidDrop,
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 1.1,
+          ease: "power2.inOut",
+        },
+        "<"
+      );
+
+      // Brief pause to establish the dense center droplet before drop release
+      tl.to(
+        {},
+        {
+          duration: 0.3,
           ease: "none",
         }
       );
@@ -236,16 +325,18 @@ export default function ProjectsPickupSection() {
       ScrollTrigger.create({
         trigger: triggerRef.current,
         pin: pinnedRef.current, // Pin the inner container specifically
-        pinSpacing: true,       // Force GSAP to pad the DOM so the footer doesn't overlap
+        pinSpacing: true,       // Force GSAP to pad the DOM so following section doesn't overlap
         scrub: 1.2,
         start: "top top",
-        end: () => "+=" + window.innerHeight * 4,
+        end: () => "+=" + window.innerHeight * 4.2,
         animation: tl,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          if (self.progress > 0.68) {
+          if (self.progress > 0.68 && self.progress < 0.94) {
             setGlobalBgColor("#D8F3DC");
+          } else if (self.progress >= 0.94) {
+            setGlobalBgColor("#302c1a");
           } else if (self.progress > 0.32) {
             setGlobalBgColor("#FFD8A8");
           } else if (self.progress > 0.03) {
@@ -253,6 +344,42 @@ export default function ProjectsPickupSection() {
           } else {
             setGlobalBgColor("transparent");
           }
+
+          // ─── STEP 2: The Gravity Drop & Release ───
+          // When scrub reaches unpinning threshold, trigger rapid heavy downward plunge
+          if (self.progress >= 0.96 && self.direction === 1 && !hasDroppedRef.current) {
+            hasDroppedRef.current = true;
+            lenis?.start();
+
+            gsap.to(liquidDrop, {
+              y: window.innerHeight * 1.15,
+              scaleY: 2.2,
+              scaleX: 0.45,
+              duration: 0.52,
+              ease: "power4.in",
+              force3D: true,
+              overwrite: "auto",
+            });
+          } else if (self.progress < 0.92 && self.direction === -1 && hasDroppedRef.current) {
+            // User scrolled backward: restore resting droplet position
+            hasDroppedRef.current = false;
+            gsap.set(liquidDrop, {
+              y: 0,
+              scaleY: 1,
+              scaleX: 1,
+            });
+          }
+        },
+        onLeave: () => {
+          lenis?.start();
+        },
+        onLeaveBack: () => {
+          hasDroppedRef.current = false;
+          gsap.set(liquidDrop, {
+            y: 0,
+            scaleY: 1,
+            scaleX: 1,
+          });
         },
       });
 
@@ -523,6 +650,24 @@ export default function ProjectsPickupSection() {
               {PICKUP_PROJECTS[2].desc}
             </p>
           </div>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════
+            LAYER 4: Kinetic Liquid Drop & Exit Backdrop
+            ═══════════════════════════════════════════════════════════ */}
+        {/* Dark exit backdrop (#302c1a) fades in as the mint bubble implodes */}
+        <div
+          ref={exitBackdropRef}
+          className="absolute inset-0 z-[42] bg-[#302c1a] pointer-events-none will-change-transform"
+        />
+
+        {/* Dense small mint sphere (w-16 h-16) in dead center */}
+        <div
+          ref={liquidDropRef}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-[#D8F3DC] shadow-[0_0_45px_rgba(216,243,220,0.9),inset_0_2px_8px_rgba(255,255,255,0.85),0_12px_28px_rgba(0,0,0,0.45)] z-[45] pointer-events-none will-change-transform flex items-center justify-center"
+        >
+          {/* Specular fluid light sheen */}
+          <div className="w-5 h-5 rounded-full bg-white/70 blur-[1px] -translate-x-1.5 -translate-y-1.5" />
         </div>
       </div>
     </div>
