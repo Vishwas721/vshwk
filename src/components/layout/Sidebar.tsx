@@ -497,11 +497,10 @@ export default function Sidebar() {
       <div
         aria-hidden="true"
         onClick={closeSidebar}
-        className={`fixed inset-0 z-[998] ${
-          isSidebarOpen
+        className={`fixed inset-0 z-[998] ${isSidebarOpen
             ? "pointer-events-auto bg-transparent"
             : "pointer-events-none"
-        }`}
+          }`}
       />
 
       {/* 
