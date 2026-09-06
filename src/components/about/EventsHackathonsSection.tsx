@@ -13,7 +13,9 @@ if (typeof window !== "undefined") {
 interface EventItem {
   id: string;
   title: string;
+  subtitle: string;
   details: string;
+  href: string;
   code: string;
   category: string;
 }
@@ -21,45 +23,57 @@ interface EventItem {
 const EVENTS_DATA: EventItem[] = [
   {
     id: "event-1",
-    title: "MICROSOFT IMAGINE CUP 2026",
-    details: "Azure AI Document Intelligence • Project Prism",
+    title: "CODE CUBICLE 5.0 FINALIST",
+    subtitle: "MICROSOFT BANGALORE",
+    details: "MICROSOFT BANGALORE",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/IMG_20251017_193634.jpg",
     code: "01",
-    category: "GLOBAL HACKATHON",
+    category: "FINALIST SHOWCASE",
   },
   {
     id: "event-2",
-    title: "BUILD ON APTOS HACKATHON",
-    details: "Decentralized Identity • Project Parichay",
+    title: "THE GREAT BENGALURU HACKATHON",
+    subtitle: "ZYSK & HACKCULTURE",
+    details: "ZYSK & HACKCULTURE",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/Vishwas%20%20K.pdf",
     code: "02",
-    category: "WEB3 / BLOCKCHAIN",
+    category: "CITY HACKATHON",
   },
   {
     id: "event-3",
-    title: "MICROSOFT CODECUBICLE",
-    details: "September 2025 • Participant",
+    title: "GEN AI EXCHANGE HACKATHON",
+    subtitle: "GOOGLE CLOUD",
+    details: "GOOGLE CLOUD",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/Hack2skill-Certificate%20(2).png",
     code: "03",
-    category: "INVITATIONAL CODEATHON",
+    category: "GLOBAL CLOUD SPRINT",
   },
   {
     id: "event-4",
-    title: "VIRTUAL HACKATHON",
-    details: "Team Collaboration • SynergySphere",
+    title: "HACC-IT 2.0",
+    subtitle: "TEAM XCAPE MATRIX",
+    details: "TEAM XCAPE MATRIX",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/IMG_20251017_193643_1.jpg",
     code: "04",
-    category: "AGENTIC WORKFLOWS",
+    category: "TEAM CODEATHON",
   },
   {
     id: "event-5",
-    title: "IBM SKILLSBUILD",
-    details: "Edunet Foundation • Frontend Development",
+    title: "ADOBE INDIA HACKATHON",
+    subtitle: "TEAM ERROR 404",
+    details: "TEAM ERROR 404",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/799b4739-fb88-4744-ba4e-e6088c3d2f0e_copy.pdf",
     code: "05",
-    category: "NATIONAL ACCREDITATION",
+    category: "NATIONAL HACKATHON",
   },
   {
     id: "event-6",
-    title: "TATA CRUCIBLE",
-    details: "Campus Quiz • Participant",
+    title: "AI RENA 2.0 HACKATHON",
+    subtitle: "REVA UNIVERSITY",
+    details: "REVA UNIVERSITY",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/Vishwas%20k%20(1).pdf",
     code: "06",
-    category: "CAMPUS COMPETITION",
+    category: "CAMPUS INNOVATION",
   },
 ];
 
@@ -233,11 +247,14 @@ const EventsHackathonsSection = forwardRef<HTMLElement, EventsHackathonsSectionP
               const isCurrentHovered = hoveredEventId === event.id;
               return (
                 <div key={event.id} className="flex items-center shrink-0">
-                  {/* Event Title Button / Trigger */}
-                  <span
-                    className={`inline-block cursor-pointer px-4 sm:px-8 py-2 uppercase leading-[0.82] tracking-tight transition-all duration-200 ${isCurrentHovered
-                        ? "!opacity-100 scale-[1.02] text-black"
-                        : "text-[#0a0a0a]"
+                  {/* Event Title Link / Trigger */}
+                  <a
+                    href={event.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`inline-block cursor-pointer px-4 sm:px-8 py-2 uppercase leading-[0.82] tracking-tight transition-opacity duration-300 hover:opacity-70 ${isCurrentHovered
+                      ? "!opacity-100 text-black"
+                      : "text-[#0a0a0a]"
                       }`}
                     style={{
                       fontFamily: "var(--font-six-caps)",
@@ -248,7 +265,7 @@ const EventsHackathonsSection = forwardRef<HTMLElement, EventsHackathonsSectionP
                     onMouseLeave={handleEventLeave}
                   >
                     {event.title}
-                  </span>
+                  </a>
 
                   {/* Bullet Point Separator */}
                   <span

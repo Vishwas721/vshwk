@@ -9,6 +9,8 @@ interface Certificate {
   issuer: string;
   title: string;
   tag: string;
+  category?: string;
+  href: string;
   cardBg: string;
   cardText: string;
   watermark: string;
@@ -17,39 +19,135 @@ interface Certificate {
 const CERTIFICATES_DATA: Certificate[] = [
   {
     id: "cert-01",
-    issuer: "SWAYAM-NPTEL (IIT ROPAR)",
-    title: "DEEP LEARNING",
-    tag: "IIT ROPAR",
+    issuer: "COURSERA",
+    title: "IBM GENERATIVE AI ENGINEERING",
+    tag: "PROFESSIONAL CERTIFICATE",
+    category: "PROFESSIONAL CERTIFICATE",
+    href: "https://www.coursera.org/account/accomplishments/professional-cert/NDGS5TPT75ZS",
     cardBg: "#9dd5d6",
     cardText: "#1e5658",
-    watermark: "DEEP",
+    watermark: "GEN AI",
   },
   {
     id: "cert-02",
-    issuer: "SWAYAM-NPTEL",
-    title: "SOFTWARE PROJECT MANAGEMENT",
-    tag: "NPTEL",
+    issuer: "UDEMY",
+    title: "FULL-STACK WEB DEVELOPMENT",
+    tag: "62-HOUR BOOTCAMP",
+    category: "62-HOUR BOOTCAMP",
+    href: "https://www.udemy.com/certificate/UC-2ac2b41e-53ac-4925-ab1e-8ad8932076e8/",
     cardBg: "#fab740",
     cardText: "#7c5614",
-    watermark: "SPM",
+    watermark: "BOOTCAMP",
   },
   {
     id: "cert-03",
-    issuer: "GOOGLE CLOUD",
-    title: "GEN AI ACADEMY",
-    tag: "GOOGLE",
+    issuer: "AICTE / EDUNET",
+    title: "FRONT END WEB DEV INTERNSHIP",
+    tag: "6-WEEK INTERNSHIP",
+    category: "6-WEEK INTERNSHIP",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/AICTE%20B3_PD_2001-3491-1424.pdf",
     cardBg: "#7aa0d0",
     cardText: "#254167",
-    watermark: "GENAI",
+    watermark: "INTERN",
   },
   {
     id: "cert-04",
-    issuer: "IBM SKILLSBUILD",
-    title: "FRONTEND DEVELOPMENT",
-    tag: "IBM",
+    issuer: "AWS",
+    title: "SOLUTIONS ARCHITECTURE",
+    tag: "JOB SIMULATION",
+    category: "JOB SIMULATION",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/vishwasamazon.pdf",
     cardBg: "#df6588",
     cardText: "#6e1b34",
-    watermark: "FRONT",
+    watermark: "CLOUD",
+  },
+  {
+    id: "cert-05",
+    issuer: "DELOITTE",
+    title: "TECHNOLOGY",
+    tag: "JOB SIMULATION",
+    category: "JOB SIMULATION",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/vishwasdeloitee.pdf",
+    cardBg: "#a3d9a5",
+    cardText: "#215c23",
+    watermark: "TECH",
+  },
+  {
+    id: "cert-06",
+    issuer: "BRITISH AIRWAYS",
+    title: "DATA SCIENCE",
+    tag: "JOB SIMULATION",
+    category: "JOB SIMULATION",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/britishvishwas.pdf",
+    cardBg: "#c4a7e7",
+    cardText: "#4b2a75",
+    watermark: "DATA",
+  },
+  {
+    id: "cert-07",
+    issuer: "TATA",
+    title: "DATA VISUALISATION",
+    tag: "JOB SIMULATION",
+    category: "JOB SIMULATION",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/vishwastat.pdf",
+    cardBg: "#f9a875",
+    cardText: "#7a350c",
+    watermark: "VISUAL",
+  },
+  {
+    id: "cert-08",
+    issuer: "QUANT MASTERS",
+    title: "LOW CODE/NO CODE AI DEV",
+    tag: "SKILL DEVELOPMENT",
+    category: "SKILL DEVELOPMENT",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/Vishwas_K_R23EQ134_QMI159.pdf",
+    cardBg: "#e5a4be",
+    cardText: "#6e1f3a",
+    watermark: "NO CODE",
+  },
+  {
+    id: "cert-09",
+    issuer: "IBM SKILLSBUILD",
+    title: "AGILE EXPLORER",
+    tag: "CREDENTIAL",
+    category: "CREDENTIAL",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/Vish%20agile.pdf",
+    cardBg: "#d2bc95",
+    cardText: "#5e4042",
+    watermark: "AGILE",
+  },
+  {
+    id: "cert-10",
+    issuer: "IBM SKILLSBUILD",
+    title: "WEB DEV FUNDAMENTALS",
+    tag: "CREDENTIAL",
+    category: "CREDENTIAL",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/IBMDesign20251001-31-ok4kot.pdf",
+    cardBg: "#abc2cb",
+    cardText: "#2a4a58",
+    watermark: "FUNDAMENTALS",
+  },
+  {
+    id: "cert-11",
+    issuer: "IBM SKILLSBUILD",
+    title: "EDUNET FRONT END",
+    tag: "CREDENTIAL",
+    category: "CREDENTIAL",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/Vishwas.pdf",
+    cardBg: "#d6e291",
+    cardText: "#4d5c19",
+    watermark: "FRONTEND",
+  },
+  {
+    id: "cert-12",
+    issuer: "IBM SKILLSBUILD",
+    title: "GITHUB BLOG",
+    tag: "CREDENTIAL",
+    category: "CREDENTIAL",
+    href: "https://github.com/Vishwas721/Certificates/blob/main/vishwasgithub.pdf",
+    cardBg: "#f4a261",
+    cardText: "#6d3106",
+    watermark: "GITHUB",
   },
 ];
 
@@ -132,7 +230,10 @@ const CertificatesSection = forwardRef<HTMLElement, CertificatesSectionProps>(
               }}
             >
               {/* Top Dot & Issuer Indicator */}
-              <div className="pointer-events-none flex items-center gap-1.5 opacity-90">
+              <div
+                className="pointer-events-none flex items-center gap-1.5 opacity-90"
+                style={{ color: CERTIFICATES_DATA[activeCardIndex].cardText }}
+              >
                 <span className="text-[24px] leading-none indent-[-1px]">・</span>
                 <span className="text-[10px] font-mono tracking-[0.15em] uppercase font-bold">
                   {CERTIFICATES_DATA[activeCardIndex].tag}
@@ -140,24 +241,36 @@ const CertificatesSection = forwardRef<HTMLElement, CertificatesSectionProps>(
               </div>
 
               {/* Credential Status */}
-              <p className="pointer-events-none mt-3 text-[11px] font-[helvetica,Arial,sans-serif] tracking-[0.02em] uppercase opacity-80 leading-tight">
+              <p
+                className="pointer-events-none mt-3 text-[11px] font-[helvetica,Arial,sans-serif] tracking-[0.02em] uppercase opacity-80 leading-tight"
+                style={{ color: CERTIFICATES_DATA[activeCardIndex].cardText }}
+              >
                 VERIFIED CREDENTIAL
               </p>
 
               {/* Issuer */}
-              <p className="pointer-events-none text-[10px] font-[helvetica,Arial,sans-serif] tracking-[0.02em] uppercase opacity-70 mt-0.5">
+              <p
+                className="pointer-events-none text-[10px] font-[helvetica,Arial,sans-serif] tracking-[0.02em] uppercase opacity-70 mt-0.5"
+                style={{ color: CERTIFICATES_DATA[activeCardIndex].cardText }}
+              >
                 {CERTIFICATES_DATA[activeCardIndex].issuer}
               </p>
 
               {/* Certificate Title */}
-              <h3 className="pointer-events-none mt-4 text-[13px] font-bold font-[helvetica,Arial,sans-serif] tracking-[0.01em] uppercase leading-[1.25] text-black">
+              <h3
+                className="pointer-events-none mt-4 text-[13px] font-bold font-[helvetica,Arial,sans-serif] tracking-[0.01em] uppercase leading-[1.25]"
+                style={{ color: CERTIFICATES_DATA[activeCardIndex].cardText }}
+              >
                 {CERTIFICATES_DATA[activeCardIndex].title}
               </h3>
 
               {/* Giant Six Caps Watermark in Card Bottom */}
               <div
                 className="pointer-events-none absolute -bottom-[11px] left-0 w-full text-[120px] leading-none uppercase select-none opacity-40 px-3 overflow-hidden"
-                style={{ fontFamily: "var(--font-six-caps)" }}
+                style={{
+                  fontFamily: "var(--font-six-caps)",
+                  color: CERTIFICATES_DATA[activeCardIndex].cardText,
+                }}
               >
                 {CERTIFICATES_DATA[activeCardIndex].watermark}
               </div>
@@ -190,9 +303,12 @@ const CertificatesSection = forwardRef<HTMLElement, CertificatesSectionProps>(
             >
               <div className="relative w-full">
                 {CERTIFICATES_DATA.map((cert, index) => (
-                  <div
+                  <a
                     key={cert.id}
-                    className="certificate-reveal-item group relative w-full flex flex-col md:flex-row md:items-baseline justify-between py-6 sm:py-8 border-t border-[#828282]/30 text-[#828282] hover:text-white transition-colors duration-300 cursor-pointer will-change-transform"
+                    href={cert.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="certificate-reveal-item group relative w-full flex flex-col md:flex-row md:items-baseline justify-between py-6 sm:py-8 border-t border-[#828282]/30 text-[#828282] hover:text-white transition-colors duration-300 cursor-pointer will-change-transform no-underline"
                     onMouseEnter={() => setActiveCardIndex(index)}
                   >
                     {/* Interactive BounceLine Divider (strictly pointer-events: none) */}
@@ -223,7 +339,7 @@ const CertificatesSection = forwardRef<HTMLElement, CertificatesSectionProps>(
                     >
                       {cert.tag}
                     </p>
-                  </div>
+                  </a>
                 ))}
 
                 {/* Bottom Closing Line (strictly pointer-events: none) */}
