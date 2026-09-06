@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useRef, forwardRef, useImperativeHandle } from "react";
+import React, { useState, useRef, forwardRef, useImperativeHandle } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -28,7 +29,7 @@ export const SELECTED_PROJECTS: SelectedProjectItem[] = [
     tagline: "AI CLINICAL INTELLIGENCE PLATFORM",
     description:
       "Longitudinal medical report summarization engine utilizing RAG architecture.",
-    stack: ["FastAPI", "pgvector", "Local LLMs", "React"],
+    stack: ["FASTAPI", "PGVECTOR", "LOCAL LLMS", "REACT"],
     bg: "#E3EAF4", // Ice Blue
     zIndexClass: "z-10",
   },
@@ -39,7 +40,7 @@ export const SELECTED_PROJECTS: SelectedProjectItem[] = [
     tagline: "VISUAL FIREWALL & MEMORY AGENT",
     description:
       "Privacy-focused local infrastructure with real-time edge detection and hybrid vector-graph pipelines.",
-    stack: ["YOLOv8", "EasyOCR", "LangGraph", "FastAPI", "Neo4j"],
+    stack: ["YOLOV8", "EASYOCR", "LANGGRAPH", "FASTAPI", "NEO4J"],
     bg: "#E4F0E8", // Matcha Green
     zIndexClass: "z-20",
   },
@@ -50,11 +51,120 @@ export const SELECTED_PROJECTS: SelectedProjectItem[] = [
     tagline: "DECENTRALIZED CIVIC GOVERNANCE",
     description:
       "Civic issue reporting platform engineered with 50-meter geospatial duplicate detection.",
-    stack: ["PERN Stack", "React Native", "PostGIS", "Gemini API"],
+    stack: ["PERN STACK", "REACT NATIVE", "POSTGIS", "GEMINI API"],
     bg: "#F9EAE1", // Peach Orange
     zIndexClass: "z-30",
   },
 ];
+
+const STACK_CARD_COLORS = [
+  "#F5B041", // Mustard Yellow
+  "#A9DFBF", // Soft Green
+  "#AED6F1", // Light Blue
+  "#F5CBA7", // Peach
+  "#D7BDE2", // Soft Lavender
+  "#F9E79F", // Warm Cream
+];
+
+interface TactileStackDrawerProps {
+  stack: string[];
+}
+
+/**
+ * TactileStackDrawer
+ *
+ * Premium physical card deck matching the reference:
+ * - Solid vibrant backgrounds (#F5B041, #A9DFBF, #AED6F1, #F5CBA7) with solid black typography.
+ * - w-48 h-64 rounded-2xl p-5 shadow-xl relative overflow-hidden.
+ * - Top element: small dot + '• STACK' tracked-out label.
+ * - Middle element: bold clean sans-serif tool name.
+ * - Bottom element: massive ultra-condensed watermark (-bottom-4 -left-2 text-6xl text-black/10).
+ * - Staggered slide-up cascade (initial y: 100, opacity: 0 -> animate y: 0, opacity: 1).
+ * - Positioned beside/above toggle button so it does not overlap project description.
+ * - Mechanical hover state: whileHover={{ y: -10, scale: 1.02, zIndex: 50 }}.
+ */
+function TactileStackDrawer({ stack }: TactileStackDrawerProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="relative mt-4 pt-3 border-t border-[#2d2a26]/15 pointer-events-auto">
+      {/* Interactive Staggered Physical Cards Deck (Framer Motion) */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute bottom-full left-0 mb-4 sm:mb-0 sm:bottom-0 sm:left-full sm:ml-8 flex items-end z-40 pointer-events-auto"
+          >
+            {stack.map((tool, idx) => (
+              <motion.div
+                key={tool}
+                initial={{ y: 100, opacity: 0 }}
+                animate={{
+                  y: 0,
+                  opacity: 1,
+                  transition: {
+                    delay: idx * 0.08,
+                    duration: 0.35,
+                    ease: "easeOut",
+                  },
+                }}
+                exit={{
+                  y: 50,
+                  opacity: 0,
+                  transition: { duration: 0.2, ease: "easeIn" },
+                }}
+                whileHover={{ y: -10, scale: 1.02, zIndex: 50 }}
+                className={`w-44 sm:w-48 h-56 sm:h-64 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden shadow-xl border border-black/10 cursor-pointer select-none text-black shrink-0 ${
+                  idx > 0 ? "-ml-20 sm:-ml-24" : ""
+                }`}
+                style={{
+                  backgroundColor:
+                    STACK_CARD_COLORS[idx % STACK_CARD_COLORS.length],
+                  zIndex: idx + 1,
+                }}
+              >
+                {/* Top Elements: Dot & STACK label */}
+                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase font-bold text-black select-none z-10">
+                  <span className="text-xs leading-none">•</span>
+                  <span>STACK</span>
+                </div>
+
+                {/* Middle Element: Tool Name Primary Title */}
+                <div className="my-auto z-10">
+                  <h4 className="text-xl sm:text-2xl font-black font-sans tracking-tight text-black leading-tight uppercase break-words">
+                    {tool}
+                  </h4>
+                </div>
+
+                {/* Bottom Element: Massive Ultra-Condensed Watermark */}
+                <span
+                  className="absolute -bottom-4 -left-2 text-6xl font-custom-condensed text-black/10 leading-none select-none pointer-events-none uppercase tracking-tighter whitespace-nowrap"
+                  style={{
+                    fontFamily:
+                      "var(--font-custom-condensed, var(--font-six-caps))",
+                  }}
+                >
+                  {tool}
+                </span>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Trigger Button */}
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="rounded-full border border-current px-4 py-1.5 uppercase text-xs tracking-widest hover:bg-black hover:text-white transition-colors font-mono cursor-pointer pointer-events-auto text-[#2d2a26]"
+      >
+        {isOpen ? "[ - CLOSE STACK ]" : "[ + EXPLORE STACK ]"}
+      </button>
+    </div>
+  );
+}
 
 export interface SelectedProjectsSectionProps
   extends React.HTMLAttributes<HTMLElement> {}
@@ -327,19 +437,7 @@ const SelectedProjectsSection = forwardRef<
             <p className="text-sm sm:text-base font-[helvetica,Arial,sans-serif] text-[#2d2a26]/85 leading-relaxed max-w-md">
               {SELECTED_PROJECTS[0].description}
             </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-[#2d2a26]/15">
-              <span className="text-[10px] font-mono tracking-widest uppercase text-[#2d2a26]/50 mr-1">
-                STACK:
-              </span>
-              {SELECTED_PROJECTS[0].stack.map((tech, tIdx) => (
-                <span
-                  key={tIdx}
-                  className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase px-2.5 py-1 rounded-full border border-[#2d2a26]/20 bg-[#2d2a26]/[0.03] text-[#2d2a26]/75 hover:border-[#2d2a26]/50 transition-colors"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
+            <TactileStackDrawer stack={SELECTED_PROJECTS[0].stack} />
           </div>
         </div>
 
@@ -414,19 +512,7 @@ const SelectedProjectsSection = forwardRef<
             <p className="text-sm sm:text-base font-[helvetica,Arial,sans-serif] text-[#2d2a26]/85 leading-relaxed max-w-md">
               {SELECTED_PROJECTS[1].description}
             </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-[#2d2a26]/15">
-              <span className="text-[10px] font-mono tracking-widest uppercase text-[#2d2a26]/50 mr-1">
-                STACK:
-              </span>
-              {SELECTED_PROJECTS[1].stack.map((tech, tIdx) => (
-                <span
-                  key={tIdx}
-                  className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase px-2.5 py-1 rounded-full border border-[#2d2a26]/20 bg-[#2d2a26]/[0.03] text-[#2d2a26]/75 hover:border-[#2d2a26]/50 transition-colors"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
+            <TactileStackDrawer stack={SELECTED_PROJECTS[1].stack} />
           </div>
         </div>
 
@@ -501,19 +587,7 @@ const SelectedProjectsSection = forwardRef<
             <p className="text-sm sm:text-base font-[helvetica,Arial,sans-serif] text-[#2d2a26]/85 leading-relaxed max-w-md">
               {SELECTED_PROJECTS[2].description}
             </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-[#2d2a26]/15">
-              <span className="text-[10px] font-mono tracking-widest uppercase text-[#2d2a26]/50 mr-1">
-                STACK:
-              </span>
-              {SELECTED_PROJECTS[2].stack.map((tech, tIdx) => (
-                <span
-                  key={tIdx}
-                  className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase px-2.5 py-1 rounded-full border border-[#2d2a26]/20 bg-[#2d2a26]/[0.03] text-[#2d2a26]/75 hover:border-[#2d2a26]/50 transition-colors"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
+            <TactileStackDrawer stack={SELECTED_PROJECTS[2].stack} />
           </div>
         </div>
 
