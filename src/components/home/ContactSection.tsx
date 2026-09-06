@@ -318,7 +318,7 @@ export default function ContactSection() {
               className="hover:text-black hover:underline inline-block transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
-              READ RESUME / CV
+              READ RESUME
             </a>
           </li>
         </ul>

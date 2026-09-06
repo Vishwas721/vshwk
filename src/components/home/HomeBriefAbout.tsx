@@ -200,8 +200,9 @@ export default function HomeBriefAbout() {
   return (
     <section
       ref={sectionRef}
+      id="about-section"
       aria-label="About brief introduction"
-      className="relative w-full bg-transparent select-none z-10 overflow-hidden md:overflow-visible"
+      className="relative w-full bg-[#55b1ff] select-none z-10 overflow-hidden md:overflow-visible"
     >
       {/* 
         .about-inner padding extracted from legacy SCSS:

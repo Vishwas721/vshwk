@@ -140,7 +140,7 @@ export default function Home() {
       <HeaderLogo />
 
       {/* ─── Hero and About Realm (Clipped at bottom to prevent blue circle bleeding downward) ─── */}
-      <div className="relative overflow-hidden w-full">
+      <div id="hero-about-realm" className="relative overflow-hidden w-full z-40">
         {/* ─── Hero Section ─── */}
         <section ref={heroRef} className="relative w-full min-h-screen z-0">
         {/* ─── Background Blobs Layer (Z-Index: 0, securely behind typography & card) ─── */}
