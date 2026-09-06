@@ -500,10 +500,16 @@ const SelectedProjectsSection = forwardRef<
   return (
     <section
       ref={containerRef}
-      id="selected-projects"
       {...props}
       className={`relative w-full select-none ${props.className || ""}`}
     >
+      {/* Phantom Anchor: Positioned at 100vh so #projects lands after the intro wipe when SummAID is fully revealed */}
+      <div
+        id="projects"
+        className="absolute top-[100vh] left-0 w-full h-[1px] pointer-events-none invisible"
+        aria-hidden="true"
+      />
+
       {/* ─── Master Pinned Container with Virtual Scroll Track ─── */}
       <div
         ref={masterWrapperRef}

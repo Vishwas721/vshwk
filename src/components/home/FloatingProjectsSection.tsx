@@ -166,7 +166,7 @@ export default function FloatingProjectsSection() {
   return (
     <section
       ref={sectionRef}
-      id="selected-projects"
+      id="floating-projects"
       aria-label="Selected Projects Gallery"
       className="relative w-full bg-[#f0efeb] text-[#302c1a] pt-24 md:pt-32 pb-40 overflow-hidden z-10 select-none"
     >

@@ -75,6 +75,60 @@ export const WORKS_DATA: ProjectRosterItem[] = [
   },
 ];
 
+export interface CommandRoute {
+  id: string;
+  index: string;
+  label: string;
+  href: string;
+  hoverBg: string;
+  hoverText: string;
+  span?: string;
+}
+
+export const COMMAND_ROUTES: CommandRoute[] = [
+  {
+    id: "about",
+    index: "01",
+    label: "ABOUT",
+    href: "/about",
+    hoverBg: "hover:bg-[#F5B041]", // Mustard Yellow
+    hoverText: "group-hover:text-black",
+  },
+  {
+    id: "certificates",
+    index: "02",
+    label: "CERTIFICATES",
+    href: "/about#certificates",
+    hoverBg: "hover:bg-[#A9DFBF]", // Soft Green
+    hoverText: "group-hover:text-black",
+  },
+  {
+    id: "events",
+    index: "03",
+    label: "EVENTS",
+    href: "/about#events",
+    hoverBg: "hover:bg-[#EA580C]", // Burnt Orange
+    hoverText: "group-hover:text-white",
+  },
+  {
+    id: "skills",
+    index: "04",
+    label: "SKILLS",
+    href: "/about#skills",
+    hoverBg: "hover:bg-[#2563EB]", // Royal Blue
+    hoverText: "group-hover:text-white",
+  },
+  {
+    id: "projects",
+    index: "05",
+    label: "PROJECTS",
+    href: "/#projects",
+    hoverBg: "hover:bg-[#F5CBA7]", // Peach
+    hoverText: "group-hover:text-black",
+    span: "col-span-2",
+  },
+];
+
 /**
  * Sidebar — 1:1 Architectural & UX Replica of Hisami Kurita's BaseHambergerMenu.vue
  *
@@ -521,6 +575,43 @@ export default function Sidebar() {
                 ABOUT
               </Link>
             </div>
+          </div>
+
+          {/* Brutalist Command Matrix (Global Navigation Grid) */}
+          <div className="sidebar-title-item grid grid-cols-2 gap-3 mb-12 z-[2] relative translate-y-10 opacity-0 w-full">
+            {COMMAND_ROUTES.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                onClick={closeSidebar}
+                className={`flex flex-col justify-between h-24 p-4 border border-black/10 bg-white/40 group cursor-pointer transition-colors duration-200 rounded-xl overflow-hidden ${item.hoverBg} ${item.span || ""}`}
+              >
+                {/* Top Row: Index number + subtle indicator on hover */}
+                <div className="flex items-center justify-between w-full">
+                  <span
+                    className={`font-mono text-[10px] uppercase tracking-widest text-current/50 transition-colors duration-200 ${item.hoverText}`}
+                  >
+                    {item.index}
+                  </span>
+                  <span
+                    className={`font-mono text-[11px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${item.hoverText}`}
+                  >
+                    ↗
+                  </span>
+                </div>
+
+                {/* Bottom: Route Name */}
+                <span
+                  className={`font-bold text-2xl uppercase tracking-wider text-[#302c1a] transition-colors duration-200 ${item.hoverText}`}
+                  style={{
+                    fontFamily:
+                      "var(--font-sidebar-title, var(--font-six-caps))",
+                  }}
+                >
+                  {item.label}
+                </span>
+              </Link>
+            ))}
           </div>
 
           {/* Section Indicator: '・ WORKS' (Exact legacy typography math: 36px dot, 12px label) */}

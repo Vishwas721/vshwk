@@ -373,6 +373,9 @@ const SkillsMatrixSection = forwardRef<HTMLElement, SkillsMatrixSectionProps>(
         }`}
         style={{ backgroundColor: "#F9F6F0" }}
       >
+        {/* Anchor for #skills navigation */}
+        <div id="skills" className="absolute top-0 pointer-events-none" aria-hidden="true" />
+
         {/* ─── Step 4: Floating Scatter Cards Overlay (Cursor-Following, strictly pointer-events-none) ─── */}
         <div
           ref={scatterWrapRef}

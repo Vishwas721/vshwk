@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -41,6 +42,7 @@ if (typeof window !== "undefined") {
  * - Harmonious dark-mode footer
  */
 export default function AboutPage() {
+  const router = useRouter();
   const pageWrapperRef = useRef<HTMLDivElement>(null);
   const heroPinContainerRef = useRef<HTMLDivElement>(null);
   const heroSectionRef = useRef<HTMLElement>(null);
@@ -194,10 +196,15 @@ export default function AboutPage() {
             className="relative w-full min-h-screen px-6 sm:px-10 pt-[92px] pb-[92px] bg-[#f0efeb] overflow-hidden will-change-transform"
           >
             {/* Top Back Link */}
-            <div className="mb-8 pt-4">
+            <div className="relative z-30 mb-8 pt-4 pointer-events-auto">
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 text-[12px] font-mono tracking-[0.15em] text-[#302c1a] hover:opacity-60 transition-opacity"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                  router.push("/");
+                }}
+                className="relative z-30 inline-flex items-center gap-2 text-[12px] font-mono tracking-[0.15em] text-[#302c1a] hover:opacity-60 transition-opacity cursor-pointer pointer-events-auto select-none"
               >
                 <span>←</span>
                 <span>BACK TO HERO</span>

@@ -200,6 +200,9 @@ const EventsHackathonsSection = forwardRef<HTMLElement, EventsHackathonsSectionP
           }`}
         onMouseMove={handleMouseMove}
       >
+        {/* Anchor for #events navigation */}
+        <div id="events" className="absolute top-0 pointer-events-none" aria-hidden="true" />
+
         {/* ─── Top Category Header & Indicator ─── */}
         <div className="relative z-10 w-full px-6 sm:px-12 flex justify-between items-center text-[#0a0a0a]">
           <div className="flex items-center gap-2">
