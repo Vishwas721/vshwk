@@ -63,7 +63,7 @@ const EVENTS_DATA: EventItem[] = [
   },
 ];
 
-export interface EventsHackathonsSectionProps extends React.HTMLAttributes<HTMLElement> {}
+export interface EventsHackathonsSectionProps extends React.HTMLAttributes<HTMLElement> { }
 
 /**
  * EventsHackathonsSection
@@ -196,9 +196,8 @@ const EventsHackathonsSection = forwardRef<HTMLElement, EventsHackathonsSectionP
         ref={sectionRef}
         id="events-hackathons"
         {...props}
-        className={`relative w-full h-screen min-h-screen overflow-hidden bg-[#F37021] text-[#0a0a0a] flex flex-col justify-between py-12 sm:py-16 select-none ${
-          props.className || ""
-        }`}
+        className={`relative w-full h-screen min-h-screen overflow-hidden bg-[#F37021] text-[#0a0a0a] flex flex-col justify-between py-12 sm:py-16 select-none ${props.className || ""
+          }`}
         onMouseMove={handleMouseMove}
       >
         {/* ─── Top Category Header & Indicator ─── */}
@@ -221,9 +220,8 @@ const EventsHackathonsSection = forwardRef<HTMLElement, EventsHackathonsSectionP
         <div className="relative z-10 w-full overflow-visible my-auto">
           <div
             ref={marqueeTrackRef}
-            className={`flex items-center whitespace-nowrap will-change-transform transition-opacity duration-300 ${
-              hoveredEventId ? "opacity-30" : "opacity-100"
-            }`}
+            className={`flex items-center whitespace-nowrap will-change-transform transition-opacity duration-300 ${hoveredEventId ? "opacity-30" : "opacity-100"
+              }`}
           >
             {/* Initial leading spacer */}
             <div className="w-[8vw] shrink-0" aria-hidden="true" />
@@ -234,11 +232,10 @@ const EventsHackathonsSection = forwardRef<HTMLElement, EventsHackathonsSectionP
                 <div key={event.id} className="flex items-center shrink-0">
                   {/* Event Title Button / Trigger */}
                   <span
-                    className={`inline-block cursor-pointer px-4 sm:px-8 py-2 uppercase leading-[0.82] tracking-tight transition-all duration-200 ${
-                      isCurrentHovered
+                    className={`inline-block cursor-pointer px-4 sm:px-8 py-2 uppercase leading-[0.82] tracking-tight transition-all duration-200 ${isCurrentHovered
                         ? "!opacity-100 scale-[1.02] text-black"
                         : "text-[#0a0a0a]"
-                    }`}
+                      }`}
                     style={{
                       fontFamily: "var(--font-six-caps)",
                       fontSize: "clamp(6.5rem, 16vw, 17.5rem)",
@@ -271,7 +268,7 @@ const EventsHackathonsSection = forwardRef<HTMLElement, EventsHackathonsSectionP
         </div>
 
         {/* ─── Bottom Meta Bar ─── */}
-        <div className="relative z-10 w-full px-6 sm:px-12 flex justify-between items-center text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase opacity-75">
+        <div className="relative z-10 w-full pl-6 sm:pl-12 pr-24 sm:pr-[120px] flex justify-between items-center text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase opacity-75">
           <span>06 OFFICIAL STOPS</span>
           <span>COMPETITIONS & RECOGNITION</span>
         </div>

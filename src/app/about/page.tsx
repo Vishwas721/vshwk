@@ -327,7 +327,7 @@ export default function AboutPage() {
         <CertificatesSection ref={certsSectionRef} />
 
         {/* ─── Bottom Footer Bar ─── */}
-        <footer className="relative z-30 bg-black py-12 px-6 sm:px-10 flex flex-col sm:flex-row justify-between items-center text-[11px] font-mono tracking-[0.15em] text-[#828282] border-t border-[#828282]/20">
+        <footer className="relative z-30 bg-black py-12 pl-6 sm:pl-10 pr-24 sm:pr-[120px] flex flex-col sm:flex-row justify-between items-center text-[11px] font-mono tracking-[0.15em] text-[#828282] border-t border-[#828282]/20">
           <span>VISHWAS K ・ PORTFOLIO 2026</span>
           <Link href="/" className="hover:text-white transition-colors mt-4 sm:mt-0">
             RETURN TO HOME ↑
