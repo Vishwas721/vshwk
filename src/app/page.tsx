@@ -10,7 +10,7 @@ import BounceLine from "@/components/dom/BounceLine";
 import HeaderLogo from "@/components/dom/HeaderLogo";
 import HomeBriefAbout from "@/components/home/HomeBriefAbout";
 import SelectedProjectsSection from "@/components/home/SelectedProjectsSection";
-import SelectProjectCardsSection from "@/components/home/SelectProjectCardsSection";
+import FloatingProjectsSection from "@/components/home/FloatingProjectsSection";
 import ContactSection from "@/components/home/ContactSection";
 
 // Register ScrollTrigger plugin
@@ -271,8 +271,8 @@ export default function Home() {
       {/* ─── Selected Projects Section (Cinematic Full-Screen Snapping & Mask Reveal) ─── */}
       <SelectedProjectsSection />
 
-      {/* ─── Selected Projects Cards Section (Dual Marquee & Floating Cards) ─── */}
-      <SelectProjectCardsSection />
+      {/* ─── Floating Projects Section (Dual Marquee & 160vh Drag Playground) ─── */}
+      <FloatingProjectsSection />
 
       {/* ─── Footer / Contact Section (Pink Bubble Bloom & Draggable Cards) ─── */}
       <ContactSection />
