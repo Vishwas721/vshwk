@@ -14,16 +14,16 @@ if (typeof window !== "undefined") {
 
 /** Project roster matching portfolio showcase */
 const PROJECT_INDEX = [
-
-  { name: "PRIVEX", href: "#" },
-  { name: "NAGARIKONE", href: "#" },
-  { name: "SUMMAID", href: "#" },
-  { name: "PRISM", href: "#" },
-  { name: "GESTO", href: "#" },
-  { name: "REGENEX", href: "#" },
-  { name: "ARCHIVE", href: "#" },
+  { name: "PRIVEX", href: "https://github.com/Vishwas721/privex" },
+  { name: "SUMMAID", href: "https://github.com/Vishwas721/summaid" },
+  { name: "NAGARIKONE", href: "https://github.com/Vishwas721/nagarikone" },
+  { name: "FREELANCEHUB", href: "https://github.com/Vishwas721/freelancehub" },
+  { name: "ARTISAN AI", href: "https://github.com/Vishwas721/artisan-ai" },
+  { name: "HONESTA", href: "https://github.com/Vishwas721/honesta" },
+  { name: "PRISM", href: "https://github.com/Vishwas721/prism" },
+  { name: "GESTO", href: "https://github.com/Vishwas721/gesto" },
+  { name: "ARCHIVE", href: "/#projects" }
 ];
-
 export default function ContactSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const pinkBubbleRef = useRef<HTMLDivElement>(null);
@@ -142,12 +142,12 @@ export default function ContactSection() {
 
             {/* 26 chars -> needs small size */}
             <span className="block w-full text-center whitespace-nowrap text-[8.3vw]">
-              FOCUSED ON CREATING THINGS
+              FOCUSED ON BUILDING
             </span>
 
             {/* 28 chars -> needs smallest size */}
             <span className="block w-full text-center whitespace-nowrap text-[7.8vw]">
-              WITH INTERACTION & ANIMATION
+              SYSTEMS THAT ARE USEFUL
             </span>
 
             {/* 17 chars -> needs large size */}
@@ -195,7 +195,7 @@ export default function ContactSection() {
                 className="block font-custom-condensed text-[clamp(4.5rem,18vw,20rem)] leading-[0.74] uppercase text-[#cf1146] opacity-90"
                 style={{ fontFamily: "var(--font-six-caps)" }}
               >
-                VISHWAS K
+                VISHWAS KK
               </span>
             </div>
           </div>

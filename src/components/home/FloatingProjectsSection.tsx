@@ -33,10 +33,10 @@ export const PROJECT_CARDS: ProjectCardItem[] = [
     title: "PRISM",
     desc: "AI prior authorization review platform with real-time audit verification.",
     tech: "Azure Document AI ・ OpenAI ・ React",
-    top: "10%",
+    top: "8%",
     left: "10%",
     rotate: -4,
-    posClass: "top-[10%] left-[10%]",
+    posClass: "top-[8%] left-[10%]",
   },
   {
     id: "gesto",
@@ -46,36 +46,49 @@ export const PROJECT_CARDS: ProjectCardItem[] = [
     title: "GESTO",
     desc: "Real-time sign language to code converter leveraging geometric skeletal tracking.",
     tech: "Python ・ MediaPipe ・ OpenCV",
-    top: "25%",
-    left: "55%",
+    top: "23%",
+    left: "56%",
     rotate: 3,
-    posClass: "top-[25%] left-[55%]",
+    posClass: "top-[23%] left-[56%]",
   },
   {
-    id: "regenex",
+    id: "freelancehub",
     number: "03",
-    category: "RARE DISEASE GRAPH ML",
-    name: "REGENEX GRAPH",
-    title: "REGENX",
-    desc: "Graph neural network platform for drug repurposing and rare diseases.",
-    tech: "PyTorch Geometric ・ Neo4j",
-    top: "45%",
-    left: "15%",
-    rotate: -2,
-    posClass: "top-[45%] left-[15%]",
+    category: "FULL-STACK BIDDING PLATFORM",
+    name: "FREELANCEHUB",
+    title: "FLHUB",
+    desc: "Scalable freelance bidding engine featuring role-based JWT authentication, real-time activity feeds, and secure RESTful APIs.",
+    tech: "REACT • NODE.JS • EXPRESS • MYSQL",
+    top: "38%",
+    left: "12%",
+    rotate: -3,
+    posClass: "top-[38%] left-[12%]",
   },
   {
-    id: "parichay",
+    id: "artisanai",
     number: "04",
-    category: "DECENTRALIZED IDENTITY",
-    name: "PROJECT PARICHAY",
-    title: "PRCHY",
-    desc: "Decentralized self-sovereign identity attestation protocol with verifiable credential proofs.",
-    tech: "Aptos ・ Move Smart Contracts",
-    top: "60%",
-    left: "50%",
-    rotate: 5,
-    posClass: "top-[60%] left-[50%]",
+    category: "AI E-COMMERCE CO-PILOT",
+    name: "ARTISAN AI",
+    title: "ARTAI",
+    desc: "Intelligent empowerment platform leveraging multimodal generative AI to automate storytelling, trend harmonization, and targeted ad campaigns.",
+    tech: "REACT • GCP • GENERATIVE AI",
+    top: "53%",
+    left: "54%",
+    rotate: 4,
+    posClass: "top-[53%] left-[54%]",
+  },
+  {
+    id: "honesta",
+    number: "05",
+    category: "RISK-BASED PROCTORING",
+    name: "HONESTA",
+    title: "HNSTA",
+    desc: "Real-time browser proctoring system utilizing WebSockets to detect tab switching, erratic mouse kinetics, and typing anomalies.",
+    tech: "REACT • NODE.JS • SOCKET.IO • POSTGRESQL",
+    top: "68%",
+    left: "16%",
+    rotate: -2,
+    posClass: "top-[68%] left-[16%]",
   },
 ];
 
@@ -95,11 +108,12 @@ const MARQUEE_TEXT = "MAINLY A SELECTION OF PROJECTS THAT I HAVE FOCUSED ON. —
  *    - Massive 200vh height (min-h-[200vh] w-full relative overflow-hidden pb-40).
  *    - Unconstrained free drag with dragMomentum={false} for 1:1 cursor tracking.
  *    - whileHover sets rotate: 0 and scale: 1.05 to straighten cards out when grabbed.
- *    - Initial formation clustered in upper/mid section so bottom card never touches the footer:
- *        Card 1 (PRISM):    top-[10%] left-[10%] rotate-[-4deg]
- *        Card 2 (GESTO):    top-[25%] left-[55%] rotate-[3deg]
- *        Card 3 (REGENEX):  top-[45%] left-[15%] rotate-[-2deg]
- *        Card 4 (PARICHAY): top-[60%] left-[50%] rotate-[5deg]
+ *    - Initial formation clustered cleanly across 200vh canvas so bottom card never touches the footer:
+ *        Card 1 (PRISM):        top-[8%] left-[10%] rotate-[-4deg]
+ *        Card 2 (GESTO):        top-[23%] left-[56%] rotate-[3deg]
+ *        Card 3 (FREELANCEHUB): top-[38%] left-[12%] rotate-[-3deg]
+ *        Card 4 (ARTISAN AI):   top-[53%] left-[54%] rotate-[4deg]
+ *        Card 5 (HONESTA):      top-[68%] left-[16%] rotate-[-2deg]
  */
 export default function FloatingProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -262,7 +276,7 @@ export default function FloatingProjectsSection() {
                   ・
                 </span>
                 <span className="block font-mono text-[10px] tracking-[0.2em] text-[#302c1a]/50 uppercase mt-2">
-                  {card.number} / 04
+                  {card.number} / 05
                 </span>
                 <h3 className="text-xs md:text-base font-sans font-bold uppercase tracking-tight mt-1 text-[#302c1a] leading-tight">
                   {card.category}

@@ -277,12 +277,19 @@ export default function AboutPage() {
                     <span className="block mt-2">BENGALURU, KARNATAKA, INDIA</span>
                   </div>
                   <div className="mt-8 text-right">
-                    <span
-                      className="block text-[65px] leading-[0.8] text-[#302c1a]/80"
-                      style={{ fontFamily: "var(--font-six-caps)" }}
+                    <a
+                      href="https://www.reva.edu.in/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block hover:opacity-100 transition-opacity duration-300"
                     >
-                      REVA.EDU
-                    </span>
+                      <span
+                        className="block text-[65px] leading-[0.8] text-[#302c1a]/80"
+                        style={{ fontFamily: "var(--font-six-caps)" }}
+                      >
+                        REVA.EDU
+                      </span>
+                    </a>
                   </div>
                 </div>
               </div>
