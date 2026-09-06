@@ -166,6 +166,155 @@ function TactileStackDrawer({ stack }: TactileStackDrawerProps) {
   );
 }
 
+export interface ProjectHUDData {
+  subtitle: string;
+  details: string;
+  timeline: string;
+  accentColor: string;
+  bgClass: string;
+  bgHex: string;
+}
+
+export const PROJECT_HUD_DATA: Record<string, ProjectHUDData> = {
+  summaid: {
+    subtitle: "AI Clinical Intelligence Platform",
+    details:
+      "Engineered a RAG architecture pipeline utilizing pgvector and local LLMs to summarize longitudinal medical reports. Designed to process dense medical histories, reducing manual review time for clinical staff. The system retrieves contextually relevant patient data using advanced vector embeddings, built on top of FastAPI for a highly responsive backend.",
+    timeline: "Oct 2025 - Jan 2026",
+    accentColor: "#93C5FD", // Light Blue Accent for contrast on Royal Blue
+    bgClass: "bg-[#2563EB]", // Vibrant Royal Blue
+    bgHex: "#2563EB",
+  },
+  privex: {
+    subtitle: "Edge AI Security & Privacy",
+    details:
+      "Developed a privacy-focused local visual firewall and memory agent using real-time edge YOLOv8 detection and hybrid vector-graph pipelines. Operates entirely locally using LangGraph and Neo4j to ensure zero data leakage to external servers. Features real-time EasyOCR to redact sensitive on-screen information instantly, acting as a secure, memory-augmented local agent.",
+    timeline: "Mar 2026 - Jun 2026",
+    accentColor: "#A7F3D0", // Light Emerald Accent for contrast on Forest Green
+    bgClass: "bg-[#059669]", // Deep Forest / Emerald Green
+    bgHex: "#059669",
+  },
+  nagarikone: {
+    subtitle: "Civic Governance Platform",
+    details:
+      "Built a civic issue reporting engine featuring a custom 50-meter geospatial duplicate detection algorithm powered by PostGIS and the Gemini API. Developed with the PERN stack and React Native to provide a seamless mobile experience. The automated AI pipeline categorizes and prioritizes civic complaints, routing them directly to municipal dashboards for live tracking.",
+    timeline: "Aug 2025 - Nov 2025",
+    accentColor: "#FED7AA", // Warm Peach / Amber Accent for contrast on Burnt Orange
+    bgClass: "bg-[#EA580C]", // Striking Burnt Orange / Crimson
+    bgHex: "#EA580C",
+  },
+};
+
+interface ProjectTitleWithHUDProps {
+  title: string;
+  hudData: ProjectHUDData;
+  titleRef: (el: HTMLHeadingElement | null) => void;
+}
+
+/**
+ * ProjectTitleWithHUD
+ *
+ * Interactive title with Supersized Data HUD (Heads-Up Display):
+ * - Hover trigger wrapper with relative positioning and cursor-crosshair
+ * - Masked slide-up container preserving GSAP title reveal animation (100% untouched)
+ * - Commanding w-[600px] card with vibrant project-specific solid background
+ * - Framer Motion AnimatePresence spring animation dead center over the title
+ * - Rich editorial architectural descriptions with text-lg leading-relaxed typography
+ */
+function ProjectTitleWithHUD({
+  title,
+  hudData,
+  titleRef,
+}: ProjectTitleWithHUDProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative flex items-center justify-center pointer-events-auto cursor-crosshair"
+    >
+      {/* Masked Title Container for GSAP Scroll Reveal */}
+      <div className="overflow-hidden py-4 flex items-center justify-center">
+        <h2
+          ref={titleRef}
+          className="project-title text-[clamp(4.5rem,15vw,22rem)] leading-[0.8] uppercase font-custom-condensed text-[#2d2a26] tracking-[-0.01em] select-none text-center will-change-transform whitespace-nowrap"
+          style={{
+            fontFamily: "var(--font-custom-condensed, var(--font-six-caps))",
+          }}
+        >
+          {title}
+        </h2>
+      </div>
+
+      {/* Supersized Data HUD (Heads-Up Display Info Box) */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              transition: { type: "spring", stiffness: 300, damping: 20 },
+            }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] max-w-[92vw] p-8 rounded-3xl shadow-2xl z-50 flex flex-col gap-6 text-white border border-white/20 pointer-events-auto select-none ${hudData.bgClass}`}
+            style={{
+              backgroundColor: hudData.bgHex,
+              boxShadow:
+                "0 25px 60px -12px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2)",
+            }}
+          >
+            {/* Header: System Tag & Timeline */}
+            <div className="flex items-center justify-between gap-3 border-b border-white/20 pb-4">
+              <div className="flex items-center gap-2.5">
+                <span
+                  className="w-2 h-2 rounded-full animate-pulse shadow-sm"
+                  style={{ backgroundColor: hudData.accentColor }}
+                />
+                <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/70">
+                  DATA HUD // {title}
+                </span>
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/70 px-3 py-1 rounded-full border border-white/20 bg-black/20">
+                {hudData.timeline}
+              </span>
+            </div>
+
+            {/* Subtitle (Category) */}
+            <p className="font-sans text-xs font-bold uppercase tracking-[0.2em] text-white/90 border-l-2 border-white/50 pl-3 py-0.5">
+              {hudData.subtitle}
+            </p>
+
+            {/* Main Description (Editorial Body) */}
+            <p className="font-light text-lg leading-[1.8] tracking-wide text-white/95">
+              {hudData.details}
+            </p>
+
+            {/* Footer: Live Protocol Status */}
+            <div className="pt-3 border-t border-white/20 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-white/70">
+              <span className="flex items-center gap-2">
+                <span className="text-white/40">•</span>
+                STATUS:{" "}
+                <span
+                  className="font-bold"
+                  style={{ color: hudData.accentColor }}
+                >
+                  ACTIVE ARCHITECTURE
+                </span>
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/70">
+                HOVER TO DISMISS
+              </span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export interface SelectedProjectsSectionProps
   extends React.HTMLAttributes<HTMLElement> {}
 
@@ -403,22 +552,15 @@ const SelectedProjectsSection = forwardRef<
             </span>
           </div>
 
-          {/* Center: Massive Project Title with Masking Container */}
+          {/* Center: Massive Project Title with Data HUD */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 px-4">
-            <div className="overflow-hidden py-4 flex items-center justify-center">
-              <h2
-                ref={(el) => {
-                  titleRefs.current[0] = el;
-                }}
-                className="project-title text-[clamp(4.5rem,15vw,22rem)] leading-[0.8] uppercase font-custom-condensed text-[#2d2a26] tracking-[-0.01em] select-none text-center will-change-transform whitespace-nowrap pointer-events-auto"
-                style={{
-                  fontFamily:
-                    "var(--font-custom-condensed, var(--font-six-caps))",
-                }}
-              >
-                {SELECTED_PROJECTS[0].title}
-              </h2>
-            </div>
+            <ProjectTitleWithHUD
+              title={SELECTED_PROJECTS[0].title}
+              hudData={PROJECT_HUD_DATA.summaid}
+              titleRef={(el) => {
+                titleRefs.current[0] = el;
+              }}
+            />
           </div>
 
           {/* Bottom Left: Project Details Block */}
@@ -478,22 +620,15 @@ const SelectedProjectsSection = forwardRef<
             </span>
           </div>
 
-          {/* Center: Massive Project Title with Masking Container */}
+          {/* Center: Massive Project Title with Data HUD */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 px-4">
-            <div className="overflow-hidden py-4 flex items-center justify-center">
-              <h2
-                ref={(el) => {
-                  titleRefs.current[1] = el;
-                }}
-                className="project-title text-[clamp(4.5rem,15vw,22rem)] leading-[0.8] uppercase font-custom-condensed text-[#2d2a26] tracking-[-0.01em] select-none text-center will-change-transform whitespace-nowrap pointer-events-auto"
-                style={{
-                  fontFamily:
-                    "var(--font-custom-condensed, var(--font-six-caps))",
-                }}
-              >
-                {SELECTED_PROJECTS[1].title}
-              </h2>
-            </div>
+            <ProjectTitleWithHUD
+              title={SELECTED_PROJECTS[1].title}
+              hudData={PROJECT_HUD_DATA.privex}
+              titleRef={(el) => {
+                titleRefs.current[1] = el;
+              }}
+            />
           </div>
 
           {/* Bottom Left: Project Details Block */}
@@ -553,22 +688,15 @@ const SelectedProjectsSection = forwardRef<
             </span>
           </div>
 
-          {/* Center: Massive Project Title with Masking Container */}
+          {/* Center: Massive Project Title with Data HUD */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 px-4">
-            <div className="overflow-hidden py-4 flex items-center justify-center">
-              <h2
-                ref={(el) => {
-                  titleRefs.current[2] = el;
-                }}
-                className="project-title text-[clamp(4.5rem,15vw,22rem)] leading-[0.8] uppercase font-custom-condensed text-[#2d2a26] tracking-[-0.01em] select-none text-center will-change-transform whitespace-nowrap pointer-events-auto"
-                style={{
-                  fontFamily:
-                    "var(--font-custom-condensed, var(--font-six-caps))",
-                }}
-              >
-                {SELECTED_PROJECTS[2].title}
-              </h2>
-            </div>
+            <ProjectTitleWithHUD
+              title={SELECTED_PROJECTS[2].title}
+              hudData={PROJECT_HUD_DATA.nagarikone}
+              titleRef={(el) => {
+                titleRefs.current[2] = el;
+              }}
+            />
           </div>
 
           {/* Bottom Left: Project Details Block */}

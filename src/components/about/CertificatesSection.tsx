@@ -65,7 +65,7 @@ const CERTIFICATES_DATA: Certificate[] = [
  * - Right-side padding: pr-12 sm:pr-24 md:pr-32 lg:pr-36 xl:pr-[10vw] clears the custom fixed sidebar
  * - Cursor Follower: Floating verified credential preview card (CardAward.vue replica)
  */
-export interface CertificatesSectionProps extends React.HTMLAttributes<HTMLElement> {}
+export interface CertificatesSectionProps extends React.HTMLAttributes<HTMLElement> { }
 
 const CertificatesSection = forwardRef<HTMLElement, CertificatesSectionProps>(
   (props, forwardedRef) => {
@@ -108,9 +108,8 @@ const CertificatesSection = forwardRef<HTMLElement, CertificatesSectionProps>(
         ref={sectionRef}
         id="certificates"
         {...props}
-        className={`relative z-30 w-full bg-black text-[#828282] overflow-hidden select-none ${
-          props.className || ""
-        }`}
+        className={`relative z-30 w-full bg-black text-[#828282] overflow-hidden select-none ${props.className || ""
+          }`}
       >
         {/* ─── Floating Cursor-Tracked Certificate Preview Card (CardAward.vue 1:1 Replica) ─── */}
         <div
@@ -169,7 +168,7 @@ const CertificatesSection = forwardRef<HTMLElement, CertificatesSectionProps>(
         {/* ─── Main Content Container (legacy .award-inner & .l-container) ─── */}
         <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[40px] py-[63px] md:py-[152px]">
           <div className="w-full flex flex-col lg:flex-row lg:items-start justify-between gap-12 lg:gap-16">
-            
+
             {/* ─── Left Column: Sticky Section Title (Revealed in Stagger) ─── */}
             <div className="certificate-reveal-item lg:w-[220px] xl:w-[260px] shrink-0 lg:sticky lg:top-[140px] self-start will-change-transform">
               <div className="flex flex-col">
@@ -238,14 +237,7 @@ const CertificatesSection = forwardRef<HTMLElement, CertificatesSectionProps>(
                 </div>
               </div>
 
-              {/* ─── Total Counts Summary (Revealed in Stagger) ─── */}
-              <div className="certificate-reveal-item mt-10 hidden md:block will-change-transform">
-                <ul className="flex flex-col space-y-1 font-[helvetica,Arial,sans-serif] text-[12px] tracking-[0.02em] text-[#828282]">
-                  <li className="hover:text-white transition-colors">NPTEL*2</li>
-                  <li className="hover:text-white transition-colors">GOOGLE CLOUD*1</li>
-                  <li className="hover:text-white transition-colors">IBM*1</li>
-                </ul>
-              </div>
+
             </div>
           </div>
         </div>

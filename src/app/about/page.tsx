@@ -186,7 +186,7 @@ export default function AboutPage() {
 
       {/* ─── Page Content Wrapper with Strict Horizontal Overflow Containment ─── */}
       <div ref={pageWrapperRef} className="relative z-10 w-full overflow-x-clip">
-        
+
         {/* ─── Hero Pin Container (z-10) ─── */}
         <div ref={heroPinContainerRef} className="relative w-full z-10">
           <section
@@ -206,18 +206,7 @@ export default function AboutPage() {
 
             {/* Heading Container replicating Kurita's About Hero */}
             <div className="relative">
-              {/* Top-Left Metadata Read Area */}
-              <div className="mb-6">
-                <span className="block text-[32px] md:text-[36px] leading-[0.79] text-[#302c1a] indent-[-2px] font-[helvetica,Arial,sans-serif]">
-                  ・
-                </span>
-                <div className="font-[helvetica,Arial,sans-serif] text-[10px] md:text-[12px] tracking-[0.02em] leading-[1.15] text-[#302c1a] opacity-85 mt-1">
-                  <span className="block font-bold">MYSKILL :</span>
-                  <span className="block">FULL-STACK WEB / NEXT.JS</span>
-                  <span className="block">AI ENGINEERING & AGENTIC WORKFLOWS</span>
-                  <span className="block">MACHINE LEARNING / COMPUTER VISION / NLP</span>
-                </div>
-              </div>
+
 
               {/* Massive Typography Lines */}
               <h1
@@ -252,7 +241,7 @@ export default function AboutPage() {
                 <div className="relative block ml-0 sm:ml-[clamp(0px,8vw,120px)] max-w-[clamp(650px,85vw,1100px)]">
                   <BounceLine width={1100} origin="right" strokeColor="#302c1a" />
                   <span className="block text-[clamp(3.5rem,11.5vw,9.5rem)] pt-2 md:pt-4">
-                    AI ENGINEER AT REVA UNIVERSITY
+                    AND AI ENGINEER
                   </span>
                 </div>
               </h1>
@@ -277,7 +266,7 @@ export default function AboutPage() {
                   </span>
                   <div className="mt-6 text-[11px] font-[helvetica,Arial,sans-serif] font-medium leading-[1.3] opacity-90">
                     <span className="block">B.TECH IN INFORMATION SCIENCE</span>
-                    <span className="block">& ENGINEERING (2022 - 2026)</span>
+                    <span className="block">& ENGINEERING (2023 - 2027)</span>
                     <span className="block mt-2">BENGALURU, KARNATAKA, INDIA</span>
                   </div>
                   <div className="mt-8 text-right">
