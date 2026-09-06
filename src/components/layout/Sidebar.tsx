@@ -31,7 +31,7 @@ export const WORKS_DATA: ProjectRosterItem[] = [
     desc: "Privacy-focused local visual firewall and memory agent.",
     tech: "YOLOv8, LangGraph, FastAPI, pgvector, Neo4j",
     image: "/images/poster-mtrust.webp",
-    link: "#privex",
+    link: "https://github.com/Vishwas721/privex",
   },
   {
     id: "02",
@@ -39,7 +39,7 @@ export const WORKS_DATA: ProjectRosterItem[] = [
     desc: "Civic issue reporting platform with 50m geospatial duplicate detection.",
     tech: "PERN Stack, React Native, PostGIS, Gemini API",
     image: "/images/poster-ketakuma.webp",
-    link: "#nagarikone",
+    link: "https://github.com/Vishwas721/nagarikone",
   },
   {
     id: "03",
@@ -47,7 +47,7 @@ export const WORKS_DATA: ProjectRosterItem[] = [
     desc: "AI-powered clinical intelligence platform for medical reports.",
     tech: "FastAPI, pgvector, local LLMs, React",
     image: "/images/poster-yakudoh.webp",
-    link: "#summaid",
+    link: "https://github.com/Vishwas721/summaid",
   },
   {
     id: "04",
@@ -55,7 +55,7 @@ export const WORKS_DATA: ProjectRosterItem[] = [
     desc: "AI prior authorization review platform.",
     tech: "Azure AI Document Intelligence, Azure OpenAI, FastAPI, React",
     image: "/images/poster-frontier.webp",
-    link: "#prism",
+    link: "https://github.com/Vishwas721/prism",
   },
   {
     id: "05",
@@ -63,7 +63,7 @@ export const WORKS_DATA: ProjectRosterItem[] = [
     desc: "Real-time sign language to code converter.",
     tech: "Python, MediaPipe, OpenCV",
     image: "/images/poster-basta.webp",
-    link: "#gesto",
+    link: "https://github.com/Vishwas721/gesto",
   },
   {
     id: "06",
@@ -71,7 +71,7 @@ export const WORKS_DATA: ProjectRosterItem[] = [
     desc: "Drug repurposing platform for rare diseases.",
     tech: "PyTorch Geometric, Neo4j",
     image: "/images/poster-redandgreen.webp",
-    link: "#regenex",
+    link: "https://github.com/Vishwas721/regenex",
   },
 ];
 
@@ -538,10 +538,11 @@ export default function Sidebar() {
             {WORKS_DATA.map((item) => (
               <li key={item.id} className="relative overflow-hidden w-full">
                 <div className="sidebar-item-wrapper translate-y-[180px] w-full">
-                  <Link
+                  <a
                     href={item.link}
-                    onClick={closeSidebar}
-                    className="flex items-center group cursor-pointer w-full"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center group cursor-pointer w-full hover:opacity-80 transition-opacity"
                   >
                     {/* Thumbnail: 180x180 with 14px border radius */}
                     <span className="relative flex-shrink-0 w-[180px] h-[180px] mr-[20px] rounded-[14px] overflow-hidden bg-[#302c1a]/10 max-[767px]:w-[28.67vw] max-[767px]:h-[28.67vw] max-[767px]:rounded-[4px]">
@@ -568,7 +569,7 @@ export default function Sidebar() {
                         </span>
                       )}
                     </span>
-                  </Link>
+                  </a>
                 </div>
               </li>
             ))}
