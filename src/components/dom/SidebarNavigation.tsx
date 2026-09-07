@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -24,48 +24,66 @@ export default function SidebarNavigation() {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverAreaRef = useRef<HTMLButtonElement>(null);
   const sliderHandleRef = useRef<HTMLDivElement>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const percentTextRef = useRef<HTMLSpanElement>(null);
+  const lastProgressRef = useRef<number>(-1);
   const { toggleSidebar } = useUIStore();
 
   // Range of motion for the slider handle indicator on the 173px track
   const maxTravel = 140;
 
+  // Direct DOM and GSAP update to prevent React state re-render loops at 60-120fps
+  const updateScrollProgress = React.useCallback(
+    (progress: number) => {
+      const clamped = Math.max(0, Math.min(1, progress));
+      if (Math.abs(clamped - lastProgressRef.current) < 0.0005) return;
+      lastProgressRef.current = clamped;
+
+      if (percentTextRef.current) {
+        percentTextRef.current.textContent = `${Math.round(clamped * 100)}%`;
+      }
+      if (sliderHandleRef.current) {
+        gsap.to(sliderHandleRef.current, {
+          y: clamped * maxTravel,
+          duration: 0.1,
+          ease: "none",
+          overwrite: "auto",
+        });
+      }
+    },
+    [maxTravel]
+  );
+
   // ─── 1. Lenis Real-time Smooth Scroll Tracker ───
-  useLenis(({ progress }) => {
-    setScrollProgress(progress);
-    if (sliderHandleRef.current) {
-      gsap.to(sliderHandleRef.current, {
-        y: progress * maxTravel,
-        duration: 0.1,
-        ease: "none",
-        overwrite: "auto",
-      });
-    }
-  });
-
-  // ─── 2. GSAP ScrollTrigger tracking entire document.body (0 to 1) ───
-  useGSAP(() => {
-    if (typeof document === "undefined") return;
-
-    const trigger = ScrollTrigger.create({
-      trigger: document.body,
-      start: "top top",
-      end: "bottom bottom",
-      onUpdate: (self) => {
-        setScrollProgress(self.progress);
-        if (sliderHandleRef.current) {
-          gsap.to(sliderHandleRef.current, {
-            y: self.progress * maxTravel,
-            duration: 0.1,
-            ease: "none",
-            overwrite: "auto",
-          });
+  useLenis(
+    React.useCallback(
+      (lenis: { progress?: number }) => {
+        if (typeof lenis?.progress === "number") {
+          updateScrollProgress(lenis.progress);
         }
       },
-    });
+      [updateScrollProgress]
+    ),
+    [updateScrollProgress]
+  );
 
-    return () => trigger.kill();
-  }, []);
+  // ─── 2. GSAP ScrollTrigger tracking entire document.body (0 to 1) ───
+  useGSAP(
+    () => {
+      if (typeof document === "undefined") return;
+
+      const trigger = ScrollTrigger.create({
+        trigger: document.body,
+        start: "top top",
+        end: "bottom bottom",
+        onUpdate: (self) => {
+          updateScrollProgress(self.progress);
+        },
+      });
+
+      return () => trigger.kill();
+    },
+    { dependencies: [updateScrollProgress] }
+  );
 
   const handleMouseEnter = () => {
     if (hoverAreaRef.current) {
@@ -134,7 +152,7 @@ export default function SidebarNavigation() {
 
         {/* Bottom percentage indicator on desktop */}
         <div className="hidden md:flex flex-col items-center gap-1 opacity-60 text-[11px] font-mono text-[#302c1a]">
-          <span>{Math.round(scrollProgress * 100)}%</span>
+          <span ref={percentTextRef}>0%</span>
         </div>
       </button>
     </aside>

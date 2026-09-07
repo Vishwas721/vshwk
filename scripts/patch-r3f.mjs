@@ -22,3 +22,23 @@ for (const f of files) {
     }
   }
 }
+
+// Silence THREE.Clock deprecation warning triggered by @react-three/fiber root store initialization
+const threeFiles = [
+  "node_modules/three/build/three.core.js",
+  "node_modules/three/build/three.cjs",
+  "node_modules/three/src/core/Clock.js",
+];
+
+for (const f of threeFiles) {
+  const fullPath = path.resolve(__dirname, "..", f);
+  if (fs.existsSync(fullPath)) {
+    let content = fs.readFileSync(fullPath, "utf8");
+    const target = "warn( 'Clock: This module has been deprecated. Please use THREE.Timer instead.' );";
+    if (content.includes(target)) {
+      content = content.replaceAll(target, "// [silenced for R3F compatibility] " + target);
+      fs.writeFileSync(fullPath, content, "utf8");
+      console.log("Silenced Clock deprecation warning in:", f);
+    }
+  }
+}

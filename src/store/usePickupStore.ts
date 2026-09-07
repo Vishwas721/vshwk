@@ -104,10 +104,12 @@ export const usePickupStore = create<PickupState>((set, get) => ({
       // Note: globalBgColor is preserved on leave so downward exits remain Mint
     }),
 
-  setScene: (sceneName: string) =>
+  setScene: (sceneName: string) => {
+    if (get().scene === sceneName) return;
     set({
       scene: sceneName,
-    }),
+    });
+  },
 
   setCurrentNumber: (num: number, direction: "next" | "prev" | "init" = "next") => {
     const clamped = Math.max(1, Math.min(3, num));
@@ -119,10 +121,12 @@ export const usePickupStore = create<PickupState>((set, get) => ({
     });
   },
 
-  setGlobalBgColor: (color: string) =>
+  setGlobalBgColor: (color: string) => {
+    if (get().globalBgColor === color) return;
     set({
       globalBgColor: color,
-    }),
+    });
+  },
 
   setIsRewinding: (isRewinding: boolean) =>
     set({
