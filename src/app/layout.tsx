@@ -1,6 +1,7 @@
 import "./globals.css";
 import localFont from "next/font/local";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import GlobalCanvas from "@/components/webgl/GlobalCanvas";
 import DynamicBackground from "@/components/layout/DynamicBackground";
 import SmoothScrollProvider from "@/components/dom/SmoothScrollProvider";
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <GlobalCanvas />
         {/* Dynamic full-screen background synchronized with active project */}
         <DynamicBackground />
+        <Analytics />
       </body>
     </html>
   );
