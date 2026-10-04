@@ -238,7 +238,7 @@ export default function Home() {
               </div>
 
               {/* ─── Line 3: AI & FULL-STACK (wrapper-03) ─── */}
-              <div className="relative block mb-6 md:mb-8 ml-[170px] sm:ml-[clamp(0px,32.34vw,414px)] max-w-[clamp(450px,54.53vw,698px)] whitespace-nowrap">
+              <div className="relative block mb-6 md:mb-8 ml-[22vw] sm:ml-[clamp(0px,32.34vw,414px)] max-w-[clamp(450px,54.53vw,698px)] whitespace-nowrap">
                 <BounceLine width={700} origin="left" delay={0.3} strokeColor="#ffffff" />
                 <span className="block text-[clamp(4.5rem,14.06vw,11.25rem)] text-white pt-2 md:pt-4">
                   AI & FULL-STACK
@@ -255,7 +255,8 @@ export default function Home() {
             </h1>
 
             {/* ─── 3. Pink Floating 3D Tilt Card (Pinned strictly to left wall, hanging off Line 2 date) ─── */}
-            <div className="absolute left-4 sm:left-8 md:left-12 lg:left-[5vw] top-[235px] sm:top-[270px] md:top-[320px] lg:top-[375px] xl:top-[400px] z-20 pointer-events-auto">
+            {/* Mobile: flows below the heading instead of covering the stacked lines */}
+            <div className="relative w-fit mt-14 ml-auto mr-[6vw] md:absolute md:w-auto md:mt-0 md:ml-0 md:mr-0 md:left-12 lg:left-[5vw] md:top-[320px] lg:top-[375px] xl:top-[400px] z-20 pointer-events-auto">
               <FloatingCard />
             </div>
           </div>
