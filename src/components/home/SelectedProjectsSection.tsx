@@ -238,7 +238,7 @@ function ProjectTitleWithHUD({
       <div className="overflow-hidden py-4 flex items-center justify-center">
         <h2
           ref={titleRef}
-          className="project-title text-[clamp(4.5rem,15vw,22rem)] leading-[0.8] uppercase font-custom-condensed text-[#2d2a26] tracking-[-0.01em] select-none text-center will-change-transform whitespace-nowrap"
+          className="project-title text-[24vw] md:text-[clamp(4.5rem,15vw,22rem)] leading-[0.8] uppercase font-custom-condensed text-[#2d2a26] tracking-[-0.01em] select-none text-center will-change-transform whitespace-nowrap"
           style={{
             fontFamily: "var(--font-custom-condensed, var(--font-six-caps))",
           }}
@@ -551,7 +551,7 @@ const SelectedProjectsSection = forwardRef<
             ref={(el) => {
               metaTopRefs.current[0] = el;
             }}
-            className="absolute top-8 sm:top-12 md:top-16 right-6 sm:right-12 md:right-16 z-20 will-change-transform"
+            className="absolute top-[96px] md:top-16 right-6 sm:right-12 md:right-16 z-20 will-change-transform"
           >
             <span className="text-xs sm:text-sm font-mono tracking-[0.25em] uppercase text-[#2d2a26]/75 select-none">
               {`• SELECTED PROJECT ${SELECTED_PROJECTS[0].index}`}
@@ -574,7 +574,7 @@ const SelectedProjectsSection = forwardRef<
             ref={(el) => {
               metaBottomRefs.current[0] = el;
             }}
-            className="absolute bottom-8 sm:bottom-12 md:bottom-16 left-6 sm:left-12 md:left-16 z-20 max-w-lg will-change-transform select-none"
+            className="absolute bottom-8 sm:bottom-12 md:bottom-16 left-6 sm:left-12 md:left-16 right-6 sm:right-12 md:right-auto z-20 max-w-lg will-change-transform select-none"
           >
             <div className="flex items-center gap-2 mb-2.5">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#2d2a26]" />
@@ -619,7 +619,7 @@ const SelectedProjectsSection = forwardRef<
             ref={(el) => {
               metaTopRefs.current[1] = el;
             }}
-            className="absolute top-8 sm:top-12 md:top-16 right-6 sm:right-12 md:right-16 z-20 will-change-transform"
+            className="absolute top-[96px] md:top-16 right-6 sm:right-12 md:right-16 z-20 will-change-transform"
           >
             <span className="text-xs sm:text-sm font-mono tracking-[0.25em] uppercase text-[#2d2a26]/75 select-none">
               {`• SELECTED PROJECT ${SELECTED_PROJECTS[1].index}`}
@@ -642,7 +642,7 @@ const SelectedProjectsSection = forwardRef<
             ref={(el) => {
               metaBottomRefs.current[1] = el;
             }}
-            className="absolute bottom-8 sm:bottom-12 md:bottom-16 left-6 sm:left-12 md:left-16 z-20 max-w-lg will-change-transform select-none"
+            className="absolute bottom-8 sm:bottom-12 md:bottom-16 left-6 sm:left-12 md:left-16 right-6 sm:right-12 md:right-auto z-20 max-w-lg will-change-transform select-none"
           >
             <div className="flex items-center gap-2 mb-2.5">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#2d2a26]" />
@@ -687,7 +687,7 @@ const SelectedProjectsSection = forwardRef<
             ref={(el) => {
               metaTopRefs.current[2] = el;
             }}
-            className="absolute top-8 sm:top-12 md:top-16 right-6 sm:right-12 md:right-16 z-20 will-change-transform"
+            className="absolute top-[96px] md:top-16 right-6 sm:right-12 md:right-16 z-20 will-change-transform"
           >
             <span className="text-xs sm:text-sm font-mono tracking-[0.25em] uppercase text-[#2d2a26]/75 select-none">
               {`• SELECTED PROJECT ${SELECTED_PROJECTS[2].index}`}
@@ -710,7 +710,7 @@ const SelectedProjectsSection = forwardRef<
             ref={(el) => {
               metaBottomRefs.current[2] = el;
             }}
-            className="absolute bottom-8 sm:bottom-12 md:bottom-16 left-6 sm:left-12 md:left-16 z-20 max-w-lg will-change-transform select-none"
+            className="absolute bottom-8 sm:bottom-12 md:bottom-16 left-6 sm:left-12 md:left-16 right-6 sm:right-12 md:right-auto z-20 max-w-lg will-change-transform select-none"
           >
             <div className="flex items-center gap-2 mb-2.5">
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#2d2a26]" />
