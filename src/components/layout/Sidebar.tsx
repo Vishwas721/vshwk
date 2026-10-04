@@ -529,7 +529,7 @@ export default function Sidebar() {
           type="button"
           aria-label={isSidebarOpen ? "Close navigation menu" : "Open navigation menu"}
           onClick={toggleSidebar}
-          className="absolute top-0 bottom-0 my-auto -left-[43px] w-[86px] h-[86px] rounded-full cursor-pointer z-20 opacity-0 pointer-events-none border-none outline-none focus:outline-none max-[767px]:-left-[30px] max-[767px]:top-[20px] max-[767px]:bottom-auto max-[767px]:w-[60px] max-[767px]:h-[60px]"
+          className="absolute top-0 bottom-0 my-auto -left-[43px] w-[86px] h-[86px] rounded-full cursor-pointer z-20 opacity-0 pointer-events-none border-none outline-none focus:outline-none max-[767px]:left-auto max-[767px]:right-[20px] max-[767px]:top-[10px] max-[767px]:bottom-auto max-[767px]:w-[60px] max-[767px]:h-[60px]"
         >
           <span
             ref={btnHoverRef}
