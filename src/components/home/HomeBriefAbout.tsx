@@ -60,7 +60,7 @@ const MOBILE_TITLE_FLOW = [
   { text: "WAS PASSIONATE ABOUT. I'VE B", br: true },
   { text: "EEN WRITING CODE EVERY DAY", br: true },
   { text: "EVER SINCE. MY STRENGTH IS", br: true },
-  { text: "INSATIABLE CURIOSITY.", br: false },
+  { text: "RELENTLESS EXECUTION.", br: false },
 ];
 
 /**
@@ -210,7 +210,7 @@ export default function HomeBriefAbout() {
         - Tablet Vertical (<= 1028px): pt-[213px] pb-[448px]
         - Mobile (<= 767px): pt-[118px] pb-[340px]
       */}
-      <div className="relative w-full pt-[118px] pb-[340px] max-[1028px]:pt-[213px] max-[1028px]:pb-[448px] md:pt-[333px] md:pb-[568px]">
+      <div className="relative w-full pt-[118px] pb-[340px] max-[1028px]:pt-[213px] max-[1028px]:pb-[448px] max-[767px]:pt-[118px] max-[767px]:pb-[340px] md:pt-[333px] md:pb-[568px]">
         {/* 
           .l-container:
           width: 100%; padding: 0 40px; (Mobile: 0 vw_sp(20) = 0 2.667vw)
@@ -287,7 +287,7 @@ export default function HomeBriefAbout() {
               <div className="block text-right">
                 <span className="sp-title-wrap-0 inline-block relative overflow-hidden">
                   <span className="sp-title-block-0 inline-block opacity-0 whitespace-nowrap">
-                    IN THE SUMMER OF 22, I
+                    IN THE SUMMER OF 24, I
                   </span>
                 </span>
               </div>
