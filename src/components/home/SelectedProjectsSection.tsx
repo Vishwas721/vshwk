@@ -95,7 +95,7 @@ function TactileStackDrawer({ stack }: TactileStackDrawerProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute bottom-full left-0 mb-4 sm:mb-0 sm:bottom-0 sm:left-full sm:ml-8 flex items-end z-40 pointer-events-auto"
+            className="absolute bottom-full left-0 mb-4 md:mb-0 md:bottom-0 md:left-full md:ml-8 flex flex-wrap md:flex-nowrap gap-2 md:gap-0 w-[min(342px,calc(100vw-3rem))] md:w-auto items-end z-40 pointer-events-auto"
           >
             {stack.map((tool, idx) => (
               <motion.div
@@ -116,8 +116,8 @@ function TactileStackDrawer({ stack }: TactileStackDrawerProps) {
                   transition: { duration: 0.2, ease: "easeIn" },
                 }}
                 whileHover={{ y: -10, scale: 1.02, zIndex: 50 }}
-                className={`w-44 sm:w-48 h-56 sm:h-64 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden shadow-xl border border-black/10 cursor-pointer select-none text-black shrink-0 ${
-                  idx > 0 ? "-ml-20 sm:-ml-24" : ""
+                className={`w-[calc(33.333%-0.34rem)] md:w-48 h-32 md:h-64 rounded-xl md:rounded-2xl p-3 md:p-5 flex flex-col justify-between relative overflow-hidden shadow-xl border border-black/10 cursor-pointer select-none text-black shrink-0 ${
+                  idx > 0 ? "md:-ml-24" : ""
                 }`}
                 style={{
                   backgroundColor:
@@ -126,14 +126,14 @@ function TactileStackDrawer({ stack }: TactileStackDrawerProps) {
                 }}
               >
                 {/* Top Elements: Dot & STACK label */}
-                <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase font-bold text-black select-none z-10">
+                <div className="flex items-center gap-1.5 text-[9px] md:text-[11px] font-mono tracking-[0.2em] uppercase font-bold text-black select-none z-10">
                   <span className="text-xs leading-none">•</span>
                   <span>STACK</span>
                 </div>
 
                 {/* Middle Element: Tool Name Primary Title */}
                 <div className="my-auto z-10">
-                  <h4 className="text-xl sm:text-2xl font-black font-sans tracking-tight text-black leading-tight uppercase break-words">
+                  <h4 className="text-sm md:text-2xl font-black font-sans tracking-tight text-black leading-tight uppercase break-words">
                     {tool}
                   </h4>
                 </div>
