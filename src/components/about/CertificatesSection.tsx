@@ -298,7 +298,7 @@ const CertificatesSection = forwardRef<HTMLElement, CertificatesSectionProps>(
 
             {/* ─── Right Column: Certificate List Container with Aggressive Right Padding ─── */}
             <div
-              className="flex-1 w-full max-w-[1050px] pr-12 sm:pr-24 md:pr-32 lg:pr-36 xl:pr-[10vw]"
+              className="flex-1 w-full max-w-[1050px] pr-0 sm:pr-24 md:pr-32 lg:pr-36 xl:pr-[10vw]"
               onMouseLeave={() => setActiveCardIndex(null)}
             >
               <div className="relative w-full">
