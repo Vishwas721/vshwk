@@ -210,7 +210,7 @@ const EventsHackathonsSection = forwardRef<HTMLElement, EventsHackathonsSectionP
         ref={sectionRef}
         id="events-hackathons"
         {...props}
-        className={`relative w-full h-screen min-h-screen overflow-hidden bg-[#F37021] text-[#0a0a0a] flex flex-col justify-between py-12 sm:py-16 select-none ${props.className || ""
+        className={`relative w-full h-screen min-h-screen overflow-hidden bg-[#F37021] text-[#0a0a0a] flex flex-col justify-between pt-24 pb-12 sm:pb-16 md:pt-16 select-none ${props.className || ""
           }`}
         onMouseMove={handleMouseMove}
       >
@@ -288,7 +288,7 @@ const EventsHackathonsSection = forwardRef<HTMLElement, EventsHackathonsSectionP
         </div>
 
         {/* ─── Bottom Meta Bar ─── */}
-        <div className="relative z-10 w-full pl-6 sm:pl-12 pr-24 sm:pr-[120px] flex justify-between items-center text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase opacity-75">
+        <div className="relative z-10 w-full pl-6 sm:pl-12 pr-6 sm:pr-[120px] flex justify-between items-center gap-4 text-[10px] sm:text-[11px] font-mono tracking-[0.2em] uppercase opacity-75">
           <span>06 OFFICIAL STOPS</span>
           <span>COMPETITIONS & RECOGNITION</span>
         </div>
