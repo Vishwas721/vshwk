@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { useCoarsePointer } from "@/hooks/useCoarsePointer";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -120,6 +121,8 @@ export default function FloatingProjectsSection() {
   const marqueeContainerRef = useRef<HTMLDivElement>(null);
   const line1Ref = useRef<HTMLDivElement>(null);
   const line2Ref = useRef<HTMLDivElement>(null);
+  // Touch devices: dragging would lock page scroll over the cards
+  const isCoarsePointer = useCoarsePointer();
 
   useGSAP(
     () => {
@@ -253,20 +256,27 @@ export default function FloatingProjectsSection() {
       </div>
 
       {/* ─── Massive 200vh Free Drag Canvas (No teleports, endless room) ─── */}
-      <div className="relative z-10 w-full min-h-[200vh] h-[200vh] overflow-hidden mt-8 md:mt-12">
-        {PROJECT_CARDS.map((card) => (
+      <div className="relative z-10 w-full min-h-[200vh] h-[200vh] max-[767px]:min-h-[180vh] max-[767px]:h-[180vh] overflow-hidden mt-8 md:mt-12">
+        {PROJECT_CARDS.map((card, idx) => (
           <motion.div
             key={card.id}
-            drag
+            drag={!isCoarsePointer}
             dragMomentum={false}
             initial={{ rotate: card.rotate }}
             whileHover={{ scale: 1.05, rotate: 0, zIndex: 50, cursor: "grab" }}
             whileTap={{ scale: 1.05, zIndex: 50, cursor: "grabbing" }}
-            className={`absolute select-none will-change-transform ${card.posClass}`}
-            style={{
-              top: card.top,
-              left: card.left,
-            }}
+            className={`project-card-item absolute select-none will-change-transform ${card.posClass}`}
+            style={
+              {
+                // Desktop (md+): original scattered formation
+                "--top-d": card.top,
+                "--left-d": card.left,
+                // Mobile: alternate cards between the left and right gutters
+                "--top-m": `${4 + idx * 16}%`,
+                "--left-m": idx % 2 === 0 ? "4vw" : "auto",
+                "--right-m": idx % 2 === 0 ? "auto" : "4vw",
+              } as React.CSSProperties
+            }
           >
             {/* Card Surface */}
             <div className="project-card-surface group relative w-[250px] sm:w-[275px] md:w-[295px] h-[350px] sm:h-[375px] md:h-[405px] rounded-[14px] p-[20px_16px] md:p-[28px_18px] bg-white text-[#302c1a] shadow-[0_20px_50px_rgba(48,44,26,0.11)] hover:shadow-[0_30px_70px_rgba(48,44,26,0.22)] transition-shadow duration-300 ease-out select-none flex flex-col justify-between overflow-hidden cursor-grab active:cursor-grabbing">
