@@ -53,6 +53,9 @@ export default function ContactSection() {
       }
 
       // ─── Step 4: Interactive Draggable Cards with Inertia ───
+      // Touch devices: Draggable would block page scrolling over the cards
+      if (window.matchMedia("(pointer: coarse)").matches) return;
+
       const cardElements = [card1Ref.current, card2Ref.current].filter(
         Boolean
       ) as HTMLElement[];
@@ -107,7 +110,7 @@ export default function ContactSection() {
       {/* ─── Step 1: Expanding Pink Circle Element (#ffabb7) ─── */}
       <div
         ref={pinkBubbleRef}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] rounded-full bg-[#ffabb7] -z-10"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] max-[767px]:w-[160vh] max-[767px]:h-[160vh] rounded-full bg-[#ffabb7] -z-10"
       />
 
       {/* ─── Main Content Container (Full Width Edge-to-Edge) ─── */}
@@ -158,7 +161,8 @@ export default function ContactSection() {
         </div>
 
         {/* ─── Bottom Area: Left Index Menu & Bottom Name ─── */}
-        <div className="w-[90vw] mx-auto mt-16 sm:mt-20 md:mt-24">
+        {/* Mobile: large top margin reserves the space where the two cards sit */}
+        <div className="w-[90vw] mx-auto mt-[464px] md:mt-24">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 w-full">
             {/* Left Index Menu */}
             <div className="relative z-20">
@@ -212,22 +216,22 @@ export default function ContactSection() {
       {/* Card 1: Developer / Vishwas K */}
       <div
         ref={card1Ref}
-        className="absolute top-[28%] sm:top-[32%] md:top-[34%] left-[6%] sm:left-[14%] md:left-[20%] z-30 w-[260px] sm:w-[290px] h-[360px] sm:h-[400px] bg-white text-[#2d2a26] rounded-[14px] p-6 sm:p-7 shadow-[0_20px_50px_rgba(45,42,38,0.18)] hover:shadow-[0_30px_70px_rgba(45,42,38,0.28)] flex flex-col justify-between cursor-grab active:cursor-grabbing touch-none select-none will-change-transform"
+        className="absolute top-[calc(172px+60.8vw)] md:top-[34%] left-[4%] md:left-[20%] z-30 w-[58vw] max-w-[240px] md:w-[290px] md:max-w-none h-[300px] md:h-[400px] bg-white text-[#2d2a26] rounded-[14px] p-5 md:p-7 shadow-[0_20px_50px_rgba(45,42,38,0.18)] hover:shadow-[0_30px_70px_rgba(45,42,38,0.28)] flex flex-col justify-between cursor-grab active:cursor-grabbing md:touch-none select-none will-change-transform"
         style={{ transform: "rotate(-10deg)" }}
       >
         {/* Card 1 Header */}
         <div>
-          <span className="block text-[32px] sm:text-[36px] leading-[0.75] font-bold text-[#2d2a26] indent-[-2px]">
+          <span className="block text-[28px] md:text-[36px] leading-[0.75] font-bold text-[#2d2a26] indent-[-2px]">
             ・
           </span>
-          <div className="mt-2 text-[17px] sm:text-[20px] font-sans font-bold leading-[1.18] uppercase tracking-tight text-[#2d2a26]">
+          <div className="mt-2 text-[15px] md:text-[20px] font-sans font-bold leading-[1.18] uppercase tracking-tight text-[#2d2a26]">
             <span>CODED & DESIGNED BY</span>
             <span className="block">(VISHWAS K)</span>
           </div>
         </div>
 
         {/* Card 1 Links */}
-        <ul className="space-y-1.5 text-[11px] sm:text-[12px] font-mono tracking-wider text-[#2d2a26]/75 uppercase">
+        <ul className="space-y-1.5 text-[10px] md:text-[12px] font-mono tracking-wider text-[#2d2a26]/75 uppercase">
           <li>
             <a
               href="https://github.com/Vishwas721"
@@ -264,7 +268,7 @@ export default function ContactSection() {
         {/* Card 1 Bottom Display Text */}
         <div className="relative pt-2 border-t border-[#2d2a26]/10">
           <span
-            className="block text-[85px] sm:text-[112px] leading-[0.8] uppercase tracking-[-0.01em] text-[#2d2a26] select-none pointer-events-none"
+            className="block text-[64px] md:text-[112px] leading-[0.8] uppercase tracking-[-0.01em] text-[#2d2a26] select-none pointer-events-none"
             style={{ fontFamily: "var(--font-six-caps)" }}
           >
             VISHWAS K
@@ -276,22 +280,22 @@ export default function ContactSection() {
       {/* Card 2: Contact / Say Hi */}
       <div
         ref={card2Ref}
-        className="absolute top-[40%] sm:top-[44%] md:top-[46%] right-[5%] sm:right-[10%] md:right-[16%] z-30 w-[260px] sm:w-[290px] h-[360px] sm:h-[400px] bg-white text-[#2d2a26] rounded-[14px] p-6 sm:p-7 shadow-[0_20px_50px_rgba(45,42,38,0.18)] hover:shadow-[0_30px_70px_rgba(45,42,38,0.28)] flex flex-col justify-between cursor-grab active:cursor-grabbing touch-none select-none will-change-transform"
+        className="absolute top-[calc(262px+60.8vw)] md:top-[46%] right-[4%] md:right-[16%] z-30 w-[58vw] max-w-[240px] md:w-[290px] md:max-w-none h-[300px] md:h-[400px] bg-white text-[#2d2a26] rounded-[14px] p-5 md:p-7 shadow-[0_20px_50px_rgba(45,42,38,0.18)] hover:shadow-[0_30px_70px_rgba(45,42,38,0.28)] flex flex-col justify-between cursor-grab active:cursor-grabbing md:touch-none select-none will-change-transform"
         style={{ transform: "rotate(8deg)" }}
       >
         {/* Card 2 Header */}
         <div>
-          <span className="block text-[32px] sm:text-[36px] leading-[0.75] font-bold text-[#2d2a26] indent-[-2px]">
+          <span className="block text-[28px] md:text-[36px] leading-[0.75] font-bold text-[#2d2a26] indent-[-2px]">
             ・
           </span>
-          <div className="mt-2 text-[17px] sm:text-[20px] font-sans font-bold leading-[1.18] uppercase tracking-tight text-[#2d2a26]">
+          <div className="mt-2 text-[15px] md:text-[20px] font-sans font-bold leading-[1.18] uppercase tracking-tight text-[#2d2a26]">
             <span>GET IN TOUCH</span>
             <span className="block">(SAY HI)</span>
           </div>
         </div>
 
         {/* Card 2 Links */}
-        <ul className="space-y-1.5 text-[11px] sm:text-[12px] font-mono tracking-wider text-[#2d2a26]/75 uppercase">
+        <ul className="space-y-1.5 text-[10px] md:text-[12px] font-mono tracking-wider text-[#2d2a26]/75 uppercase">
           <li>
             <a
               href="mailto:vishwasvishu2830@gmail.com"
@@ -326,7 +330,7 @@ export default function ContactSection() {
         {/* Card 2 Bottom Display Text */}
         <div className="relative pt-2 border-t border-[#2d2a26]/10">
           <span
-            className="block text-[85px] sm:text-[112px] leading-[0.8] uppercase tracking-[-0.01em] text-[#2d2a26] select-none pointer-events-none"
+            className="block text-[64px] md:text-[112px] leading-[0.8] uppercase tracking-[-0.01em] text-[#2d2a26] select-none pointer-events-none"
             style={{ fontFamily: "var(--font-six-caps)" }}
           >
             SAY HI
