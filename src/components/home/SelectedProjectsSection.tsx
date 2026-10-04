@@ -259,7 +259,7 @@ function ProjectTitleWithHUD({
               transition: { type: "spring", stiffness: 300, damping: 20 },
             }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
-            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] max-w-[92vw] p-8 rounded-3xl shadow-2xl z-50 flex flex-col gap-6 text-white border border-white/20 pointer-events-auto select-none ${hudData.bgClass}`}
+            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] max-w-[92vw] p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-2xl z-50 flex flex-col gap-4 md:gap-6 text-white border border-white/20 pointer-events-auto select-none ${hudData.bgClass}`}
             style={{
               backgroundColor: hudData.bgHex,
               boxShadow:
@@ -277,7 +277,7 @@ function ProjectTitleWithHUD({
                   DATA HUD // {title}
                 </span>
               </div>
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/70 px-3 py-1 rounded-full border border-white/20 bg-black/20">
+              <span className="shrink-0 whitespace-nowrap font-mono text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-white/70 px-3 py-1 rounded-full border border-white/20 bg-black/20">
                 {hudData.timeline}
               </span>
             </div>
@@ -288,12 +288,12 @@ function ProjectTitleWithHUD({
             </p>
 
             {/* Main Description (Editorial Body) */}
-            <p className="font-light text-lg leading-[1.8] tracking-wide text-white/95">
+            <p className="font-light text-sm md:text-lg leading-relaxed md:leading-[1.8] tracking-wide text-white/95">
               {hudData.details}
             </p>
 
             {/* Footer: Live Protocol Status */}
-            <div className="pt-3 border-t border-white/20 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-white/70">
+            <div className="pt-3 border-t border-white/20 flex flex-wrap gap-2 items-center justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-white/70">
               <span className="flex items-center gap-2">
                 <span className="text-white/40">•</span>
                 STATUS:{" "}
@@ -305,7 +305,8 @@ function ProjectTitleWithHUD({
                 </span>
               </span>
               <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/70">
-                HOVER TO DISMISS
+                <span className="hidden md:inline">HOVER TO DISMISS</span>
+                <span className="md:hidden">TAP OUTSIDE TO CLOSE</span>
               </span>
             </div>
           </motion.div>
